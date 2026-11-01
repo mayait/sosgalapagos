@@ -1,15 +1,43 @@
 #!/usr/bin/env bash
-# Deja los puertos 80/443 abiertos SOLO para Cloudflare y el 22 para SSH.
-# Así nadie puede saltarse Cloudflare (WAF, rate limiting) ni falsificar la
-# cabecera CF-Connecting-IP. Rangos: https://www.cloudflare.com/ips/
+# Deja los puertos 80/443 del servidor abiertos SOLO para Cloudflare.
+#
+# Docker publica los puertos de Caddy con sus propias reglas de iptables y se
+# salta ufw, así que el filtro va en la cadena DOCKER-USER, que Docker evalúa
+# antes que las suyas. Así nadie puede saltarse Cloudflare (WAF, rate limiting)
+# ni falsificar la cabecera CF-Connecting-IP. SSH (22) no se toca.
+# Rangos: https://www.cloudflare.com/ips/
+#
+# Se instala como servicio para que se reaplique al arrancar:
+#   ./firewall-cloudflare.sh --instalar
 set -euo pipefail
-apt-get install -y ufw >/dev/null
-ufw --force reset >/dev/null
-ufw default deny incoming
-ufw default allow outgoing
-ufw allow 22/tcp
-for ip in $(curl -fsS https://www.cloudflare.com/ips-v4) $(curl -fsS https://www.cloudflare.com/ips-v6); do
-  ufw allow proto tcp from "$ip" to any port 80,443 comment cloudflare >/dev/null
+
+if [ "${1:-}" = "--instalar" ]; then
+  install -m 755 "$0" /usr/local/sbin/sosgalapagos-firewall
+  cat > /etc/systemd/system/sosgalapagos-firewall.service <<'UNIT'
+[Unit]
+Description=SOS Galápagos: puertos 80/443 solo desde Cloudflare
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/sosgalapagos-firewall
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+  systemctl daemon-reload
+  systemctl enable --now sosgalapagos-firewall.service
+  exit 0
+fi
+
+V4=$(curl -fsS https://www.cloudflare.com/ips-v4)
+iptables -N DOCKER-USER 2>/dev/null || true
+iptables -F DOCKER-USER
+for ip in $V4; do
+  iptables -A DOCKER-USER -p tcp -m multiport --dports 80,443 -s "$ip" -j RETURN
 done
-ufw --force enable
-ufw status | head -5
+iptables -A DOCKER-USER -p tcp -m multiport --dports 80,443 -j DROP
+iptables -A DOCKER-USER -j RETURN
+echo "DOCKER-USER: 80/443 solo desde $(echo "$V4" | wc -l) rangos de Cloudflare"

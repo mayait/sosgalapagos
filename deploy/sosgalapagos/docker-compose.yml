@@ -96,9 +96,11 @@ services:
     depends_on:
       - web
       - api
+    # Solo IPv4: Cloudflare llega por el registro A, y el filtro de
+    # firewall-cloudflare.sh (cadena DOCKER-USER) es de iptables IPv4.
     ports:
-      - '80:80'
-      - '443:443'
+      - '0.0.0.0:80:80'
+      - '0.0.0.0:443:443'
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddydata:/data

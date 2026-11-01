@@ -21,12 +21,12 @@ Cloudflare (proxy) ──► Caddy :443 ─┬─► web  (Next.js) :3001
 
 ```bash
 apt-get update && apt-get install -y ca-certificates curl git
-curl -fsSL https://get.docker.com | sh
+apt-get install -y docker.io docker-compose   # paquetes de Debian
 git clone https://github.com/mayait/sosgalapagos.git /opt/sosgalapagos
 cd /opt/sosgalapagos/deploy/sosgalapagos
 cp .env.example .env && chmod 600 .env
 # rellenar .env: POSTGRES_PASSWORD, JWT_SECRET e INTERNAL_PROXY_SECRET con `openssl rand -hex 32`
-./firewall-cloudflare.sh     # 80/443 solo desde Cloudflare; 22 abierto (solo con llave)
+./firewall-cloudflare.sh --instalar   # 80/443 solo desde Cloudflare (cadena DOCKER-USER); 22 abierto (solo con llave)
 ```
 
 ## 3. Desplegar y actualizar
