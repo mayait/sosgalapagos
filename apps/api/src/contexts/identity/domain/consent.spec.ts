@@ -71,9 +71,9 @@ describe('consent helpers', () => {
       expect(isProfileComplete('+58 412 555 0101', bothAccepted)).toBe(true);
     });
 
-    it('false without phone', () => {
-      expect(isProfileComplete(null, bothAccepted)).toBe(false);
-      expect(isProfileComplete('   ', bothAccepted)).toBe(false);
+    it('true without phone: phone is optional in SOS Galápagos', () => {
+      expect(isProfileComplete(null, bothAccepted)).toBe(true);
+      expect(isProfileComplete('   ', bothAccepted)).toBe(true);
     });
 
     it('false without consents even if phone present', () => {

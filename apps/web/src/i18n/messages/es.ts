@@ -438,7 +438,8 @@ export const es = {
     name_label: 'Nombre completo',
     email_label: 'Correo electrónico',
     phone_label: 'Teléfono de contacto',
-    phone_hint: '(obligatorio)',
+    phone_hint: '(opcional)',
+    phone_note: 'Nunca te vamos a llamar por nada que no sea la gestión de la emergencia.',
     password_label: 'Contraseña',
     password_hint: '(mín. 8 caracteres)',
     submit: 'Crear cuenta',
@@ -471,9 +472,10 @@ export const es = {
   onboarding: {
     title: 'Completa tu perfil',
     subtitle:
-      'Necesitamos tu teléfono de contacto y tu aceptación de las condiciones antes de continuar.',
+      'Acepta las condiciones para continuar. El teléfono es opcional.',
     phone_label: 'Teléfono de contacto',
-    phone_hint: '(obligatorio)',
+    phone_hint: '(opcional)',
+    phone_note: 'Nunca te vamos a llamar por nada que no sea la gestión de la emergencia.',
     submit: 'Continuar',
     submitting: 'Guardando…',
     error_fallback: 'No se pudo completar el perfil.',

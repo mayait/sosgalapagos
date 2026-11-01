@@ -419,7 +419,8 @@ export const en = {
     name_label: 'Full name',
     email_label: 'Email address',
     phone_label: 'Contact phone',
-    phone_hint: '(required)',
+    phone_hint: '(optional)',
+    phone_note: 'We will never call you for anything other than managing the emergency.',
     password_label: 'Password',
     password_hint: '(min. 8 characters)',
     submit: 'Create account',
@@ -450,9 +451,10 @@ export const en = {
   onboarding: {
     title: 'Complete your profile',
     subtitle:
-      'We need your contact phone and your acceptance of the terms before continuing.',
+      'Accept the terms to continue. The phone is optional.',
     phone_label: 'Contact phone',
-    phone_hint: '(required)',
+    phone_hint: '(optional)',
+    phone_note: 'We will never call you for anything other than managing the emergency.',
     submit: 'Continue',
     submitting: 'Saving…',
     error_fallback: 'Could not complete your profile.',

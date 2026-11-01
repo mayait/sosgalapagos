@@ -42,11 +42,12 @@ export class RegisterDto {
   @ApiProperty({
     example: '+58 412 555 0101',
     type: String,
-    description: 'Teléfono de contacto (obligatorio)',
+    description: 'Teléfono de contacto (opcional)',
+    required: false,
   })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  phone!: string;
+  phone?: string;
 
   @ApiProperty({
     example: true,
@@ -76,11 +77,12 @@ export class OnboardingDto {
   @ApiProperty({
     example: '+58 412 555 0101',
     type: String,
-    description: 'Teléfono de contacto (obligatorio)',
+    description: 'Teléfono de contacto (opcional)',
+    required: false,
   })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  phone!: string;
+  phone?: string;
 
   @ApiProperty({
     example: true,

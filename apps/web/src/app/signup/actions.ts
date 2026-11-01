@@ -27,10 +27,6 @@ export async function signupAction(
     return { status: 'error', message: t.signup.err_all_fields_required };
   }
 
-  if (!phone) {
-    return { status: 'error', message: t.signup.err_phone_required };
-  }
-
   if (password.length < 8) {
     return {
       status: 'error',

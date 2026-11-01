@@ -6,7 +6,6 @@ import { UserId } from '../domain/user-id';
 import { Email } from '../domain/email';
 import { EmailAlreadyRegisteredError } from '../domain/email-already-registered.error';
 import { ConsentRequiredError } from '../domain/consent-required.error';
-import { PhoneRequiredError } from '../domain/phone-required.error';
 import { ConsentDocument, CURRENT_CONSENT_VERSIONS } from '../domain/consent';
 import type { PasswordHasher } from '../domain/ports/password-hasher';
 import type { TokenService, TokenPayload } from '../domain/ports/token.service';
@@ -212,13 +211,11 @@ describe('RegisterUser', () => {
     expect(await repo.countAll()).toBe(0);
   });
 
-  it('rechaza el registro si no hay teléfono', async () => {
+  it('registra sin teléfono (opcional en SOS Galápagos) y lo guarda como null', async () => {
     const repo = new InMemoryUserRepository();
     const { useCase } = useCaseWith(repo);
 
-    await expect(useCase.execute(validCmd({ phone: '   ' }))).rejects.toThrow(
-      PhoneRequiredError,
-    );
-    expect(await repo.countAll()).toBe(0);
+    await useCase.execute(validCmd({ phone: '   ' }));
+    expect(await repo.countAll()).toBe(1);
   });
 });

@@ -68,9 +68,7 @@ export function isProfileComplete(
   phone: string | null,
   consents: readonly ConsentSnapshot[],
 ): boolean {
-  return (
-    phone !== null &&
-    phone.trim() !== '' &&
-    hasAcceptedCurrentConsents(consents)
-  );
+  // Fork SOS Galápagos: el teléfono es opcional; basta con el consentimiento.
+  void phone;
+  return hasAcceptedCurrentConsents(consents);
 }

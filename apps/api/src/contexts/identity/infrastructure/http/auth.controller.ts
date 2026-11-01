@@ -111,7 +111,7 @@ export class AuthController {
       email: dto.email,
       password: dto.password,
       name: dto.name,
-      phone: dto.phone,
+      phone: dto.phone ?? null,
       acceptedTerms: dto.acceptedTerms,
       acceptedPrivacy: dto.acceptedPrivacy,
       ...consentContext(req),
@@ -141,7 +141,7 @@ export class AuthController {
   ): Promise<OnboardingResponseDto> {
     return this.completeRegistration.execute({
       userId: req.user.id,
-      phone: dto.phone,
+      phone: dto.phone ?? null,
       acceptedTerms: dto.acceptedTerms,
       acceptedPrivacy: dto.acceptedPrivacy,
       ...consentContext(req),

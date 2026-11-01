@@ -4,12 +4,11 @@ import { UserId } from '../domain/user-id';
 import { User } from '../domain/user';
 import { UserNotFoundError } from '../domain/user-not-found.error';
 import { ConsentRequiredError } from '../domain/consent-required.error';
-import { PhoneRequiredError } from '../domain/phone-required.error';
 import { CURRENT_CONSENT_VERSIONS, missingConsents } from '../domain/consent';
 
 export interface CompleteRegistrationCommand {
   userId: string;
-  phone: string;
+  phone?: string | null;
   acceptedTerms: boolean;
   acceptedPrivacy: boolean;
   /** Request IP at acceptance (audit); optional. */
@@ -39,14 +38,18 @@ export class CompleteRegistration {
     if (!cmd.acceptedTerms || !cmd.acceptedPrivacy) {
       throw new ConsentRequiredError();
     }
-    const phone = cmd.phone?.trim() ?? '';
-    if (phone === '') throw new PhoneRequiredError();
+    // Teléfono opcional (fork SOS Galápagos): si viene vacío se conserva el actual.
+    const phone = cmd.phone?.trim() || null;
 
     const userId = UserId.fromString(cmd.userId);
     const user = await this.userRepo.findById(userId);
     if (!user) throw new UserNotFoundError(cmd.userId);
 
-    const updated = User.fromSnapshot({ ...user.toSnapshot(), phone });
+    const snapshot = user.toSnapshot();
+    const updated = User.fromSnapshot({
+      ...snapshot,
+      phone: phone ?? snapshot.phone,
+    });
     await this.userRepo.save(updated);
 
     // Only append consents the user has not already accepted at current version,

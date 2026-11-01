@@ -20,9 +20,6 @@ export async function onboardingAction(
 
   const { t } = await getT();
 
-  if (!phone) {
-    return { status: 'error', message: t.onboarding.err_phone_required };
-  }
   if (!consent) {
     return { status: 'error', message: t.onboarding.err_consent_required };
   }

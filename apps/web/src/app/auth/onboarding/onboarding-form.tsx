@@ -41,9 +41,12 @@ export function OnboardingForm({ next, t, tc }: OnboardingFormProps) {
           name="phone"
           type="tel"
           autoComplete="tel"
-          required
           placeholder="0999 123 456"
+          aria-describedby="phone-note"
         />
+        <p id="phone-note" className="text-xs text-muted">
+          {t.phone_note}
+        </p>
       </div>
 
       <ConsentCheckbox

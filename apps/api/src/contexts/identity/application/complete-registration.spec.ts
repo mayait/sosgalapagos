@@ -8,7 +8,6 @@ import { User } from '../domain/user';
 import { UserId } from '../domain/user-id';
 import { Email } from '../domain/email';
 import { ConsentRequiredError } from '../domain/consent-required.error';
-import { PhoneRequiredError } from '../domain/phone-required.error';
 import { UserNotFoundError } from '../domain/user-not-found.error';
 import {
   ConsentDocument,
@@ -109,16 +108,16 @@ describe('CompleteRegistration', () => {
     ).rejects.toThrow(ConsentRequiredError);
   });
 
-  it('rejects when phone is blank', async () => {
+  it('completes without a phone (optional in SOS Galápagos)', async () => {
     const repo = await buildSocialUser();
     const useCase = new CompleteRegistration(
       repo,
       new InMemoryConsentRepository(),
     );
 
-    await expect(useCase.execute(validCmd({ phone: '  ' }))).rejects.toThrow(
-      PhoneRequiredError,
-    );
+    await expect(useCase.execute(validCmd({ phone: '  ' }))).resolves.toEqual({
+      profileComplete: true,
+    });
   });
 
   it('throws when the user does not exist', async () => {

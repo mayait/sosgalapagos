@@ -7,7 +7,6 @@ import { UserId } from '../domain/user-id';
 import { User } from '../domain/user';
 import { EmailAlreadyRegisteredError } from '../domain/email-already-registered.error';
 import { ConsentRequiredError } from '../domain/consent-required.error';
-import { PhoneRequiredError } from '../domain/phone-required.error';
 import {
   ALL_CONSENT_DOCUMENTS,
   CURRENT_CONSENT_VERSIONS,
@@ -17,8 +16,8 @@ export interface RegisterUserCommand {
   email: string;
   password: string;
   name: string;
-  /** Contact phone — required for every account. */
-  phone: string;
+  /** Contact phone — optional (SOS Galápagos). */
+  phone?: string | null;
   /** Must be true — acceptance of the Terms of Service. */
   acceptedTerms: boolean;
   /** Must be true — acceptance of the Privacy Policy. */
@@ -41,8 +40,8 @@ export class RegisterUser {
     if (!cmd.acceptedTerms || !cmd.acceptedPrivacy) {
       throw new ConsentRequiredError();
     }
-    const phone = cmd.phone?.trim() ?? '';
-    if (phone === '') throw new PhoneRequiredError();
+    // Teléfono opcional (fork SOS Galápagos): vacío se guarda como null.
+    const phone = cmd.phone?.trim() || null;
 
     const email = Email.fromString(cmd.email);
 
