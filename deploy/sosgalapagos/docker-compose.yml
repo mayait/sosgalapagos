@@ -1,0 +1,112 @@
+# SOS Galápagos — stack de producción en un solo servidor.
+#
+#   Cloudflare (proxy, WAF, caché) → Caddy :443 → web (Next) :3001
+#                                              └→ /backend/* → api (NestJS) :3000
+#   postgres · redis · migraciones idempotentes (deploy/migrate.sh)
+#
+# Uso (en el servidor, con el repo clonado en /opt/sosgalapagos):
+#   cp deploy/sosgalapagos/.env.example deploy/sosgalapagos/.env   # y editar
+#   deploy/sosgalapagos/deploy.sh
+#
+# La API se publica bajo el mismo dominio en /backend (Caddy quita el prefijo),
+# así no hace falta un subdominio ni CORS entre orígenes.
+
+name: sosgalapagos
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    command: ['redis-server', '--save', '60', '1', '--appendonly', 'yes']
+    volumes:
+      - redisdata:/data
+
+  migrate:
+    image: postgres:16
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ../../apps/api/drizzle:/migrations:ro
+      - ../migrate.sh:/migrate.sh:ro
+    entrypoint: ['sh', '/migrate.sh']
+    restart: 'no'
+
+  api:
+    build:
+      context: ../..
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - REDIS_URL=redis://redis:6379
+      - FRONTEND_URL=${SITE_URL}
+      - OAUTH_CALLBACK_BASE=${SITE_URL}/backend
+      # La imagen carga dd-trace; sin agente de Datadog se desactiva.
+      - DD_TRACE_ENABLED=false
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_started
+    volumes:
+      - uploads:/app/uploads
+    expose:
+      - '3000'
+
+  web:
+    build:
+      context: ../..
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${SITE_URL}/backend
+        NEXT_PUBLIC_SITE_URL: ${SITE_URL}
+        NEXT_PUBLIC_AID_BOTS_ENABLED: 'false'
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - API_URL=http://api:3000
+      - COOKIE_SECURE=true
+      - DEMO_MODE=false
+    depends_on:
+      - api
+    expose:
+      - '3001'
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - web
+      - api
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+      - caddyconfig:/config
+
+volumes:
+  pgdata:
+  redisdata:
+  uploads:
+  caddydata:
+  caddyconfig:
