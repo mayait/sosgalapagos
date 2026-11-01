@@ -83,4 +83,4 @@ Los botones están **ocultos** mientras `SOCIAL_LOGIN` esté vacío en `.env`. P
 
 **Encender:** en `.env` pon `SOCIAL_LOGIN=google,facebook` (o solo uno) y ejecuta `./deploy.sh`. Hay que reconstruir porque la variable va dentro del JavaScript.
 
-La cuenta se asocia por correo: si alguien ya se registró con ese email, entra a la misma cuenta. Las cookies del flujo usan la ruta `/backend/auth`, que se deduce de `OAUTH_CALLBACK_BASE`.
+Una cuenta creada **con contraseña** no se une sola a Google o Facebook (protección contra robo de cuentas): esa persona ve «Ya tienes una cuenta con contraseña» y debe entrar con su contraseña. Las cuentas nuevas creadas con Google o Facebook funcionan directo. Las cookies del flujo usan la ruta `/backend/auth`, que se deduce de `OAUTH_CALLBACK_BASE`.
