@@ -131,8 +131,11 @@ export default async function HomePage() {
               <Link href={`${base}/voluntario`} className={botonNegro}>
                 Apuntarme como voluntario
               </Link>
+              <a href={PORTADA.donacionUSFQ} target="_blank" rel="noopener noreferrer" className={botonRojo}>
+                Donar a la campaña USFQ ↗
+              </a>
               <a href="#organizaciones" className={botonBorde}>
-                Dónde donar dinero
+                Otras organizaciones
               </a>
             </div>
           </section>
@@ -236,15 +239,36 @@ export default async function HomePage() {
             Si quieres donar dinero, hazlo a organizaciones con trazabilidad y por sus canales oficiales.{' '}
             <b>No dones a cuentas personales.</b> Todo se coordina con el COE.
           </p>
-          <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3" role="list">
+          <div className="mt-4 flex flex-col gap-4 rounded-lg bg-black p-4 text-white sm:flex-row sm:items-center sm:justify-between lg:p-5">
+            <div>
+              <p className="font-display text-base font-black uppercase leading-tight lg:text-lg">{PORTADA.usfq.nombre}</p>
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[13px]">
+                {PORTADA.usfq.redes.map((r) => (
+                  <a key={r.url} href={r.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-white/85 underline underline-offset-2 hover:text-white">
+                    {r.etiqueta} ↗
+                  </a>
+                ))}
+              </div>
+            </div>
+            <a href={PORTADA.donacionUSFQ} target="_blank" rel="noopener noreferrer" className={`${botonRojo} shrink-0 px-5 py-3 text-[15px]`}>
+              Donar · Campaña USFQ ↗
+            </a>
+          </div>
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3" role="list">
             {PORTADA.organizaciones.map((o) => (
-              <li key={o.nombre} className="rounded-lg border border-line bg-surface px-3 py-2.5 text-[13.5px] font-semibold text-ink">
-                {o.url ? (
-                  <a href={o.url} target="_blank" rel="noopener noreferrer" className="underline-offset-2 hover:text-accent hover:underline">
-                    {o.nombre} ↗
+              <li key={o.nombre} className="flex flex-col gap-0.5 rounded-lg border border-line bg-surface px-3 py-2.5">
+                <span className="text-[13.5px] font-semibold text-ink">{o.nombre}</span>
+                {o.instagram ? (
+                  <a
+                    href={`https://www.instagram.com/${o.instagram}/`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[12.5px] font-semibold text-accent underline-offset-2 hover:underline"
+                  >
+                    Instagram @{o.instagram} ↗
                   </a>
                 ) : (
-                  o.nombre
+                  <span className="text-[12px] text-muted">Contactar por sus canales oficiales</span>
                 )}
               </li>
             ))}

@@ -37,22 +37,32 @@ export const PORTADA = {
     'La SNGR envía medicinas en el avión Hércules.',
   ],
 
+  /** Campaña de donaciones de la USFQ (botón de pagos oficial de la universidad). */
+  donacionUSFQ: 'https://btnpagos.usfq.edu.ec/pagos/eventos.aspx?adm=810110836',
+
   /**
-   * Organizaciones con trazabilidad para donar dinero. `url` solo cuando el
-   * sitio oficial está verificado; sin `url`, se pide contactarlas por sus
-   * canales oficiales. Nunca cuentas personales.
+   * Organizaciones con trazabilidad. Cada enlace lleva a su red oficial
+   * (verificada en su propio sitio web o en el perfil). Sin enlace = no se
+   * encontró una cuenta oficial verificable. Nunca cuentas personales.
    */
+  usfq: {
+    nombre: 'USFQ Galápagos · Galápagos Science Center',
+    redes: [
+      { etiqueta: 'Instagram USFQ Galápagos', url: 'https://www.instagram.com/usfqgalapagos/' },
+      // Instagram del GSC por confirmar: por ahora su página oficial de Facebook.
+      { etiqueta: 'Galápagos Science Center', url: 'https://www.facebook.com/GalapagosGSC/' },
+    ],
+  },
   organizaciones: [
-    { nombre: 'USFQ Galápagos', url: 'https://www.usfq.edu.ec' },
-    { nombre: 'Funcavid — Fundación Un Cambio por la Vida' },
-    { nombre: 'Fundación Charles Darwin (FCD)', url: 'https://www.darwinfoundation.org' },
-    { nombre: 'Fundación Jocotoco', url: 'https://www.jocotoco.org' },
-    { nombre: 'Galápagos Life Fund' },
-    { nombre: 'Galapagos Conservancy', url: 'https://www.galapagos.org' },
+    { nombre: 'Funcavid — Fundación Un Cambio por la Vida', instagram: 'fundacionuncambioxlavida' },
+    { nombre: 'Fundación Charles Darwin (FCD)', instagram: 'charlesdarwinfoundation' },
+    { nombre: 'Fundación Jocotoco', instagram: 'fundacion.jocotoco' },
+    { nombre: 'Galápagos Life Fund', instagram: 'galapagos.life.fund' },
+    { nombre: 'Galapagos Conservancy', instagram: 'galapagosconservancy' },
     { nombre: 'Fundación ECOS' },
     { nombre: 'Fideicomiso de la Cámara de Industrias' },
     { nombre: 'CAPTURGAL — Cámara Provincial de Turismo de Galápagos' },
-  ] as { nombre: string; url?: string }[],
+  ] as { nombre: string; instagram?: string }[],
 
   cuidate: [
     'Toma solo agua embotellada, hervida o clorada.',
