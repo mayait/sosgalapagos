@@ -4,6 +4,7 @@
 # Guarda 14 días en /var/backups/sosgalapagos. Copiar fuera del servidor
 # (p. ej. a Cloudflare R2) para que sobreviva a la pérdida de la máquina.
 set -euo pipefail
+umask 077   # los backups contienen datos personales: solo root
 cd "$(dirname "$0")"
 set -a; . ./.env; set +a
 DEST=/var/backups/sosgalapagos
