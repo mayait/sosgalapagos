@@ -14,7 +14,10 @@ export default function PrivacidadPage() {
       <p className="text-xs text-muted-soft">Actualizada el {LEGAL.actualizado}</p>
 
       <h2>Quién es responsable</h2>
-      <p>USFQ Galápagos (Universidad San Francisco de Quito), que coordina SOS Galápagos para la emergencia por inundaciones.</p>
+      <p>
+        Human Centric SAS BIC (IA Humana), la empresa que desarrolla y opera SOS Galápagos. La coordinación de la
+        ayuda la hace USFQ Galápagos con las organizaciones aliadas.
+      </p>
 
       <h2>Qué datos guardamos</h2>
       <ul>

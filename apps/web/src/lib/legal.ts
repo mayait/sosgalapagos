@@ -1,6 +1,6 @@
 /**
  * Páginas legales propias de la instancia SOS Galápagos (las de Global
- * Emergency no aplican: el responsable de los datos aquí es USFQ Galápagos).
+ * Emergency no aplican: el responsable de los datos aquí es Human Centric SAS BIC).
  * El correo se reenvía con Cloudflare Email Routing.
  */
 export const LEGAL = {
