@@ -40,6 +40,7 @@ cd geodatos
 .venv/bin/python -I scripts/07b_cuencas_aportantes.py
 # Siempre:
 .venv/bin/python -I scripts/08_exportar.py      # recorta, simplifica y genera export/galapagos + capas.json
+.venv/bin/python -I scripts/08b_nombres_vias.py # rótulos de nombres de calles (nombres_vias.geojson)
 .venv/bin/python -I scripts/09_entregable.py    # actualiza esta carpeta (datos, visor, catálogo, código y parche)
 ```
 

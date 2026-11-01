@@ -53,6 +53,8 @@ export interface ManifestLayer {
   estilo_si?: StyleRule[];
   /** Etiqueta del elemento: al pasar el ratón, o permanente (visible desde zoom 15). */
   rotulo?: { propiedad: string; permanente?: boolean; sufijo?: string };
+  /** Puntos sin símbolo: solo se dibuja el rótulo (p. ej. nombres de calles). */
+  solo_rotulo?: boolean;
   popup?: { titulo?: string; titulo_defecto?: string; sufijo_titulo?: string; campos?: Record<string, string> };
   /** Leyenda explícita [color, texto]; si falta se deriva de `clasificar`. */
   leyenda?: [string, string][];
@@ -132,6 +134,7 @@ export function styleFor(layer: ManifestLayer, props: Props | null | undefined):
 
 /** Entradas de leyenda de una capa. */
 export function legendFor(layer: ManifestLayer): LegendEntry[] {
+  if (layer.solo_rotulo) return [];
   if (layer.leyenda) return layer.leyenda.map(([color, texto]) => ({ color, texto, forma: 'area' }));
   const forma: LegendEntry['forma'] = layer.tipo === 'linea' ? 'linea' : layer.tipo === 'punto' ? 'punto' : 'area';
   const c = layer.clasificar;

@@ -710,6 +710,22 @@
      }
     },
     {
+     "id": "nombres_vias",
+     "titulo": "Nombres de calles",
+     "archivo": "nombres_vias.geojson",
+     "tipo": "punto",
+     "visible": true,
+     "visible_movil": false,
+     "zoom_min": 16,
+     "solo_rotulo": true,
+     "rotulo": {
+      "propiedad": "nombre",
+      "permanente": true
+     },
+     "fuente": "OpenStreetMap, 31-oct-2026",
+     "descripcion": "Se ven al acercar el mapa."
+    },
+    {
      "id": "rutas",
      "titulo": "Rutas de evacuación por tsunami",
      "archivo": "rutas_evacuacion_tsunami.geojson",

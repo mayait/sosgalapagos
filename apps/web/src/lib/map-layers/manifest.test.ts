@@ -131,3 +131,8 @@ test('defaultVisibility usa visible_movil en celulares y visible en escritorio',
   assert.deepEqual(defaultVisibility(m), { susc: true, b: true });
   assert.deepEqual(defaultVisibility(m, true), { susc: false, b: true });
 });
+
+test('legendFor: una capa solo de rótulos no aparece en la leyenda', () => {
+  const capa = { id: 'n', titulo: 'Nombres de calles', tipo: 'punto', solo_rotulo: true } as unknown as ManifestLayer;
+  assert.deepEqual(legendFor(capa), []);
+});

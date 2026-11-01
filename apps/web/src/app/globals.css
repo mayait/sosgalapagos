@@ -98,6 +98,12 @@ body {
 .leaflet-tooltip.rg-capas-rotulo::before {
   display: none;
 }
+/* Nombres de calles: discretos, debajo de los de barrios */
+.leaflet-tooltip.rg-capas-rotulo.rg-capas-rotulo-via {
+  color: #374151;
+  font: 500 10.5px system-ui, sans-serif;
+  letter-spacing: 0.01em;
+}
 /* Rótulos permanentes (p. ej. barrios) solo de cerca */
 .rg-capas-lejos .leaflet-tooltip.rg-capas-rotulo {
   display: none;

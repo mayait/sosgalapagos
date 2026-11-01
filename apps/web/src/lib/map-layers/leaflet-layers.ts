@@ -118,6 +118,9 @@ export async function createLayer(layer: ManifestLayer, ctx: LayerContext): Prom
     pane,
     style: (f) => ({ lineCap: 'round', lineJoin: 'round', ...styleFor(layer, f?.properties as Props) }),
     pointToLayer: (f, latlng) => {
+      if (layer.solo_rotulo) {
+        return L.circleMarker(latlng, { pane, renderer, radius: 0, stroke: false, fill: false, interactive: false });
+      }
       const props = (f.properties ?? {}) as Props;
       const s = styleFor(layer, props);
       const cls = classFor(layer, props);
@@ -145,13 +148,19 @@ export async function createLayer(layer: ManifestLayer, ctx: LayerContext): Prom
     },
     onEachFeature: (f, l) => {
       const props = (f.properties ?? {}) as Props;
-      l.bindPopup(() => popupHtml(layer, props));
+      if (!layer.solo_rotulo) l.bindPopup(() => popupHtml(layer, props));
       const r = layer.rotulo;
       const txt = r ? props[r.propiedad] : undefined;
       if (r && txt != null && txt !== '') {
         l.bindTooltip(
           escapeHtml(txt) + escapeHtml(r.sufijo ?? ''),
-          r.permanente ? { permanent: true, direction: 'center', className: 'rg-capas-rotulo' } : { sticky: true },
+          r.permanente
+            ? {
+                permanent: true,
+                direction: 'center',
+                className: layer.solo_rotulo ? 'rg-capas-rotulo rg-capas-rotulo-via' : 'rg-capas-rotulo',
+              }
+            : { sticky: true },
         );
       }
     },
