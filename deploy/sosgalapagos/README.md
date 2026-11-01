@@ -79,6 +79,8 @@ Los botones están **ocultos** mientras `SOCIAL_LOGIN` esté vacío en `.env`. P
 4. En **Configuración básica**, completa el dominio `sosgalapagos.org`, la URL de la política de privacidad, la de eliminación de datos y el ícono. Luego pasa la app a modo **Activo** (en desarrollo solo entran los administradores de la app).
 5. Copia el identificador y la clave secreta en `.env` como `FACEBOOK_APP_ID` y `FACEBOOK_APP_SECRET`.
 
+**Páginas que piden ambos:** política de privacidad `https://sosgalapagos.org/privacidad` y eliminación de datos `https://sosgalapagos.org/eliminar-datos` (Facebook: «URL de instrucciones para la eliminación de datos»). Las solicitudes llegan a `privacidad@sosgalapagos.org`, reenviado con Cloudflare **Email Routing**.
+
 **Encender:** en `.env` pon `SOCIAL_LOGIN=google,facebook` (o solo uno) y ejecuta `./deploy.sh`. Hay que reconstruir porque la variable va dentro del JavaScript.
 
 La cuenta se asocia por correo: si alguien ya se registró con ese email, entra a la misma cuenta. Las cookies del flujo usan la ruta `/backend/auth`, que se deduce de `OAUTH_CALLBACK_BASE`.

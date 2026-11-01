@@ -1,4 +1,5 @@
 import { GLOBAL_EMERGENCY } from '@/lib/global-emergency';
+import { LEGAL } from '@/lib/legal';
 import type { Messages } from '@/i18n/messages/es';
 
 const linkClass =
@@ -22,12 +23,7 @@ export function ConsentLabel({ t }: { t: Messages['consent'] }) {
         {t.terms}
       </a>
       {t.and}
-      <a
-        href={GLOBAL_EMERGENCY.privacy}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={linkClass}
-      >
+      <a href={LEGAL.privacidad} target="_blank" className={linkClass}>
         {t.privacy}
       </a>
     </span>

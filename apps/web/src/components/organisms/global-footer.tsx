@@ -6,6 +6,7 @@ import { BotChannels } from '@/components/molecules/bot-channels';
 import { AID_BOTS_ENABLED } from '@/lib/bots';
 import { GitHubIcon } from '@/components/atoms/brand-icons';
 import { GLOBAL_EMERGENCY } from '@/lib/global-emergency';
+import { LEGAL } from '@/lib/legal';
 import { GITHUB_REPO_URL } from '@/lib/bots';
 import { MARCA } from '@/lib/marca';
 import type { Messages } from '@/i18n/messages/es';
@@ -90,8 +91,11 @@ export function GlobalFooter({ tf, tb }: GlobalFooterProps) {
 
           <nav aria-label={tf.legal_heading} className="flex flex-col gap-2.5">
             <h2 className={colHeading}>{tf.legal_heading}</h2>
-            <a href={GLOBAL_EMERGENCY.privacy} target="_blank" rel="noopener noreferrer" className={linkClass}>
+            <a href={LEGAL.privacidad} className={linkClass}>
               {tf.privacy}
+            </a>
+            <a href={LEGAL.eliminarDatos} className={linkClass}>
+              Eliminar tus datos
             </a>
             <a href={GLOBAL_EMERGENCY.terms} target="_blank" rel="noopener noreferrer" className={linkClass}>
               {tf.terms}
