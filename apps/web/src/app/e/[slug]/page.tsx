@@ -9,6 +9,7 @@ import { AppBar } from '@/components/organisms/app-bar';
 import { ResourceList } from '@/components/organisms/resource-list';
 import { EmergencyMapWrapper } from '@/components/organisms/emergency-map-wrapper';
 import { GruposWhatsapp } from '@/components/molecules/grupos-whatsapp';
+import { ApoyoViolencia } from '@/components/molecules/apoyo-violencia';
 import { NeedsFilter } from '@/components/molecules/needs-filter';
 import { MetricCard } from '@/components/molecules/metric-card';
 import { Card } from '@/components/atoms/card';
@@ -455,6 +456,8 @@ export default async function EmergencyPage({ params, searchParams }: Props) {
           </section>
 
           <GruposWhatsapp headingId="grupos-whatsapp-emergencia" />
+
+          <ApoyoViolencia headingId="apoyo-violencia-emergencia" />
 
           {token !== null && (
             <section aria-labelledby="manage-heading" className="flex flex-col gap-3">

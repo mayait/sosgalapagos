@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { api } from '@/lib/api';
 import { AppBar } from '@/components/organisms/app-bar';
 import { GruposWhatsapp } from '@/components/molecules/grupos-whatsapp';
+import { ApoyoViolencia } from '@/components/molecules/apoyo-violencia';
 import { getEmergencyBySlug } from '@/lib/emergencies';
 import { PORTADA } from '@/lib/portada-galapagos';
 
@@ -276,6 +277,8 @@ export default async function HomePage() {
         </section>
 
         <GruposWhatsapp headingId="grupos-whatsapp-portada" />
+
+        <ApoyoViolencia headingId="apoyo-violencia-portada" />
 
         <p className="text-[12.5px] text-muted">
           Información actualizada al {PORTADA.actualizado}. Fuentes: COE Provincial y cantonal, GAD Santa Cruz, empresa
