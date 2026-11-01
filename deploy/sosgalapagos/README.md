@@ -61,3 +61,24 @@ docker compose logs -f api web caddy
 - **Copias de seguridad:** `backup.sh` guarda 14 días en `/var/backups/sosgalapagos`. Hay que copiarlas fuera del servidor, por ejemplo a Cloudflare R2.
 - **Secretos:** solo en `.env` del servidor, con permisos 600. Nunca en git.
 - **IP real:** la web reenvía a la API la IP del usuario (`CF-Connecting-IP`) con `INTERNAL_PROXY_SECRET`. Así el rate limit es por persona y no global. Para que esa cabecera sea confiable, el firewall solo debe aceptar tráfico web desde Cloudflare.
+
+## 6. Iniciar sesión con Google y Facebook (opcional, apagado)
+
+Los botones están **ocultos** mientras `SOCIAL_LOGIN` esté vacío en `.env`. Para activarlos:
+
+**Google** (Google Cloud Console, con una cuenta institucional):
+1. Crea un proyecto, por ejemplo «SOS Galápagos».
+2. En **APIs y servicios → Pantalla de consentimiento de OAuth**: elige tipo *Externo*, nombre «SOS Galápagos», dominio autorizado `sosgalapagos.org` y los enlaces de privacidad y términos. Solo pide `email` y `profile`, así que no necesita verificación de Google. Publícala («En producción»).
+3. En **Credenciales → Crear credenciales → ID de cliente de OAuth**: tipo *Aplicación web*, URI de redirección autorizado `https://sosgalapagos.org/backend/auth/google/callback`.
+4. Copia el ID y el secreto en `.env` como `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`.
+
+**Facebook** (developers.facebook.com):
+1. **Crear app** → caso de uso «Autenticar y solicitar datos a los usuarios con el inicio de sesión con Facebook».
+2. En **Inicio de sesión con Facebook → Configuración**, URI de redirección OAuth válido: `https://sosgalapagos.org/backend/auth/facebook/callback`.
+3. En **Permisos**, agrega `email`; `public_profile` viene por defecto.
+4. En **Configuración básica**, completa el dominio `sosgalapagos.org`, la URL de la política de privacidad, la de eliminación de datos y el ícono. Luego pasa la app a modo **Activo** (en desarrollo solo entran los administradores de la app).
+5. Copia el identificador y la clave secreta en `.env` como `FACEBOOK_APP_ID` y `FACEBOOK_APP_SECRET`.
+
+**Encender:** en `.env` pon `SOCIAL_LOGIN=google,facebook` (o solo uno) y ejecuta `./deploy.sh`. Hay que reconstruir porque la variable va dentro del JavaScript.
+
+La cuenta se asocia por correo: si alguien ya se registró con ese email, entra a la misma cuenta. Las cookies del flujo usan la ruta `/backend/auth`, que se deduce de `OAUTH_CALLBACK_BASE`.

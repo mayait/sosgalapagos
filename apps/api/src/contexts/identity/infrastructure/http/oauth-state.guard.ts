@@ -7,7 +7,11 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { randomUUID } from 'node:crypto';
 import type { Request, Response } from 'express';
-import { OAUTH_NEXT_COOKIE, sanitizeNextPath } from './oauth-next';
+import {
+  OAUTH_NEXT_COOKIE,
+  oauthCookiePath,
+  sanitizeNextPath,
+} from './oauth-next';
 
 /** Name of the cookie that carries the CSRF state token. */
 const STATE_COOKIE = 'rh_oauth_state';
@@ -86,7 +90,7 @@ export function OAuthInitiateGuard(
       const cookieOptions = {
         httpOnly: true,
         sameSite: 'lax' as const,
-        path: '/auth',
+        path: oauthCookiePath(),
         maxAge: STATE_MAX_AGE_MS,
         // Secure by default in production (fail-safe); an HTTPS-terminating-
         // upstream deployment serving plain HTTP can opt out with
@@ -103,7 +107,7 @@ export function OAuthInitiateGuard(
       // previous attempt's target can never leak into this one.
       const next = sanitizeNextPath(req.query['next']);
       if (next === undefined) {
-        res.clearCookie(OAUTH_NEXT_COOKIE, { path: '/auth' });
+        res.clearCookie(OAUTH_NEXT_COOKIE, { path: oauthCookiePath() });
       } else {
         res.cookie(OAUTH_NEXT_COOKIE, next, cookieOptions);
       }
@@ -134,7 +138,7 @@ export function OAuthCallbackGuard(
       const res = context.switchToHttp().getResponse<Response>();
 
       // Always clear the cookie to prevent replay attacks.
-      res.clearCookie(STATE_COOKIE, { path: '/auth' });
+      res.clearCookie(STATE_COOKIE, { path: oauthCookiePath() });
 
       // Narrow req.query.state from unknown to string | undefined.
       const queryState: unknown = req.query['state'];

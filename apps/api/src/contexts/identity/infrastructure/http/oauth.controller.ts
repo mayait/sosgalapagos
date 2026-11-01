@@ -14,7 +14,11 @@ import {
   OAuthCallbackGuard,
   readCookie,
 } from './oauth-state.guard';
-import { OAUTH_NEXT_COOKIE, sanitizeNextPath } from './oauth-next';
+import {
+  OAUTH_NEXT_COOKIE,
+  oauthCookiePath,
+  sanitizeNextPath,
+} from './oauth-next';
 import { OAuthExceptionFilter } from './oauth-exception.filter';
 
 /**
@@ -83,7 +87,7 @@ export class OAuthController {
    */
   private finishOAuth(req: Request, res: Response, provider: string): void {
     const next = sanitizeNextPath(readCookie(req, OAUTH_NEXT_COOKIE));
-    res.clearCookie(OAUTH_NEXT_COOKIE, { path: '/auth' });
+    res.clearCookie(OAUTH_NEXT_COOKIE, { path: oauthCookiePath() });
     const nextParam = next ? `&next=${encodeURIComponent(next)}` : '';
 
     const user = req.user as { accessToken: string } | undefined;

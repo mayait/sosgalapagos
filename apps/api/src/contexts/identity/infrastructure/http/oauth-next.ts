@@ -26,3 +26,23 @@ export function sanitizeNextPath(value: unknown): string | undefined {
   if (value.includes('\\')) return undefined;
   return value;
 }
+
+/**
+ * Path for the OAuth cookies as the BROWSER sees it. Behind a reverse proxy
+ * that mounts the API under a prefix (e.g. `https://site.org/backend`, with
+ * the prefix stripped before reaching Nest), a cookie scoped to `/auth` would
+ * never be sent back to `/backend/auth/.../callback`. The prefix is taken from
+ * the pathname of `OAUTH_CALLBACK_BASE`, which already includes it.
+ */
+export function oauthCookiePath(
+  callbackBase: string | undefined = process.env.OAUTH_CALLBACK_BASE,
+): string {
+  let prefix = '';
+  try {
+    if (callbackBase)
+      prefix = new URL(callbackBase).pathname.replace(/\/+$/, '');
+  } catch {
+    prefix = '';
+  }
+  return `${prefix}/auth`;
+}

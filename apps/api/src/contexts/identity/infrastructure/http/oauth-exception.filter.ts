@@ -1,6 +1,10 @@
 import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
 import type { Request, Response } from 'express';
-import { OAUTH_NEXT_COOKIE, sanitizeNextPath } from './oauth-next';
+import {
+  OAUTH_NEXT_COOKIE,
+  oauthCookiePath,
+  sanitizeNextPath,
+} from './oauth-next';
 import { readCookie } from './oauth-state.guard';
 import { UnverifiedProviderEmailError } from '../../domain/unverified-provider-email.error';
 import { AccountLinkRequiresAuthError } from '../../domain/account-link-requires-auth.error';
@@ -26,7 +30,7 @@ export class OAuthExceptionFilter implements ExceptionFilter {
     const res = ctx.getResponse<Response>();
 
     const next = sanitizeNextPath(readCookie(req, OAUTH_NEXT_COOKIE));
-    res.clearCookie(OAUTH_NEXT_COOKIE, { path: '/auth' });
+    res.clearCookie(OAUTH_NEXT_COOKIE, { path: oauthCookiePath() });
     const nextParam = next ? `&next=${encodeURIComponent(next)}` : '';
 
     const code =

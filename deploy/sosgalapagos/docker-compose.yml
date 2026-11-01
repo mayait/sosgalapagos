@@ -78,6 +78,8 @@ services:
         NEXT_PUBLIC_API_URL: ${SITE_URL}/backend
         NEXT_PUBLIC_SITE_URL: ${SITE_URL}
         NEXT_PUBLIC_AID_BOTS_ENABLED: 'false'
+        # Botones «Continuar con Google/Facebook»: vacío = ocultos.
+        NEXT_PUBLIC_SOCIAL_LOGIN: ${SOCIAL_LOGIN:-}
     restart: unless-stopped
     env_file: .env
     environment:

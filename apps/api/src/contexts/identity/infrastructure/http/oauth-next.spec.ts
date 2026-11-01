@@ -1,4 +1,8 @@
-import { sanitizeNextPath, OAUTH_NEXT_COOKIE } from './oauth-next';
+import {
+  sanitizeNextPath,
+  OAUTH_NEXT_COOKIE,
+  oauthCookiePath,
+} from './oauth-next';
 
 describe('sanitizeNextPath', () => {
   it('accepts internal absolute paths (with query strings)', () => {
@@ -30,5 +34,25 @@ describe('sanitizeNextPath', () => {
 
   it('exposes a stable cookie name', () => {
     expect(OAUTH_NEXT_COOKIE).toBe('rh_oauth_next');
+  });
+});
+
+describe('oauthCookiePath', () => {
+  it('defaults to /auth without a prefix', () => {
+    expect(oauthCookiePath(undefined)).toBe('/auth');
+    expect(oauthCookiePath('http://localhost:3000')).toBe('/auth');
+  });
+
+  it('includes the reverse-proxy prefix from OAUTH_CALLBACK_BASE', () => {
+    expect(oauthCookiePath('https://sosgalapagos.org/backend')).toBe(
+      '/backend/auth',
+    );
+    expect(oauthCookiePath('https://sosgalapagos.org/backend/')).toBe(
+      '/backend/auth',
+    );
+  });
+
+  it('falls back to /auth on an invalid URL', () => {
+    expect(oauthCookiePath('not a url')).toBe('/auth');
   });
 });
