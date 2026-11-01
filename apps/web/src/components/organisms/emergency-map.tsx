@@ -5,7 +5,11 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import L from 'leaflet';
 import 'leaflet.markercluster';
-import { MapContainer, TileLayer, useMap } from 'react-leaflet';
+import { MapContainer, useMap } from 'react-leaflet';
+// Centro inicial antes de encuadrar los puntos: Puerto Ayora (Santa Cruz), prioridad de la respuesta.
+const GALAPAGOS_DEFAULT_CENTER: [number, number] = [-0.742, -90.315];
+const GALAPAGOS_DEFAULT_ZOOM = 13;
+import { EmergencyLayers } from './emergency-layers';
 import { useEffect, useRef, useState } from 'react';
 import { useLocale } from '@/i18n/locale-context';
 import { getMessages } from '@/i18n';
@@ -310,8 +314,16 @@ function BoundsFitter({ points }: { points: MapPoint[] }) {
       return;
     }
 
-    const bounds = L.latLngBounds(points.map((p) => [p.lat, p.lng]));
-    map.fitBounds(bounds, { padding: [40, 40] });
+    // Prioridad Santa Cruz: si hay puntos en la isla, el encuadre inicial se
+    // limita a ellos (los acopios del continente o de otras islas no alejan
+    // la vista). Si no, Galápagos; si tampoco, todos los puntos.
+    const inBox = (s: number, w: number, n: number, e: number) =>
+      points.filter((p) => p.lat >= s && p.lat <= n && p.lng >= w && p.lng <= e);
+    const santaCruz = inBox(-0.86, -90.6, -0.4, -90.15);
+    const galapagos = inBox(-1.5, -92.1, 0.7, -89.0);
+    const focus = santaCruz.length > 0 ? santaCruz : galapagos.length > 0 ? galapagos : points;
+    const bounds = L.latLngBounds(focus.map((p) => [p.lat, p.lng]));
+    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
   }, [map, points]);
 
   return null;
@@ -325,9 +337,9 @@ export default function EmergencyMap({
   slug,
 }: EmergencyMapProps) {
   const t = getMessages(useLocale()).ui;
-  // Default centre (Spain) used only when there are no points
-  const defaultCenter: [number, number] = [40.4168, -3.7038];
-  const defaultZoom = 5;
+  // Centro por defecto: Santa Cruz, Galápagos (prioridad de la respuesta).
+  const defaultCenter: [number, number] = GALAPAGOS_DEFAULT_CENTER;
+  const defaultZoom = GALAPAGOS_DEFAULT_ZOOM;
 
   return (
     <div className={`relative w-full overflow-hidden ${containerClassName}`}>
@@ -337,10 +349,7 @@ export default function EmergencyMap({
         style={{ height: '100%', width: '100%' }}
         scrollWheelZoom={false}
       >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
+        <EmergencyLayers slug={slug} />
 
         {onMapReady && <MapReadyEmitter onMapReady={onMapReady} />}
         <BoundsFitter points={points} />
@@ -350,7 +359,7 @@ export default function EmergencyMap({
       </MapContainer>
 
       {points.length === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-[1000] pointer-events-none">
+        <div className="absolute left-1/2 top-3 -translate-x-1/2 rounded-md bg-white/90 px-3 py-1 shadow z-[1000] pointer-events-none">
           <p className="text-sm font-medium text-muted">
             {t.map_no_locations}
           </p>
