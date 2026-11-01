@@ -23,10 +23,11 @@ RUN pnpm install --frozen-lockfile --filter=web... \
  && pnpm --filter=web... build
 
 FROM node:22-slim AS runner
-RUN corepack enable
-WORKDIR /repo
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1
-COPY --from=builder /repo /repo
+# El usuario node debe poder escribir la caché de Next (.next/cache).
+COPY --from=builder --chown=node:node /repo /repo
+WORKDIR /repo/apps/web
 USER node
 EXPOSE 3001
-CMD ["pnpm", "--filter", "web", "start"]
+# next directamente: sin pnpm/corepack en tiempo de ejecución.
+CMD ["./node_modules/.bin/next", "start", "-p", "3001"]
