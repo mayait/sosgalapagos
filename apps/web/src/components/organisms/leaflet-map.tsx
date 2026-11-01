@@ -3,6 +3,7 @@
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
+import { MapPinchZoom } from '@/components/organisms/map-pinch-zoom';
 
 // Fix Leaflet's default icon broken by bundlers that don't resolve the asset
 // URLs in leaflet.css. We point directly at the unpkg CDN copies.
@@ -43,6 +44,7 @@ export default function LeafletMap({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
       <Marker position={position} icon={defaultIcon} title={address} />
+      <MapPinchZoom />
     </MapContainer>
   );
 }

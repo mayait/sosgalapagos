@@ -6,6 +6,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import L from 'leaflet';
 import 'leaflet.markercluster';
 import { MapContainer, useMap } from 'react-leaflet';
+import { MapPinchZoom } from '@/components/organisms/map-pinch-zoom';
 // Centro inicial antes de encuadrar los puntos: Puerto Ayora (Santa Cruz), prioridad de la respuesta.
 const GALAPAGOS_DEFAULT_CENTER: [number, number] = [-0.742, -90.315];
 const GALAPAGOS_DEFAULT_ZOOM = 13;
@@ -350,6 +351,7 @@ export default function EmergencyMap({
         scrollWheelZoom={false}
       >
         <EmergencyLayers slug={slug} />
+        <MapPinchZoom />
 
         {onMapReady && <MapReadyEmitter onMapReady={onMapReady} />}
         <BoundsFitter points={points} />
