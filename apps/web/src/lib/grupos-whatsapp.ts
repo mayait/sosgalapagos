@@ -14,9 +14,9 @@ export const GRUPOS_WHATSAPP = [
   },
 ] as const;
 
-/**
- * Línea de apoyo ante violencia de género (WhatsApp de una organización de
- * mujeres de Galápagos). Por pedido de la coordinación, en la página no se
- * nombra a la organización: solo el QR y el botón.
- */
-export const APOYO_VIOLENCIA_WHATSAPP = 'https://wa.me/593991033741';
+/** Apoyo ante violencia de género: WhatsApp de Magma Galápagos. */
+export const APOYO_VIOLENCIA = {
+  organizacion: 'Magma Galápagos',
+  whatsapp: 'https://wa.me/593991033741',
+  instagram: 'https://www.instagram.com/magma.gps/',
+} as const;
