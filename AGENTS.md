@@ -1,5 +1,7 @@
 # AGENTS.md — ResponseGrid
 
+> **Fork SOS Galápagos.** Este repositorio es el fork de ResponseGrid para la emergencia de Galápagos (USFQ Galápagos, desarrollo IA Humana). Lo propio del fork está en `README.md`, `galapagos/`, `geodatos/` y `deploy/sosgalapagos/`. La rama de trabajo es `main` de este fork y los commits van firmados como **IA Humana**. Las secciones sobre issues, ramas protegidas y despliegue en srv07 describen el proyecto original.
+
 Canonical instructions for any AI agent or contributor working in this repo. Read this first. (`CLAUDE.md` just imports this file.)
 
 ## What ResponseGrid is
