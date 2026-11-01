@@ -33,11 +33,15 @@ UNIT
 fi
 
 V4=$(curl -fsS https://www.cloudflare.com/ips-v4)
+# Interfaz pública: el filtro aplica SOLO al tráfico que entra por ella. Sin -i,
+# también bloquearía la salida de los contenedores hacia cualquier :443
+# (descargas de npm, Let's Encrypt…).
+EXT=$(ip route get 1.1.1.1 | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
 iptables -N DOCKER-USER 2>/dev/null || true
 iptables -F DOCKER-USER
 for ip in $V4; do
-  iptables -A DOCKER-USER -p tcp -m multiport --dports 80,443 -s "$ip" -j RETURN
+  iptables -A DOCKER-USER -i "$EXT" -p tcp -m multiport --dports 80,443 -s "$ip" -j RETURN
 done
-iptables -A DOCKER-USER -p tcp -m multiport --dports 80,443 -j DROP
+iptables -A DOCKER-USER -i "$EXT" -p tcp -m multiport --dports 80,443 -j DROP
 iptables -A DOCKER-USER -j RETURN
-echo "DOCKER-USER: 80/443 solo desde $(echo "$V4" | wc -l) rangos de Cloudflare"
+echo "DOCKER-USER ($EXT): 80/443 de entrada solo desde $(echo "$V4" | wc -l) rangos de Cloudflare"
