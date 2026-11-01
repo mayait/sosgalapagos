@@ -113,3 +113,21 @@ test('defaultVisibility e isDrawable respetan visible y zoom_min', () => {
   assert.equal(isDrawable(b, true, 15), true);
   assert.equal(isDrawable(b, false, 18), false);
 });
+
+test('defaultVisibility usa visible_movil en celulares y visible en escritorio', () => {
+  const m: LayersManifest = {
+    version: 2,
+    grupos: [
+      {
+        id: 'g',
+        titulo: 'G',
+        capas: [
+          { ...susc, visible: true, visible_movil: false },
+          { ...susc, id: 'b', visible: true },
+        ],
+      },
+    ],
+  };
+  assert.deepEqual(defaultVisibility(m), { susc: true, b: true });
+  assert.deepEqual(defaultVisibility(m, true), { susc: false, b: true });
+});

@@ -27,7 +27,27 @@ def load(p): return json.loads((C / p).read_text())["features"]
 def rnd(g, nd=5):
     return json.loads(json.dumps(mapping(g)), parse_float=lambda x: round(float(x), nd))
 manifest_sizes = {}
+# Simplificación para la web (metros). Por debajo de la resolución de la fuente
+# (DSM de 30 m, IGM 1:25 000): no cambia lo que se ve, pero reduce los vértices
+# que el navegador redibuja en cada movimiento (clave en teléfonos).
+SIMPLIFICAR_M = {
+    "susceptibilidad_inundacion.geojson": 8, "parque_nacional.geojson": 10, "parque_zonificacion.geojson": 10,
+    "limite_parque.geojson": 5, "costa_baja.geojson": 6, "tsunami_inundacion.geojson": 4,
+    "quebradas.geojson": 4, "drenaje_adicional.geojson": 6, "franja_quebradas_20m.geojson": 3,
+    "cuencas_localidad.geojson": 8, "cuencas_aportantes.geojson": 8, "curvas_nivel.geojson": 5,
+    "vias.geojson": 2, "zonas_inundables_oficiales.geojson": 3, "zona_agricola.geojson": 5,
+}
+def simplificar(name, feats):
+    tol = SIMPLIFICAR_M.get(name)
+    if not tol: return feats
+    out = []
+    for f in feats:
+        g = shape(f["geometry"]).simplify(tol * M, preserve_topology=True)
+        if g.is_empty: continue
+        out.append({**f, "geometry": rnd(g)})
+    return out
 def save(name, feats):
+    feats = simplificar(name, feats)
     fc = {"type": "FeatureCollection", "features": feats}
     (OUT / name).write_text(json.dumps(fc, ensure_ascii=False, separators=(",", ":")))
     manifest_sizes[name] = len(feats)

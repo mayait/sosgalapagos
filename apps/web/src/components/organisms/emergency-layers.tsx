@@ -14,6 +14,7 @@ import { useLocale } from '@/i18n/locale-context';
 import { getMessages } from '@/i18n';
 import {
   defaultVisibility,
+  esDispositivoMovil,
   escapeHtml,
   isDrawable,
   legendFor,
@@ -74,7 +75,7 @@ export function EmergencyLayers({ slug }: { slug?: string | undefined }) {
       setManifest(m);
       if (!m) return;
       ctxRef.current = prepareMap(map, base);
-      setOn(defaultVisibility(m));
+      setOn(defaultVisibility(m, esDispositivoMovil()));
       setBaseId(m.mapas_base?.find((b) => b.defecto)?.id ?? m.mapas_base?.[0]?.id ?? null);
       // El panel de capas arranca siempre colapsado; se abre con el botón «Capas».
     });

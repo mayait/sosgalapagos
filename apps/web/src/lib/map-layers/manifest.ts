@@ -37,6 +37,8 @@ export interface ManifestLayer {
   raster?: string;
   opacidad?: number;
   visible?: boolean;
+  /** En pantallas táctiles o angostas sustituye a `visible` (deja apagadas por defecto las capas pesadas). */
+  visible_movil?: boolean;
   /** Por debajo de este zoom la capa no se dibuja (capas pesadas). */
   zoom_min?: number;
   fuente?: string;
@@ -195,10 +197,16 @@ export function resolveUrl(base: string, file: string): string {
 }
 
 /** Estado inicial de visibilidad: { idCapa: visible }. */
-export function defaultVisibility(manifest: LayersManifest): Record<string, boolean> {
+export function defaultVisibility(manifest: LayersManifest, movil = false): Record<string, boolean> {
   const out: Record<string, boolean> = {};
-  for (const g of manifest.grupos) for (const c of g.capas) out[c.id] = Boolean(c.visible);
+  for (const g of manifest.grupos)
+    for (const c of g.capas) out[c.id] = Boolean(movil && c.visible_movil !== undefined ? c.visible_movil : c.visible);
   return out;
+}
+
+/** Celular o tableta: pantalla angosta o puntero táctil. Ahí el mapa arranca con las capas livianas. */
+export function esDispositivoMovil(): boolean {
+  return typeof window !== 'undefined' && window.matchMedia('(max-width: 767px), (pointer: coarse)').matches;
 }
 
 /** ¿Se debe dibujar la capa con este zoom? */

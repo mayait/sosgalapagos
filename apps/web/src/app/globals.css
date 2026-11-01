@@ -80,6 +80,13 @@ body {
 .rg-capas-multiply {
   mix-blend-mode: multiply;
 }
+/* En pantallas táctiles la mezcla de imágenes se recalcula en cada cuadro del
+   zoom y congela Safari en iPhone: el relieve se pinta con opacidad normal. */
+@media (pointer: coarse) {
+  .rg-capas-multiply {
+    mix-blend-mode: normal;
+  }
+}
 .leaflet-tooltip.rg-capas-rotulo {
   background: transparent;
   border: 0;

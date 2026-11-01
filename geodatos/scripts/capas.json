@@ -1,7 +1,7 @@
 {
  "version": 2,
  "titulo": "Capas de la emergencia — Galápagos",
- "nota": "Manifiesto de capas. Lo leen el visor de geodatos/ y el mapa de ResponseGrid. Los estilos son opciones de Leaflet (PathOptions). 'clasificar' cambia el estilo según una propiedad y alimenta la leyenda.",
+ "nota": "Manifiesto de capas. Lo leen el visor de geodatos/ y el mapa de ResponseGrid. Los estilos son opciones de Leaflet (PathOptions). 'clasificar' cambia el estilo según una propiedad y alimenta la leyenda. 'visible_movil' (opcional) sustituye a 'visible' en pantallas táctiles o angostas: deja apagadas por defecto las capas pesadas para que el mapa sea fluido en celulares.",
  "islas": {
   "Santa Cruz": {
    "bounds": [
@@ -157,7 +157,8 @@
        "nota": "Nota",
        "fuente": "Fuente"
       }
-     }
+     },
+     "visible_movil": false
     },
     {
      "id": "limite_parque",
@@ -253,7 +254,8 @@
        "descripcion": "Criterio",
        "fuente": "Fuente"
       }
-     }
+     },
+     "visible_movil": false
     },
     {
      "id": "oficiales",
@@ -480,7 +482,8 @@
        "orden": "Orden de Strahler",
        "area_drenada_km2": "Área drenada (km²)"
       }
-     }
+     },
+     "visible_movil": false
     },
     {
      "id": "franja",
@@ -938,7 +941,8 @@
      "raster": "relieve",
      "visible": true,
      "opacidad": 0.5,
-     "fuente": "Copernicus GLO-30"
+     "fuente": "Copernicus GLO-30",
+     "visible_movil": false
     },
     {
      "id": "curvas",

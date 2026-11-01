@@ -30,9 +30,11 @@ www.{$SITE_DOMAIN} {
 		reverse_proxy api:3000
 	}
 
-	# Capas del mapa y estáticos de Next: cacheables en Cloudflare.
-	@estaticos path /capas/* /marca/* /_next/static/*
-	header @estaticos Cache-Control "public, max-age=3600"
+	# Capas del mapa y logos: cacheables en el navegador y en Cloudflare.
+	# «>» reemplaza el Cache-Control que manda Next (max-age=0) en vez de
+	# duplicarlo. /_next/static ya llega como immutable desde Next.
+	@estaticos path /capas/* /marca/*
+	header @estaticos >Cache-Control "public, max-age=3600, stale-while-revalidate=86400"
 
 	handle {
 		reverse_proxy web:3001
