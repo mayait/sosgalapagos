@@ -21,7 +21,9 @@ type SkillValue =
   | 'cooking'
   | 'languages'
   | 'admin'
-  | 'general';
+  | 'general'
+  | 'ngo'
+  | 'government';
 
 export function PersonnelNeedFields() {
   const [skill, setSkill] = useState<SkillValue | ''>('medical');
@@ -37,6 +39,8 @@ export function PersonnelNeedFields() {
     { value: 'languages', label: tc.skill_languages },
     { value: 'admin', label: tc.skill_admin },
     { value: 'general', label: tc.personnel_fields_skill_general },
+    { value: 'ngo', label: tc.skill_ngo },
+    { value: 'government', label: tc.skill_government },
   ];
 
   return (

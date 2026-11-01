@@ -11,7 +11,7 @@ import { ErrorMessage } from '@/components/atoms/error-message';
 import { useLocale } from '@/i18n/locale-context';
 import { getMessages } from '@/i18n';
 
-const SKILL_VALUES = ['', 'driving', 'medical', 'logistics', 'cooking', 'languages', 'admin', 'general'] as const;
+const SKILL_VALUES = ['', 'driving', 'medical', 'logistics', 'cooking', 'languages', 'admin', 'general', 'ngo', 'government'] as const;
 
 const INITIAL_STATE: ActionResult = { status: 'idle' };
 
@@ -33,6 +33,8 @@ export function CreateTaskForm({ emergencyId, slug }: CreateTaskFormProps) {
     languages: tc.skill_languages,
     admin: tc.skill_admin,
     general: tc.skill_general,
+    ngo: tc.skill_ngo,
+    government: tc.skill_government,
   };
 
   const [state, formAction, pending] = useActionState<ActionResult, FormData>(

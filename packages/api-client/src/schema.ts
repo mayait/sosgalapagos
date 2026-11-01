@@ -4312,7 +4312,7 @@ export interface components {
              * @example medical
              * @enum {string|null}
              */
-            requiredSkill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | null;
+            requiredSkill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | "ngo" | "government" | null;
             /**
              * @description Free-text specialty detail (coordinator-only, not exposed publicly)
              * @example Médico urgencias pediátricas
@@ -4403,7 +4403,7 @@ export interface components {
              * @description Required volunteer skill (personnel needs only)
              * @enum {string|null}
              */
-            requiredSkill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | null;
+            requiredSkill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | "ngo" | "government" | null;
             /**
              * @description Number of personnel needed
              * @example 3
@@ -4468,7 +4468,7 @@ export interface components {
              * @description Required volunteer skill (personnel needs only)
              * @enum {string|null}
              */
-            requiredSkill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | null;
+            requiredSkill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | "ngo" | "government" | null;
             /**
              * @description Number of personnel needed
              * @example 3
@@ -4559,7 +4559,7 @@ export interface components {
             title: string;
             description: string;
             /** @enum {string|null} */
-            requiredSkill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | null;
+            requiredSkill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | "ngo" | "government" | null;
             /** Format: uuid */
             linkedNeedId?: string | null;
             status: string;
@@ -5987,7 +5987,7 @@ export interface components {
              *       "driving"
              *     ]
              */
-            skills: ("driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general")[];
+            skills: ("driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | "ngo" | "government")[];
             /**
              * @example immediate
              * @enum {string}
@@ -6018,7 +6018,7 @@ export interface components {
             name: string;
             contact: string;
             municipality: string;
-            skills: ("driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general")[];
+            skills: ("driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | "ngo" | "government")[];
             /** @enum {string} */
             availability: "immediate" | "this_week" | "flexible";
             /** @enum {string} */
@@ -6045,7 +6045,7 @@ export interface components {
             description: string;
             location?: components["schemas"]["LocationDto"];
             /** @enum {string} */
-            requiredSkill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general";
+            requiredSkill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | "ngo" | "government";
         };
         CreateTaskResponseDto: {
             /** Format: uuid */
@@ -6078,7 +6078,7 @@ export interface components {
             description: string;
             location?: components["schemas"]["TaskLocationDto"] | null;
             /** @enum {string|null} */
-            requiredSkill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | null;
+            requiredSkill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | "ngo" | "government" | null;
             /** @enum {string} */
             status: "open" | "in_progress" | "completed" | "cancelled";
             /** Format: uuid */
@@ -6098,7 +6098,7 @@ export interface components {
             description: string;
             location?: components["schemas"]["TaskLocationDto"] | null;
             /** @enum {string|null} */
-            requiredSkill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | null;
+            requiredSkill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | "ngo" | "government" | null;
             /** @enum {string} */
             status: "open" | "in_progress" | "completed" | "cancelled";
             /** Format: uuid */
@@ -12540,7 +12540,7 @@ export interface operations {
     VolunteersController_getRosterForEmergency: {
         parameters: {
             query?: {
-                skill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general";
+                skill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | "ngo" | "government";
                 availability?: "immediate" | "this_week" | "flexible";
                 vehicle?: "none" | "car" | "van" | "truck";
                 status?: "available" | "assigned" | "inactive";

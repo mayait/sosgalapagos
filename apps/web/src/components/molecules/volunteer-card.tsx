@@ -39,6 +39,8 @@ export function VolunteerCard({ volunteer, slug }: VolunteerCardProps) {
     languages: tc.skill_languages,
     admin: tc.skill_admin,
     general: tc.skill_general,
+    ngo: tc.skill_ngo,
+    government: tc.skill_government,
   };
 
   const AVAILABILITY_LABELS: Record<VolunteerViewDto['availability'], string> = {

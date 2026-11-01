@@ -22,6 +22,12 @@ export const en = {
 
     // Global Emergency global footer (shared by every page)
     footer: {
+      cobrand_tagline: 'Universidad San Francisco de Quito platform to coordinate aid during the Galápagos emergency: needs, collection points, volunteering and logistics.',
+      based_on: 'Runs on',
+      free_software_of: ', free software by',
+      copyright_usfq: '© {year} Universidad San Francisco de Quito · USFQ Galápagos',
+      developed_by: 'Developed by',
+      source_code: 'Source code',
       project_of: 'A project by',
       org: 'Global Emergency',
       tagline:
@@ -230,9 +236,9 @@ export const en = {
     // Citable intro (SEO/GEO): summarises the page for search engines and AI
     intro_heading: 'How to help now',
     intro_body:
-      'This is the official page for {emergency} on ResponseGrid. Here you will find the verified collection points, the supply needs validated by coordination and what NOT to bring, all updated in real time. Pick an active point, confirm it by phone before going and avoid trips that overload logistics.',
+      'This is the {emergency} page of Universidad San Francisco de Quito (USFQ Galápagos), running on the ResponseGrid platform. Here you will find the verified collection points, the supply needs validated by coordination and what NOT to bring, all updated in real time. Pick an active point, confirm it by phone before going and avoid trips that overload logistics.',
     intro_source:
-      'Coordinated and verified information. An open source project by Global Emergency.',
+      'Information coordinated and verified by USFQ Galápagos. ResponseGrid is free software by Global Emergency.',
 
     // Visible FAQ + FAQPage schema (content citable by search engines and AI)
     faq_heading: 'Frequently asked questions',
@@ -305,12 +311,10 @@ export const en = {
     dont_bring_intro:
       'Sending uncoordinated supplies overloads the logistics chain and may block professional aid from getting through.',
     dont_bring_items: [
-      'Used clothing that is not sorted or packaged.',
-      'Medications — these must go through the authorised health channel.',
-      'Bottled water for international shipping.',
-      'Home-cooked food or items close to their expiry date.',
-      'Supplies with no assigned destination or receiving point.',
-      'Do not go to the affected area on your own.',
+      'No badly packed or home-made food, or food close to its expiry date: everything must be properly packed, vacuum-sealed and checked.',
+      'Do not send supplies without an assigned destination or receiving point.',
+      'Do not go to the affected areas on your own.',
+      'Do not ship bottled water between islands.',
     ],
 
     actions_heading: 'How do you want to help?',
@@ -1047,22 +1051,24 @@ export const en = {
     name_label: 'Full name',
     name_placeholder: 'e.g. Ana García',
     contact_label: 'Contact (email or phone)',
-    contact_placeholder: 'e.g. ana@example.com or +34 612 345 678',
+    contact_placeholder: 'e.g. 0999 123 456 or ana@example.com',
     municipality_label: 'Municipality',
     municipality_placeholder: 'e.g. Valencia',
-    skills_legend: 'Skills',
+    skills_legend: 'Skills or capabilities',
     availability_label: 'Availability',
     vehicle_label: 'Available vehicle',
     consent_text:
-      'I consent to the processing of my personal data for the coordination of this emergency, in accordance with applicable data protection regulations (GDPR). Data will be used exclusively for volunteering management.',
+      'I consent to the processing of my personal data for the coordination of this emergency, in accordance with the Organic Law on Personal Data Protection of Ecuador. Data will be used exclusively for volunteering management.',
 
-    skill_driving: 'Driving',
-    skill_medical: 'Medical / First aid',
+    skill_driving: 'Pickup truck',
+    skill_medical: 'Health / medical / first aid',
     skill_logistics: 'Logistics',
     skill_cooking: 'Cooking',
     skill_languages: 'Languages',
     skill_admin: 'Administration',
-    skill_general: 'General / Support',
+    skill_general: 'General support',
+    skill_ngo: 'NGO',
+    skill_government: 'Government agency',
 
     availability_immediate: 'Immediate',
     availability_this_week: 'This week',
@@ -1690,13 +1696,15 @@ export const en = {
     vol_status_assigned: 'Assigned',
     vol_status_inactive: 'Inactive',
 
-    skill_driving: 'Driving',
-    skill_medical: 'Medical',
+    skill_driving: 'Pickup truck',
+    skill_medical: 'Health / medical / first aid',
     skill_logistics: 'Logistics',
     skill_cooking: 'Cooking',
     skill_languages: 'Languages',
     skill_admin: 'Administration',
-    skill_general: 'General',
+    skill_general: 'General support',
+    skill_ngo: 'NGO',
+    skill_government: 'Government agency',
 
     availability_immediate: 'Immediate',
     availability_this_week: 'This week',
@@ -2203,13 +2211,15 @@ export const en = {
     priority_high: 'High',
     priority_urgent: 'Urgent',
 
-    skill_driving: 'Driving',
-    skill_medical: 'Medical',
+    skill_driving: 'Pickup truck',
+    skill_medical: 'Health / medical / first aid',
     skill_logistics: 'Logistics',
     skill_cooking: 'Cooking',
     skill_languages: 'Languages',
     skill_admin: 'Admin',
-    skill_general: 'General',
+    skill_general: 'General support',
+    skill_ngo: 'NGO',
+    skill_government: 'Government agency',
 
     availability_immediate: 'Immediate',
     availability_this_week: 'This week',
@@ -2552,8 +2562,8 @@ export const en = {
     personnel_fields_heading: 'Medical personnel — details',
     personnel_fields_skill_label: 'Required skill',
     personnel_fields_skill_unspecified: 'Unspecified',
-    personnel_fields_skill_medical: 'Medical / First aid',
-    personnel_fields_skill_general: 'General / Support',
+    personnel_fields_skill_medical: 'Health / medical / first aid',
+    personnel_fields_skill_general: 'General support',
     personnel_fields_specialty_label: 'Specialty',
     personnel_fields_specialty_placeholder: 'e.g. pediatric emergency physician',
     personnel_fields_count_label: 'People needed',
@@ -2772,6 +2782,16 @@ export const en = {
     map_no_locations: 'No locations on the map yet.',
     map_geolocate: 'Go to my location',
     map_geolocate_error: 'Could not get your location',
+    map_layers_button: 'Layers',
+    map_layers_title: 'Map layers',
+    map_layers_close: 'Close layers panel',
+    map_layers_goto: 'Go to',
+    map_layers_basemap: 'Base map',
+    map_layers_zoom_hint: 'Zoom in (level {zoom}+) to see this layer.',
+    map_layers_upload: '+ Load GeoJSON layer',
+    map_layers_upload_hint: 'Show your own GeoJSON on the map (this browser only).',
+    map_layers_upload_ok: 'Layer “{name}” loaded (this browser only).',
+    map_layers_upload_error: 'Could not read the file. It must be valid GeoJSON.',
   },
 
   nav: {

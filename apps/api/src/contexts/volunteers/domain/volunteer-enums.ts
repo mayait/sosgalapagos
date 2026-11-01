@@ -6,6 +6,10 @@ export enum VolunteerSkill {
   Languages = 'languages',
   Admin = 'admin',
   General = 'general',
+  /** Pertenece a una ONG (fork USFQ Galápagos). */
+  Ngo = 'ngo',
+  /** Pertenece a un organismo estatal (fork USFQ Galápagos). */
+  Government = 'government',
 }
 
 export enum Availability {

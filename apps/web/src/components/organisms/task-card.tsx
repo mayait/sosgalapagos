@@ -67,6 +67,8 @@ export function TaskCard({ task, availableVolunteers, slug }: TaskCardProps) {
     languages: tc.skill_languages,
     admin: tc.skill_admin,
     general: tc.skill_general,
+    ngo: tc.skill_ngo,
+    government: tc.skill_government,
   };
 
   const [assignState, assignFormAction, assignPending] = useActionState<ActionResult, FormData>(

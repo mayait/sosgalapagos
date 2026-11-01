@@ -7535,7 +7535,9 @@
                 "cooking",
                 "languages",
                 "admin",
-                "general"
+                "general",
+                "ngo",
+                "government"
               ],
               "type": "string"
             }
@@ -12375,7 +12377,9 @@
               "cooking",
               "languages",
               "admin",
-              "general"
+              "general",
+              "ngo",
+              "government"
             ],
             "example": "medical",
             "description": "Required volunteer skill for personnel needs",
@@ -12547,7 +12551,9 @@
               "cooking",
               "languages",
               "admin",
-              "general"
+              "general",
+              "ngo",
+              "government"
             ],
             "nullable": true,
             "description": "Required volunteer skill (personnel needs only)"
@@ -12672,7 +12678,9 @@
               "cooking",
               "languages",
               "admin",
-              "general"
+              "general",
+              "ngo",
+              "government"
             ],
             "nullable": true,
             "description": "Required volunteer skill (personnel needs only)"
@@ -12888,7 +12896,9 @@
               "cooking",
               "languages",
               "admin",
-              "general"
+              "general",
+              "ngo",
+              "government"
             ]
           },
           "linkedNeedId": {
@@ -16089,7 +16099,9 @@
                 "cooking",
                 "languages",
                 "admin",
-                "general"
+                "general",
+                "ngo",
+                "government"
               ]
             }
           },
@@ -16175,7 +16187,9 @@
                 "cooking",
                 "languages",
                 "admin",
-                "general"
+                "general",
+                "ngo",
+                "government"
               ]
             }
           },
@@ -16272,7 +16286,9 @@
               "cooking",
               "languages",
               "admin",
-              "general"
+              "general",
+              "ngo",
+              "government"
             ]
           }
         },
@@ -16387,7 +16403,9 @@
               "cooking",
               "languages",
               "admin",
-              "general"
+              "general",
+              "ngo",
+              "government"
             ],
             "nullable": true
           },
@@ -16466,7 +16484,9 @@
               "cooking",
               "languages",
               "admin",
-              "general"
+              "general",
+              "ngo",
+              "government"
             ],
             "nullable": true
           },

@@ -36,7 +36,6 @@ export function VoluntarioForm({ action, slug, existingProfile, t, backToEmergen
 
   const [name, setName] = useState(existingProfile?.name ?? '');
   const [contact, setContact] = useState(existingProfile?.contact ?? '');
-  const [municipality, setMunicipality] = useState(existingProfile?.municipality ?? '');
   const [availability, setAvailability] = useState(existingProfile?.availability ?? '');
   const [vehicle, setVehicle] = useState(existingProfile?.vehicle ?? '');
   const [selectedSkills, setSelectedSkills] = useState<Set<Skill>>(
@@ -44,11 +43,10 @@ export function VoluntarioForm({ action, slug, existingProfile, t, backToEmergen
   );
 
   // Draft only for the simple string fields (skills set is non-serialisable via the hook)
-  const draftValues = { name, contact, municipality, availability, vehicle };
+  const draftValues = { name, contact, availability, vehicle };
   const draftSetters = {
     name: setName,
     contact: setContact,
-    municipality: setMunicipality,
     availability: setAvailability,
     vehicle: setVehicle,
   };
@@ -85,6 +83,8 @@ export function VoluntarioForm({ action, slug, existingProfile, t, backToEmergen
     { value: 'languages', label: t.skill_languages },
     { value: 'admin', label: t.skill_admin },
     { value: 'general', label: t.skill_general },
+    { value: 'ngo', label: t.skill_ngo },
+    { value: 'government', label: t.skill_government },
   ];
 
   const availabilityOptions = [
@@ -168,22 +168,6 @@ export function VoluntarioForm({ action, slug, existingProfile, t, backToEmergen
           placeholder={t.contact_placeholder}
           value={contact}
           onChange={(e) => setContact(e.target.value)}
-        />
-      </FormField>
-
-      <FormField
-        htmlFor="municipality"
-        label={<>{t.municipality_label} <span aria-hidden="true">*</span></>}
-      >
-        <Input
-          id="municipality"
-          name="municipality"
-          type="text"
-          required
-          minLength={2}
-          placeholder={t.municipality_placeholder}
-          value={municipality}
-          onChange={(e) => setMunicipality(e.target.value)}
         />
       </FormField>
 

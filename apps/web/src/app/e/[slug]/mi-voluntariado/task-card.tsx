@@ -31,6 +31,8 @@ export function TaskCard({ task, volunteerId, slug }: TaskCardProps) {
     languages: ta.skill_languages,
     admin: ta.skill_admin,
     general: ta.skill_general,
+    ngo: ta.skill_ngo,
+    government: ta.skill_government,
   };
 
   const TASK_STATUS_LABELS: Record<string, string> = {

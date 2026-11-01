@@ -42,7 +42,7 @@ export function OnboardingForm({ next, t, tc }: OnboardingFormProps) {
           type="tel"
           autoComplete="tel"
           required
-          placeholder="+58 412 555 0101"
+          placeholder="0999 123 456"
         />
       </div>
 

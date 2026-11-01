@@ -10,4 +10,6 @@ export const VALID_SKILLS: VolunteerSkill[] = [
   'languages',
   'admin',
   'general',
+  'ngo',
+  'government',
 ];

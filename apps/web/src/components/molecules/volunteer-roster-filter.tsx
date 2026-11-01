@@ -18,6 +18,8 @@ export function VolunteerRosterFilter() {
     { value: 'languages', label: tc.skill_languages },
     { value: 'admin', label: tc.skill_admin },
     { value: 'general', label: tc.skill_general },
+    { value: 'ngo', label: tc.skill_ngo },
+    { value: 'government', label: tc.skill_government },
   ] as const;
 
   const AVAILABILITY_OPTIONS = [

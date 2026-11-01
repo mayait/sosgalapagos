@@ -24,6 +24,8 @@ const VALID_SKILLS: Skill[] = [
   'languages',
   'admin',
   'general',
+  'ngo',
+  'government',
 ];
 
 const VALID_AVAILABILITIES: Availability[] = ['immediate', 'this_week', 'flexible'];
@@ -53,23 +55,21 @@ export async function registerVolunteer(
 
   const rawName = formData.get('name');
   const rawContact = formData.get('contact');
-  const rawMunicipality = formData.get('municipality');
   const rawAvailability = formData.get('availability');
   const rawVehicle = formData.get('vehicle');
   const rawConsent = formData.get('consentAccepted');
 
   const name = typeof rawName === 'string' ? rawName.trim() : '';
   const contact = typeof rawContact === 'string' ? rawContact.trim() : '';
-  const municipality = typeof rawMunicipality === 'string' ? rawMunicipality.trim() : '';
+  // Fork Galápagos: el formulario ya no pide municipio (toda la respuesta es en
+  // Galápagos). La API lo exige, así que se registra la provincia.
+  const municipality = 'Galápagos';
 
   if (name.length < 2) {
     return { status: 'error', message: t.voluntario.err_name_too_short };
   }
   if (contact.length < 2) {
     return { status: 'error', message: t.voluntario.err_contact_too_short };
-  }
-  if (municipality.length < 2) {
-    return { status: 'error', message: t.voluntario.err_municipality_too_short };
   }
   if (!isAvailability(rawAvailability)) {
     return { status: 'error', message: t.voluntario.err_invalid_availability };

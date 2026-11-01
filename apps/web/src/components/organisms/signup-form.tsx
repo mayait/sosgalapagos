@@ -69,7 +69,7 @@ export function SignupForm({ next, t, tc }: SignupFormProps) {
             type="tel"
             autoComplete="tel"
             required
-            placeholder="+58 412 555 0101"
+            placeholder="0999 123 456"
           />
         </div>
 

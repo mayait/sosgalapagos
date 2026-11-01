@@ -5,16 +5,20 @@ type SkillValue =
   | 'cooking'
   | 'languages'
   | 'admin'
-  | 'general';
+  | 'general'
+  | 'ngo'
+  | 'government';
 
 const SKILL_LABELS: Record<SkillValue, string> = {
-  driving: 'Conducción',
-  medical: 'Sanitario',
+  driving: 'Camioneta',
+  medical: 'Sanitario / médico',
   logistics: 'Logística',
   cooking: 'Cocina',
   languages: 'Idiomas',
   admin: 'Administración',
-  general: 'General',
+  general: 'Apoyo general',
+  ngo: 'ONG',
+  government: 'Organismo estatal',
 };
 
 interface SkillTagProps {

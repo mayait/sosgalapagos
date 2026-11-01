@@ -55,7 +55,7 @@ export function ProfileForm({ initialName, initialPhone }: ProfileFormProps) {
           name="phone"
           type="tel"
           defaultValue={initialPhone ?? ''}
-          placeholder="+34 600 000 000"
+          placeholder="0999 123 456"
         />
         <p className="text-xs text-muted">{tm.phone_hint}</p>
       </div>

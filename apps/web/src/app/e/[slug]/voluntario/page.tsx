@@ -5,6 +5,7 @@ import { requireSession, authHeaders } from '@/lib/auth';
 import { api } from '@/lib/api';
 import type { components } from '@reliefhub/api-client';
 import { registerVolunteer } from './actions';
+import { GruposWhatsapp } from '@/components/molecules/grupos-whatsapp';
 import { VoluntarioForm } from './voluntario-form';
 import { AppBar } from '@/components/organisms/app-bar';
 import { Card } from '@/components/atoms/card';
@@ -78,6 +79,7 @@ export default async function VoluntarioPage({ params }: Props) {
               backToEmergencyLabel={t.common.back_to_emergency}
             />
           </Card>
+          <GruposWhatsapp headingId="grupos-whatsapp-voluntario" />
         </div>
       </div>
     </main>

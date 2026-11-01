@@ -21,6 +21,12 @@ export const es = {
 
     // Footer global de Global Emergency (compartido por todas las páginas)
     footer: {
+      cobrand_tagline: 'Plataforma de la Universidad San Francisco de Quito para coordinar la ayuda durante la emergencia en Galápagos: necesidades, puntos de acopio, voluntariado y logística.',
+      based_on: 'Funciona sobre',
+      free_software_of: ', software libre de',
+      copyright_usfq: '© {year} Universidad San Francisco de Quito · USFQ Galápagos',
+      developed_by: 'Desarrollado por',
+      source_code: 'Código fuente',
       project_of: 'Un proyecto de',
       org: 'Global Emergency',
       tagline:
@@ -237,9 +243,9 @@ export const es = {
     // Intro citable (SEO/GEO): resume qué es la página para buscadores y motores de IA
     intro_heading: 'Cómo ayudar ahora',
     intro_body:
-      'Esta es la página oficial de {emergency} en ResponseGrid. Aquí encuentras los puntos de acopio verificados, las necesidades de material validadas por coordinación y qué NO llevar, todo actualizado en tiempo real. Elige un punto activo, confírmalo por teléfono antes de ir y evita desplazamientos que saturan la logística.',
+      'Esta es la página de {emergency} de la Universidad San Francisco de Quito (USFQ Galápagos), sobre la plataforma ResponseGrid. Aquí encuentras los puntos de acopio verificados, las necesidades de material validadas por coordinación y qué NO llevar, todo actualizado en tiempo real. Elige un punto activo, confírmalo por teléfono antes de ir y evita desplazamientos que saturan la logística.',
     intro_source:
-      'Información coordinada y verificada. Un proyecto open source de Global Emergency.',
+      'Información coordinada y verificada por USFQ Galápagos. ResponseGrid es software libre de Global Emergency.',
 
     // FAQ visible + FAQPage schema (contenido citable por buscadores y IA)
     faq_heading: 'Preguntas frecuentes',
@@ -314,12 +320,10 @@ export const es = {
     dont_bring_intro:
       'Enviar material sin coordinar satura la cadena logística y puede bloquear la llegada de ayuda profesional.',
     dont_bring_items: [
-      'Ropa usada sin clasificar ni empaquetar.',
-      'Medicamentos — deben canalizarse a través de la vía sanitaria autorizada.',
-      'Agua embotellada para envío internacional.',
-      'Alimentos caseros o con fecha de caducidad próxima.',
-      'Material sin destino o punto receptor asignado.',
-      'No acudas por tu cuenta a la zona afectada.',
+      'No alimentos mal empacados, caseros o con fecha de caducidad próxima: todo debe ir correctamente empacado, al vacío y revisado.',
+      'No enviar material sin destino o punto receptor asignado.',
+      'No acudir por tu cuenta a las zonas afectadas.',
+      'No enviar agua embotellada entre islas.',
     ],
 
     // "¿Cómo quieres colaborar?"
@@ -1082,32 +1086,34 @@ export const es = {
     already_registered:
       'Ya estás apuntado como voluntario. Puedes actualizar tus datos a continuación.',
     name_label: 'Nombre completo',
-    name_placeholder: 'Ej. Ana García',
-    contact_label: 'Contacto (email o teléfono)',
-    contact_placeholder: 'Ej. ana@ejemplo.com o 612 345 678',
+    name_placeholder: 'Ej. Ana Torres',
+    contact_label: 'Contacto (teléfono o email)',
+    contact_placeholder: 'Ej. 0999 123 456 o ana@ejemplo.com',
     municipality_label: 'Municipio',
     municipality_placeholder: 'Ej. Valencia',
-    skills_legend: 'Habilidades',
+    skills_legend: 'Habilidades o capacidades',
     availability_label: 'Disponibilidad',
     vehicle_label: 'Vehículo disponible',
     consent_text:
-      'Acepto el tratamiento de mis datos personales para la coordinación de esta emergencia, conforme a la normativa vigente de protección de datos (GDPR). Los datos serán usados exclusivamente para la gestión del voluntariado.',
+      'Acepto el tratamiento de mis datos personales para la coordinación de esta emergencia, conforme a la Ley Orgánica de Protección de Datos Personales del Ecuador. Los datos serán usados exclusivamente para la gestión del voluntariado.',
 
-    skill_driving: 'Conducción',
-    skill_medical: 'Sanitario / Primeros auxilios',
+    skill_driving: 'Camioneta',
+    skill_medical: 'Sanitario / médico / primeros auxilios',
     skill_logistics: 'Logística',
     skill_cooking: 'Cocina',
     skill_languages: 'Idiomas',
     skill_admin: 'Administración',
-    skill_general: 'General / Apoyo',
+    skill_general: 'Apoyo general',
+    skill_ngo: 'ONG',
+    skill_government: 'Organismo estatal',
 
     availability_immediate: 'Inmediata',
     availability_this_week: 'Esta semana',
     availability_flexible: 'Flexible',
 
     vehicle_none: 'Ninguno',
-    vehicle_car: 'Coche',
-    vehicle_van: 'Furgoneta',
+    vehicle_car: 'Auto',
+    vehicle_van: 'Camioneta o furgoneta',
     vehicle_truck: 'Camión',
 
     select_availability_placeholder: 'Selecciona tu disponibilidad…',
@@ -1642,7 +1648,7 @@ export const es = {
     f_email: 'Email de contacto',
     f_email_ph: 'contacto@org.es',
     f_phone: 'Teléfono de contacto',
-    f_phone_ph: '+58 412-1234567',
+    f_phone_ph: '0999 123 456',
     creating: 'Creando…',
 
     // server-action messages
@@ -1731,21 +1737,23 @@ export const es = {
     vol_status_assigned: 'Asignado',
     vol_status_inactive: 'Inactivo',
 
-    skill_driving: 'Conducción',
-    skill_medical: 'Sanitario',
+    skill_driving: 'Camioneta',
+    skill_medical: 'Sanitario / médico / primeros auxilios',
     skill_logistics: 'Logística',
     skill_cooking: 'Cocina',
     skill_languages: 'Idiomas',
     skill_admin: 'Administración',
-    skill_general: 'General',
+    skill_general: 'Apoyo general',
+    skill_ngo: 'ONG',
+    skill_government: 'Organismo estatal',
 
     availability_immediate: 'Inmediata',
     availability_this_week: 'Esta semana',
     availability_flexible: 'Flexible',
 
     vehicle_none: 'Ninguno',
-    vehicle_car: 'Coche',
-    vehicle_van: 'Furgoneta',
+    vehicle_car: 'Auto',
+    vehicle_van: 'Camioneta o furgoneta',
     vehicle_truck: 'Camión',
 
     tasks_heading: 'Mis tareas',
@@ -2245,21 +2253,23 @@ export const es = {
     priority_high: 'Alta',
     priority_urgent: 'Urgente',
 
-    skill_driving: 'Conducción',
-    skill_medical: 'Sanitario',
+    skill_driving: 'Camioneta',
+    skill_medical: 'Sanitario / médico / primeros auxilios',
     skill_logistics: 'Logística',
     skill_cooking: 'Cocina',
     skill_languages: 'Idiomas',
     skill_admin: 'Administración',
-    skill_general: 'General',
+    skill_general: 'Apoyo general',
+    skill_ngo: 'ONG',
+    skill_government: 'Organismo estatal',
 
     availability_immediate: 'Inmediata',
     availability_this_week: 'Esta semana',
     availability_flexible: 'Flexible',
 
     vehicle_none: 'Sin vehículo',
-    vehicle_car: 'Coche',
-    vehicle_van: 'Furgoneta',
+    vehicle_car: 'Auto',
+    vehicle_van: 'Camioneta o furgoneta',
     vehicle_truck: 'Camión',
 
     need_card_label: 'Petición: {title}',
@@ -2597,8 +2607,8 @@ export const es = {
     personnel_fields_heading: 'Personal sanitario — detalle',
     personnel_fields_skill_label: 'Habilidad requerida',
     personnel_fields_skill_unspecified: 'Sin especificar',
-    personnel_fields_skill_medical: 'Sanitario / Primeros auxilios',
-    personnel_fields_skill_general: 'General / Apoyo',
+    personnel_fields_skill_medical: 'Sanitario / médico / primeros auxilios',
+    personnel_fields_skill_general: 'Apoyo general',
     personnel_fields_specialty_label: 'Especialidad',
     personnel_fields_specialty_placeholder: 'Ej. médico urgencias pediátricas',
     personnel_fields_count_label: 'Personas necesarias',
@@ -2817,6 +2827,16 @@ export const es = {
     map_no_locations: 'Aún no hay ubicaciones en el mapa.',
     map_geolocate: 'Ir a mi ubicación',
     map_geolocate_error: 'No se pudo obtener tu ubicación',
+    map_layers_button: 'Capas',
+    map_layers_title: 'Capas del mapa',
+    map_layers_close: 'Cerrar panel de capas',
+    map_layers_goto: 'Ir a',
+    map_layers_basemap: 'Mapa base',
+    map_layers_zoom_hint: 'Acércate (zoom {zoom}+) para ver esta capa.',
+    map_layers_upload: '+ Cargar capa GeoJSON',
+    map_layers_upload_hint: 'Ver un GeoJSON propio sobre el mapa (solo en este navegador).',
+    map_layers_upload_ok: 'Capa «{name}» cargada (solo en este navegador).',
+    map_layers_upload_error: 'No se pudo leer el archivo. Debe ser GeoJSON válido.',
   },
 
   nav: {

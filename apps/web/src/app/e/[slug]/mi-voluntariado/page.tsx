@@ -41,6 +41,8 @@ export default async function MiVoluntariadoPage({ params }: Props) {
     languages: ta.skill_languages,
     admin: ta.skill_admin,
     general: ta.skill_general,
+    ngo: ta.skill_ngo,
+    government: ta.skill_government,
   };
 
   const AVAILABILITY_LABELS: Record<string, string> = {

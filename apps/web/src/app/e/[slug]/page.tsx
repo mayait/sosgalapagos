@@ -1,3 +1,4 @@
+import { MARCA } from '@/lib/marca';
 import type { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
 import { api } from '@/lib/api';
@@ -7,6 +8,7 @@ import { type ResourceViewDto } from '@/lib/group-by-country';
 import { AppBar } from '@/components/organisms/app-bar';
 import { ResourceList } from '@/components/organisms/resource-list';
 import { EmergencyMapWrapper } from '@/components/organisms/emergency-map-wrapper';
+import { GruposWhatsapp } from '@/components/molecules/grupos-whatsapp';
 import { NeedsFilter } from '@/components/molecules/needs-filter';
 import { MetricCard } from '@/components/molecules/metric-card';
 import { Card } from '@/components/atoms/card';
@@ -17,6 +19,7 @@ import { NeedsList } from '@/components/organisms/needs-list';
 import { EmergencyExplorer } from '@/components/organisms/emergency-explorer';
 import { EmergencyQuickLinks } from '@/components/molecules/emergency-quick-links';
 import { EmergencyBotBanner } from '@/components/molecules/emergency-bot-banner';
+import { AID_BOTS_ENABLED } from '@/lib/bots';
 import { JsonLd } from '@/components/atoms/json-ld';
 import type { MapPoint } from '@/components/organisms/emergency-map';
 import { getT } from '@/i18n/server';
@@ -175,7 +178,7 @@ export default async function EmergencyPage({ params, searchParams }: Props) {
     name: `${emergency.name} · ResponseGrid`,
     text: announcement ?? introBody,
     datePosted: emergency.updatedAt,
-    url: `https://responsegrid.app/e/${slug}`,
+    url: `${MARCA.sitio}/e/${slug}`,
     category: 'https://www.wikidata.org/wiki/Q8065',
     spatialCoverage: { '@type': 'Place', name: emergency.country },
     provider: {
@@ -185,10 +188,13 @@ export default async function EmergencyPage({ params, searchParams }: Props) {
     },
   };
 
-  const faqItems = te.faq.map((item) => ({
-    q: item.q.replace('{emergency}', emergency.name),
-    a: item.a,
-  }));
+  const faqItems = te.faq
+    // Sin bots de chat en esta instancia: se omite la pregunta que los promociona.
+    .filter((item) => AID_BOTS_ENABLED || !/t\.me\/|wa\.me\//.test(item.a))
+    .map((item) => ({
+      q: item.q.replace('{emergency}', emergency.name),
+      a: item.a,
+    }));
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -448,6 +454,8 @@ export default async function EmergencyPage({ params, searchParams }: Props) {
             )}
           </section>
 
+          <GruposWhatsapp headingId="grupos-whatsapp-emergencia" />
+
           {token !== null && (
             <section aria-labelledby="manage-heading" className="flex flex-col gap-3">
               <h2 id="manage-heading" className={sectionTitle}>{te.manage_heading}</h2>
@@ -529,7 +537,7 @@ export default async function EmergencyPage({ params, searchParams }: Props) {
         </div>
       </div>
 
-      {isActive && <EmergencyBotBanner />}
+      {isActive && AID_BOTS_ENABLED && <EmergencyBotBanner />}
     </main>
   );
 }
