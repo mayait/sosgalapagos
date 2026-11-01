@@ -60,8 +60,7 @@ export const PORTADA = {
     { nombre: 'Galápagos Life Fund', instagram: 'galapagos.life.fund' },
     { nombre: 'Galapagos Conservancy', instagram: 'galapagosconservancy' },
     { nombre: 'Fundación ECOS' },
-    { nombre: 'Fideicomiso de la Cámara de Industrias' },
-    { nombre: 'CAPTURGAL — Cámara Provincial de Turismo de Galápagos' },
+    { nombre: 'CAPTURGAL — Cámara Provincial de Turismo de Galápagos', instagram: 'capturgal' },
   ] as { nombre: string; instagram?: string }[],
 
   cuidate: [

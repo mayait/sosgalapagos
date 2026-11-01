@@ -98,7 +98,6 @@ async function main() {
     { name: 'Galápagos Life Fund', type: 'ngo' },
     { name: 'Galapagos Conservancy', type: 'ngo' },
     { name: 'Fundación ECOS', type: 'ngo' },
-    { name: 'Cámara de Industrias (fideicomiso)', type: 'association' },
     { name: 'CAPTURGAL — Cámara Provincial de Turismo de Galápagos', type: 'association' },
   ];
   const mineList = Array.isArray(mine) ? mine : mine?.items ?? [];
