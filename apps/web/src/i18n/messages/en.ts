@@ -393,6 +393,9 @@ export const en = {
   login: {
     title: 'Sign in',
     subtitle: 'Sign in to your account to continue.',
+    error_account_exists:
+      'You already have a password account for that email. Sign in with your email and password.',
+    error_oauth_failed: 'Sign-in with that provider failed. Please try again.',
     demo_label: 'Demo credentials',
     demo_email_label: 'Email:',
     demo_email: 'coord@reliefhub.org',

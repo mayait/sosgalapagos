@@ -21,6 +21,12 @@ export default async function LoginPage({ searchParams }: Props) {
   const next =
     typeof resolved.next === 'string' ? resolved.next : '/dashboard';
   const { t } = await getT();
+  const oauthError =
+    resolved.error === 'account_exists'
+      ? t.login.error_account_exists
+      : resolved.error === 'oauth_failed'
+        ? t.login.error_oauth_failed
+        : null;
 
   return (
     <main className="flex-1 bg-surface">
@@ -50,6 +56,15 @@ export default async function LoginPage({ searchParams }: Props) {
                   <span className="font-medium">{t.login.demo_password_label}</span> {t.login.demo_password}
                 </p>
               </div>
+            )}
+
+            {oauthError && (
+              <p
+                role="alert"
+                className="rounded-lg border-2 border-accent bg-white px-4 py-3 text-sm font-medium text-ink"
+              >
+                {oauthError}
+              </p>
             )}
 
             <LoginForm next={next} t={t.login} />

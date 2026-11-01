@@ -411,6 +411,9 @@ export const es = {
   login: {
     title: 'Iniciar sesión',
     subtitle: 'Accede a tu cuenta para continuar.',
+    error_account_exists:
+      'Ya tienes una cuenta con contraseña para ese correo. Entra con tu correo y contraseña.',
+    error_oauth_failed: 'No se pudo iniciar sesión con ese proveedor. Inténtalo de nuevo.',
     demo_label: 'Credenciales demo',
     demo_email_label: 'Email:',
     demo_email: 'coord@reliefhub.org',
