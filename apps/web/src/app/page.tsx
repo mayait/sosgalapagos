@@ -172,67 +172,6 @@ export default async function HomePage() {
           )}
         </section>
 
-        {/* ── Albergues y acopio ────────────────────────────────────── */}
-        <div className="grid gap-4 md:grid-cols-5">
-          <section aria-labelledby="albergues-heading" className={`${tarjeta} md:col-span-3`}>
-            <h2 id="albergues-heading" className={h2}>Albergues</h2>
-            <dl className="mt-4 flex flex-col gap-3">
-              {PORTADA.albergues.map((a) => (
-                <div key={a.zona}>
-                  <dt className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-accent">{a.zona}</dt>
-                  <dd className="mt-0.5 text-[14.5px] leading-snug text-ink">{a.lugares.join(' · ')}</dd>
-                </div>
-              ))}
-            </dl>
-            <div className="mt-4 rounded-lg bg-black px-4 py-3 text-white">
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-white/70">Centro de acopio oficial</p>
-              <p className="mt-0.5 font-bold">{PORTADA.acopio}</p>
-            </div>
-            <p className="mt-3 text-[12px] text-muted">{PORTADA.fuenteAlbergues}</p>
-            <Link href={base} className="mt-3 inline-block text-sm font-bold text-black underline underline-offset-2 hover:text-accent">
-              Verlos en el mapa →
-            </Link>
-          </section>
-
-          <section aria-labelledby="cuidate-heading" className="rounded-card bg-accent p-5 text-white md:col-span-2 lg:p-6">
-            <h2 id="cuidate-heading" className="font-display text-lg font-black uppercase leading-[0.95] lg:text-xl">
-              Cuídate
-            </h2>
-            <ul className="mt-4 flex flex-col gap-2.5" role="list">
-              {PORTADA.cuidate.map((c) => (
-                <li key={c} className="flex gap-2 text-[14.5px] font-semibold leading-snug">
-                  <span aria-hidden="true">●</span>
-                  {c}
-                </li>
-              ))}
-            </ul>
-          </section>
-        </div>
-
-        {/* ── Agua, clima y lo que está en camino ───────────────────── */}
-        <div className="grid gap-4 md:grid-cols-3">
-          <section aria-labelledby="agua-heading" className={tarjeta}>
-            <h2 id="agua-heading" className={h2}>Agua</h2>
-            <ul className="mt-3 flex flex-col gap-2 text-[14px] leading-snug text-ink-soft" role="list">
-              {PORTADA.agua.map((x) => (
-                <li key={x}>{x}</li>
-              ))}
-            </ul>
-          </section>
-          <section aria-labelledby="clima-heading" className={tarjeta}>
-            <h2 id="clima-heading" className={h2}>Clima</h2>
-            <p className="mt-3 text-[14px] leading-snug text-ink-soft">{PORTADA.clima}</p>
-          </section>
-          <section aria-labelledby="camino-heading" className={tarjeta}>
-            <h2 id="camino-heading" className={h2}>En camino</h2>
-            <ul className="mt-3 flex flex-col gap-2 text-[14px] leading-snug text-ink-soft" role="list">
-              {PORTADA.enCamino.map((x) => (
-                <li key={x}>{x}</li>
-              ))}
-            </ul>
-          </section>
-        </div>
-
         {/* ── Organizaciones ───────────────────────────────────────── */}
         <section id="organizaciones" aria-labelledby="org-heading" className={`${tarjeta} scroll-mt-20`}>
           <h2 id="org-heading" className={h2}>Organizaciones aliadas</h2>
@@ -281,8 +220,8 @@ export default async function HomePage() {
         <ApoyoViolencia headingId="apoyo-violencia-portada" />
 
         <p className="text-[12.5px] text-muted">
-          Información actualizada al {PORTADA.actualizado}. Fuentes: COE Provincial y cantonal, GAD Santa Cruz, empresa
-          de agua, INAMHI y organizaciones de la sociedad civil.
+          Información actualizada al {PORTADA.actualizado}. Fuentes: COE Provincial y cantonal, GAD Santa Cruz y
+          organizaciones de la sociedad civil.
         </p>
       </div>
     </main>

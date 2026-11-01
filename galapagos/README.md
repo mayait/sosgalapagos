@@ -34,8 +34,8 @@ API_URL=https://sosgalapagos.org/backend ADMIN_EMAIL=… ADMIN_PASSWORD=… node
 
 | Qué | Dónde |
 |---|---|
-| Portada: albergues, agua, clima, lo que está en camino, organizaciones, «Cuídate» y fecha | `apps/web/src/lib/portada-galapagos.ts` |
-| Grupos de WhatsApp (QR) | `apps/web/src/lib/grupos-whatsapp.ts` |
+| Portada: fecha, formulario del COE, donación USFQ y organizaciones | `apps/web/src/lib/portada-galapagos.ts` |
+| Grupos de WhatsApp y apoyo ante violencia de género (QR) | `apps/web/src/lib/grupos-whatsapp.ts` |
 | «Qué NO hacer ahora» | `dont_bring_items` en `apps/web/src/i18n/messages/es.ts` (y `en.ts`) |
 | Capas del mapa | `geodatos/scripts/capas.json` → `08_exportar.py` → `apps/web/public/capas/galapagos-2026/` |
 | Áreas afectadas del COE | `areas_afectadas.geojson` (ver `geodatos/docs/05-como-actualizar.md`) |
