@@ -1,4 +1,4 @@
-import { clientIp, isCloudflareIp } from './client-ip';
+import { clientIp, forwardedByWebServer, isCloudflareIp } from './client-ip';
 
 const CF_PEER = '173.245.48.10'; // inside 173.245.48.0/20
 const DIRECT_PEER = '203.0.113.50'; // not a Cloudflare range
@@ -66,5 +66,58 @@ describe('clientIp', () => {
 
   it('returns an empty string when there is no peer IP at all', () => {
     expect(clientIp({ headers: {} })).toBe('');
+  });
+});
+
+describe('forwardedByWebServer (IP reenviada por el servidor web)', () => {
+  const SECRET = 'a-very-long-internal-secret-0123456789';
+  const original = process.env.INTERNAL_PROXY_SECRET;
+  afterEach(() => {
+    if (original === undefined) delete process.env.INTERNAL_PROXY_SECRET;
+    else process.env.INTERNAL_PROXY_SECRET = original;
+  });
+
+  it('usa la IP reenviada cuando el secreto coincide', () => {
+    process.env.INTERNAL_PROXY_SECRET = SECRET;
+    const req = {
+      headers: {
+        'x-rg-internal-token': SECRET,
+        'x-rg-client-ip': '203.0.113.9',
+      },
+      ip: '172.18.0.5',
+    };
+    expect(forwardedByWebServer(req)).toBe('203.0.113.9');
+    expect(clientIp(req)).toBe('203.0.113.9');
+  });
+
+  it('ignora la IP reenviada si el secreto no coincide', () => {
+    process.env.INTERNAL_PROXY_SECRET = SECRET;
+    const req = {
+      headers: {
+        'x-rg-internal-token': 'wrong-secret-wrong-secret-xx',
+        'x-rg-client-ip': '203.0.113.9',
+      },
+      ip: DIRECT_PEER,
+    };
+    expect(forwardedByWebServer(req)).toBeNull();
+    expect(clientIp(req)).toBe(DIRECT_PEER);
+  });
+
+  it('no hace nada si no hay secreto configurado', () => {
+    delete process.env.INTERNAL_PROXY_SECRET;
+    const req = {
+      headers: { 'x-rg-internal-token': '', 'x-rg-client-ip': '203.0.113.9' },
+      ip: DIRECT_PEER,
+    };
+    expect(clientIp(req)).toBe(DIRECT_PEER);
+  });
+
+  it('rechaza una IP inválida aunque el secreto coincida', () => {
+    process.env.INTERNAL_PROXY_SECRET = SECRET;
+    const req = {
+      headers: { 'x-rg-internal-token': SECRET, 'x-rg-client-ip': 'not-an-ip' },
+      ip: DIRECT_PEER,
+    };
+    expect(clientIp(req)).toBe(DIRECT_PEER);
   });
 });

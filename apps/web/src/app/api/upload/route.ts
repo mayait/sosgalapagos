@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { getToken, authHeaders } from '@/lib/auth';
+import { forwardedIpHeaders } from '@/lib/forwarded-ip';
 
 const API_BASE = process.env.API_URL ?? 'http://localhost:3000';
 
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   const res = await fetch(`${API_BASE}/files`, {
     method: 'POST',
-    headers: authHeaders(token),
+    headers: { ...authHeaders(token), ...(await forwardedIpHeaders()) },
     body: upstream,
   });
 

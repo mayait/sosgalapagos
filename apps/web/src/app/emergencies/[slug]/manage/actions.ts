@@ -1,5 +1,6 @@
 'use server';
 
+import { forwardedIpHeaders } from '@/lib/forwarded-ip';
 import { revalidatePath } from 'next/cache';
 import type { components } from '@reliefhub/api-client';
 import { api } from '@/lib/api';
@@ -157,7 +158,7 @@ export async function verifyAndPublish(
     `${apiBase}/resources/${resourceId}/verify`,
     {
       method: 'POST',
-      headers: { ...headers, 'Content-Type': 'application/json' },
+      headers: { ...headers, ...(await forwardedIpHeaders()), 'Content-Type': 'application/json' },
       body: '{}',
     },
   );

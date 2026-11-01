@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { getToken, authHeaders } from '@/lib/auth';
+import { forwardedIpHeaders } from '@/lib/forwarded-ip';
 
 const API_BASE = process.env.API_URL ?? 'http://localhost:3000';
 
@@ -30,7 +31,7 @@ export async function GET(
   }
 
   const upstream = await fetch(`${API_BASE}/files/${encodeURIComponent(key)}`, {
-    headers: authHeaders(token),
+    headers: { ...authHeaders(token), ...(await forwardedIpHeaders()) },
   });
 
   if (!upstream.ok || upstream.body === null) {

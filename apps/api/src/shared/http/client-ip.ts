@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto';
 import ipaddr from 'ipaddr.js';
 
 /**
@@ -56,10 +57,53 @@ export function isCloudflareIp(ip: string | undefined): boolean {
  * peer IP itself (the unforgeable TCP source). This prevents a direct attacker
  * from poisoning or evading the per-IP rate limit with a spoofed header.
  */
+/** Cabeceras con las que el servidor web (Next) reenvía la IP real del usuario. */
+export const INTERNAL_TOKEN_HEADER = 'x-rg-internal-token';
+export const FORWARDED_CLIENT_IP_HEADER = 'x-rg-client-ip';
+
+function headerValue(
+  headers: Record<string, string | string[] | undefined> | undefined,
+  name: string,
+): string | undefined {
+  const v = headers?.[name];
+  return Array.isArray(v) ? v[0] : v;
+}
+
+function sameSecret(a: string, b: string): boolean {
+  const x = Buffer.from(a);
+  const y = Buffer.from(b);
+  return x.length === y.length && timingSafeEqual(x, y);
+}
+
+/**
+ * IP real reenviada por el servidor web de esta misma instalación.
+ *
+ * Las páginas y las server actions de Next llaman a la API desde el servidor,
+ * así que la API ve siempre la IP del contenedor web: el rate limit por IP se
+ * volvería global (10 logins/min para TODA la plataforma). El servidor web
+ * reenvía la IP del usuario en `x-rg-client-ip` junto con un secreto
+ * compartido (`INTERNAL_PROXY_SECRET`). Solo se acepta si el secreto coincide
+ * (comparación en tiempo constante) y la IP es válida; sin secreto
+ * configurado, la función no hace nada.
+ */
+export function forwardedByWebServer(req: {
+  headers?: Record<string, string | string[] | undefined> | undefined;
+}): string | null {
+  const secret = process.env.INTERNAL_PROXY_SECRET ?? '';
+  if (secret.length < 16) return null;
+  const token = headerValue(req.headers, INTERNAL_TOKEN_HEADER);
+  if (token === undefined || !sameSecret(token, secret)) return null;
+  const ip = headerValue(req.headers, FORWARDED_CLIENT_IP_HEADER)?.trim();
+  if (ip === undefined || !ipaddr.isValid(ip)) return null;
+  return ipaddr.process(ip).toString();
+}
+
 export function clientIp(req: {
   headers?: Record<string, string | string[] | undefined> | undefined;
   ip?: string | undefined;
 }): string {
+  const forwarded = forwardedByWebServer(req);
+  if (forwarded !== null) return forwarded;
   const peer = req.ip ?? '';
   if (!isCloudflareIp(peer)) return peer;
   const header = req.headers?.['cf-connecting-ip'];
