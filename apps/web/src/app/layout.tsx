@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Archivo, Public_Sans } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 import { SwRegister } from '@/components/providers/sw-register';
 import { GlobalFooter } from '@/components/organisms/global-footer';
@@ -9,37 +9,37 @@ import { LocaleProvider } from '@/i18n/locale-context';
 import { CategoriesProvider } from '@/components/providers/categories-provider';
 import { getCategoriesCached } from '@/adapters/get-categories';
 import { GLOBAL_EMERGENCY } from '@/lib/global-emergency';
-import { AID_BOTS, GITHUB_REPO_URL, botContactPoints } from '@/lib/bots';
+import { MARCA } from '@/lib/marca';
+import { AID_BOTS, AID_BOTS_ENABLED, GITHUB_REPO_URL, botContactPoints } from '@/lib/bots';
 
-const archivo = Archivo({
-  subsets: ['latin'],
-  weight: ['500', '600', '700', '800'],
-  variable: '--font-archivo',
+// Tipografía de display del sistema USFQ WE WANT MORE (OFL, ver fonts/ZalandoSansExpanded-OFL.txt).
+// El cuerpo usa Helvetica Neue del sistema (ver --font-sans en globals.css).
+const zalando = localFont({
+  src: './fonts/ZalandoSansExpanded-VariableFont_wght.ttf',
+  weight: '200 900',
+  variable: '--font-zalando',
   display: 'swap',
 });
 
-const publicSans = Public_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-public-sans',
-  display: 'swap',
-});
+const SITE_NAME = 'USFQ Galápagos × ResponseGrid';
+const SITE_DESCRIPTION =
+  'Coordinación de la ayuda en Galápagos — Universidad San Francisco de Quito, sobre ResponseGrid (software libre de Global Emergency)';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://responsegrid.app'),
-  title: 'ResponseGrid',
-  description: 'Coordinación de ayuda en emergencias — un proyecto de Global Emergency',
-  applicationName: 'ResponseGrid',
+  metadataBase: new URL(MARCA.sitio),
+  title: SITE_NAME,
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
   openGraph: {
-    siteName: 'ResponseGrid',
+    siteName: SITE_NAME,
     type: 'website',
-    locale: 'es_ES',
+    locale: 'es_EC',
     images: [{ url: '/icons/icon-512.png', width: 512, height: 512, alt: 'ResponseGrid' }],
   },
   twitter: {
     card: 'summary',
-    title: 'ResponseGrid',
-    description: 'Coordinación de ayuda en emergencias — un proyecto de Global Emergency',
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
     images: ['/icons/icon-512.png'],
   },
 };
@@ -49,28 +49,31 @@ export const metadata: Metadata = {
 const orgJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'ResponseGrid',
-  url: 'https://responsegrid.app',
-  description:
-    'Plataforma open source de coordinación de ayuda material y logística en emergencias. Ofrece asistentes de chat en Telegram y WhatsApp para donar y consultar puntos de acopio.',
+  name: SITE_NAME,
+  url: MARCA.sitio,
+  description: SITE_DESCRIPTION,
   parentOrganization: {
     '@type': 'Organization',
-    name: 'Global Emergency',
-    url: GLOBAL_EMERGENCY.site,
+    name: MARCA.usfq,
+    url: MARCA.usfqSitio,
   },
   // ContactPoints so search engines and AI assistants can discover and
   // recommend the chat assistants (GEO); sameAs links the canonical profiles.
-  contactPoint: botContactPoints,
-  sameAs: [GLOBAL_EMERGENCY.site, GITHUB_REPO_URL, AID_BOTS.telegram.url, AID_BOTS.whatsapp.url],
+  ...(AID_BOTS_ENABLED ? { contactPoint: botContactPoints } : {}),
+  sameAs: [
+    GLOBAL_EMERGENCY.site,
+    GITHUB_REPO_URL,
+    ...(AID_BOTS_ENABLED ? [AID_BOTS.telegram.url, AID_BOTS.whatsapp.url] : []),
+  ],
 };
 
 const siteJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'ResponseGrid',
-  url: 'https://responsegrid.app',
+  name: SITE_NAME,
+  url: MARCA.sitio,
   inLanguage: 'es',
-  publisher: { '@type': 'Organization', name: 'Global Emergency', url: GLOBAL_EMERGENCY.site },
+  publisher: { '@type': 'Organization', name: MARCA.usfq, url: MARCA.usfqSitio },
 };
 
 export default async function RootLayout({
@@ -82,7 +85,7 @@ export default async function RootLayout({
   const categories = await getCategoriesCached(locale);
 
   return (
-    <html lang={locale} className={`h-full ${archivo.variable} ${publicSans.variable}`}>
+    <html lang={locale} className={`h-full ${zalando.variable}`}>
       <body className="min-h-full flex flex-col bg-surface text-ink antialiased font-sans">
         <LocaleProvider locale={locale}>
           <CategoriesProvider categories={categories}>

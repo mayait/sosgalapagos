@@ -1,10 +1,11 @@
+import { MARCA } from '@/lib/marca';
 import type { MetadataRoute } from 'next';
 import { api } from '@/lib/api';
 
 // Emergencies come and go; keep the sitemap in sync with live backend state.
 export const dynamic = 'force-dynamic';
 
-const BASE = 'https://responsegrid.app';
+const BASE = MARCA.sitio;
 
 /**
  * Dynamic sitemap: static info pages + one entry per emergency (`/e/{slug}`).

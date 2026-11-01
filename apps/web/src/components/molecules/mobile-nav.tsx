@@ -26,7 +26,7 @@ export function MobileNav({ brand, account, links, requestCta, labels }: MobileN
         {requestCta && (
           <Link
             href={requestCta.href}
-            className="mb-2 rounded-lg bg-accent-2 px-3 py-2.5 text-center text-sm font-bold text-white hover:bg-accent-2-600"
+            className="mb-2 rounded-lg bg-white px-3 py-2.5 text-center text-sm font-bold text-black hover:bg-white/85"
           >
             {requestCta.label}
           </Link>

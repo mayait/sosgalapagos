@@ -1,5 +1,5 @@
 import { TelegramIcon, WhatsAppIcon } from '@/components/atoms/brand-icons';
-import { AID_BOTS } from '@/lib/bots';
+import { AID_BOTS, AID_BOTS_ENABLED } from '@/lib/bots';
 import type { Messages } from '@/i18n/messages/es';
 
 type BotsMessages = Messages['common']['bots'];
@@ -24,6 +24,7 @@ const WHATSAPP_BRAND = '#25D366';
  * (see `@/lib/bots`) and labels (i18n) are injected.
  */
 export function BotChannels({ t, variant = 'buttons', className = '' }: BotChannelsProps) {
+  if (!AID_BOTS_ENABLED) return null;
   if (variant === 'footer') {
     const linkClass =
       'flex items-center gap-2 text-sm text-white/75 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-white/60 rounded';

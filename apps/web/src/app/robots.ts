@@ -1,3 +1,4 @@
+import { MARCA } from '@/lib/marca';
 import type { MetadataRoute } from 'next';
 
 /**
@@ -17,7 +18,7 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/panel/', '/auth/', '/login', '/signup', '/api/'],
     },
-    sitemap: 'https://responsegrid.app/sitemap.xml',
-    host: 'https://responsegrid.app',
+    sitemap: `${MARCA.sitio}/sitemap.xml`,
+    host: MARCA.sitio,
   };
 }

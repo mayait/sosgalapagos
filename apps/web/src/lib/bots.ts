@@ -26,8 +26,16 @@ export const AID_BOTS = {
   },
 } as const;
 
+/**
+ * Los bots anteriores pertenecen al despliegue de Venezuela. En instancias de
+ * otra emergencia (p. ej. Galápagos) se desactivan con
+ * NEXT_PUBLIC_AID_BOTS_ENABLED=false para no derivar a la gente a otro canal.
+ */
+export const AID_BOTS_ENABLED = process.env.NEXT_PUBLIC_AID_BOTS_ENABLED !== 'false';
+
 /** Canonical public GitHub repository for the platform. */
-export const GITHUB_REPO_URL = 'https://github.com/GlobalEmergency/ResponseGrid';
+/** Código fuente de esta instancia (fork de GlobalEmergency/ResponseGrid; la AGPL exige publicarlo). */
+export const GITHUB_REPO_URL = 'https://github.com/mayait/sosgalapagos';
 
 /**
  * schema.org `ContactPoint[]` describing the chat assistants, so that search

@@ -1,33 +1,37 @@
 @import "tailwindcss";
 
 /*
- * ResponseGrid design system — "Banda oficial" direction.
+ * ResponseGrid design system — "Banda oficial" direction, co-branded for the
+ * USFQ Galápagos fork with the USFQ WE WANT MORE system: red #E11B22, black and
+ * white only; Zalando Sans Expanded for display, Helvetica Neue for body.
  * Tokens are consumed as Tailwind v4 utilities (e.g. bg-navy, text-accent,
- * border-line, rounded-card, font-display). Fonts are wired to the next/font
- * CSS variables declared on <html> in layout.tsx.
+ * border-line, rounded-card, font-display). Token names are kept from upstream
+ * so the components stay untouched: "navy" is now the black band and "accent"
+ * the USFQ red. Semantic status colours (success/warning/danger/info) are
+ * functional UI signals and stay as they are.
  */
 @theme {
   /* Typography */
-  --font-sans: var(--font-public-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-zalando), "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-  /* Brand */
-  --color-navy: #112b4a;
-  --color-navy-700: #13315c;
-  --color-accent: #e8740e;
-  --color-accent-600: #c85f08;
-  --color-accent-2: #1d9e75;
-  --color-accent-2-600: #0f6e56;
+  /* Brand (USFQ WE WANT MORE) */
+  --color-navy: #000000;
+  --color-navy-700: #1d1d1b;
+  --color-accent: #e11b22;
+  --color-accent-600: #b3141a;
+  --color-accent-2: #1d1d1b;
+  --color-accent-2-600: #000000;
 
-  /* Warm neutral surfaces & ink */
-  --color-surface: #fbfaf8;
-  --color-surface-alt: #f4f1ec;
-  --color-ink: #1a2230;
-  --color-ink-soft: #2c3645;
-  --color-muted: #6a7382;
-  --color-muted-soft: #8a93a2;
-  --color-line: #e7e2da;
-  --color-line-soft: #eae5dd;
+  /* Neutral surfaces & ink */
+  --color-surface: #fafafa;
+  --color-surface-alt: #f2f2f2;
+  --color-ink: #1d1d1b;
+  --color-ink-soft: #333333;
+  --color-muted: #666666;
+  --color-muted-soft: #8a8a8a;
+  --color-line: #e5e5e5;
+  --color-line-soft: #ececec;
 
   /* Semantic status */
   --color-success: #1e8049;
@@ -51,10 +55,10 @@
   --color-family-ink: #7a5a12;
 
   /* Text over the navy header band */
-  --color-on-navy: #b7c6da;
-  --color-on-navy-soft: #a8bbd2;
+  --color-on-navy: #c4c4c4;
+  --color-on-navy-soft: #a6a6a6;
   /* Stronger neutral line + danger accents */
-  --color-line-strong: #d8d2c8;
+  --color-line-strong: #d4d4d4;
   --color-danger-strong: #9a3b12;
   --color-danger-line: #e9b79a;
 
@@ -71,3 +75,24 @@ body {
   isolation: isolate;
   z-index: 0;
 }
+
+/* Capas cartográficas por emergencia (components/organisms/emergency-layers.tsx) */
+.rg-capas-multiply {
+  mix-blend-mode: multiply;
+}
+.leaflet-tooltip.rg-capas-rotulo {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  color: #7c2d12;
+  font: 600 11px system-ui, sans-serif;
+  text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff;
+}
+.leaflet-tooltip.rg-capas-rotulo::before {
+  display: none;
+}
+/* Rótulos permanentes (p. ej. barrios) solo de cerca */
+.rg-capas-lejos .leaflet-tooltip.rg-capas-rotulo {
+  display: none;
+}
+

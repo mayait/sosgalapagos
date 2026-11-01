@@ -48,7 +48,7 @@ export function HeaderBandShell({
       <div className={`flex items-center justify-between gap-3${rowMb}`}>
         <Link
           href="/"
-          aria-label="ResponseGrid"
+          aria-label="ResponseGrid — inicio"
           className="rounded focus:outline-none focus:ring-2 focus:ring-white/60"
         >
           <BrandLogo size={brandSize} wordmarkClassName="text-base" />

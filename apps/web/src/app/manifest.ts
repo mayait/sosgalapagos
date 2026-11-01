@@ -2,13 +2,13 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'ResponseGrid',
-    short_name: 'ResponseGrid',
-    description: 'Coordinación de ayuda en emergencias — un proyecto de Global Emergency',
+    name: 'USFQ Galápagos × ResponseGrid',
+    short_name: 'Ayuda Galápagos',
+    description: 'Coordinación de la ayuda en Galápagos — USFQ sobre ResponseGrid (Global Emergency)',
     start_url: '/',
     display: 'standalone',
-    background_color: '#fbfaf8',
-    theme_color: '#112b4a',
+    background_color: '#ffffff',
+    theme_color: '#000000',
     icons: [
       {
         src: '/icon.svg',

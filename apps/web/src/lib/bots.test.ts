@@ -19,7 +19,7 @@ test('WhatsApp deep link is a wa.me URL with a digits-only number', () => {
 });
 
 test('GitHub repo URL points at the public repository', () => {
-  assert.equal(GITHUB_REPO_URL, 'https://github.com/GlobalEmergency/ResponseGrid');
+  assert.equal(GITHUB_REPO_URL, 'https://github.com/mayait/sosgalapagos');
 });
 
 test('bot ContactPoints carry the messaging deep links for GEO', () => {

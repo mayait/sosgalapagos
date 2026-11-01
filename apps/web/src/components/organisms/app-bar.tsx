@@ -78,7 +78,7 @@ export async function AppBar({ variant, slug, emergency, backHref, currentPath }
   const brand = (
     <Link
       href="/"
-      aria-label="ResponseGrid"
+      aria-label="ResponseGrid — inicio"
       className="inline-flex text-white rounded focus:outline-none focus:ring-2 focus:ring-white/60"
     >
       <BrandLogo size={22} wordmarkClassName="text-base text-white" />
@@ -126,7 +126,7 @@ export async function AppBar({ variant, slug, emergency, backHref, currentPath }
             </Link>
             <Link
               href={`/e/${slug}/peticion`}
-              className="rounded-lg bg-accent-2 px-3.5 py-1.5 text-[13px] font-bold text-white hover:bg-accent-2-600"
+              className="rounded-lg bg-white px-3.5 py-1.5 text-[13px] font-bold text-black hover:bg-white/85"
             >
               {ta.request}
             </Link>

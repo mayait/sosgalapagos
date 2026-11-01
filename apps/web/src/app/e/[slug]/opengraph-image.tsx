@@ -66,7 +66,7 @@ export default async function Image({ params }: Props) {
         </div>
 
         <span style={{ fontSize: 30, color: '#9db4d0' }}>
-          Puntos de acopio, necesidades y cómo ayudar · responsegrid.app
+          Puntos de acopio, necesidades y cómo ayudar · sosgalapagos.org
         </span>
       </div>
     ),
