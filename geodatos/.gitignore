@@ -1,0 +1,7 @@
+# Datos crudos e intermedios: pesan cientos de MB y algunos traen datos
+# personales (albergues y eventos de la SNGR). Se regeneran con los scripts.
+.venv/
+descargas/
+capas/
+export/
+*.pbf
