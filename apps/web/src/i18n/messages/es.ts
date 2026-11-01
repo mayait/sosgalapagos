@@ -243,9 +243,8 @@ export const es = {
     // Intro citable (SEO/GEO): resume qué es la página para buscadores y motores de IA
     intro_heading: 'Cómo ayudar ahora',
     intro_body:
-      'Esta es la página de {emergency} de la Universidad San Francisco de Quito (USFQ Galápagos), sobre la plataforma ResponseGrid. Aquí encuentras los puntos de acopio verificados, las necesidades de material validadas por coordinación y qué NO llevar, todo actualizado en tiempo real. Elige un punto activo, confírmalo por teléfono antes de ir y evita desplazamientos que saturan la logística.',
-    intro_source:
-      'Información coordinada y verificada por USFQ Galápagos. ResponseGrid es software libre de Global Emergency.',
+      'Acopio, necesidades validadas y qué NO llevar, en tiempo real. Confirma el punto antes de ir.',
+    intro_source: 'Verificado por USFQ Galápagos.',
 
     // FAQ visible + FAQPage schema (contenido citable por buscadores y IA)
     faq_heading: 'Preguntas frecuentes',
@@ -405,7 +404,7 @@ export const es = {
     official_label: 'Comunicado oficial',
     last_updated: 'Última actualización:',
     aria_label: 'Comunicado oficial',
-    source: 'Global Emergency',
+    source: 'USFQ Galápagos',
   },
 
   // ── Login page ────────────────────────────────────────────────────────────

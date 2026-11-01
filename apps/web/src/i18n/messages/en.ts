@@ -236,9 +236,8 @@ export const en = {
     // Citable intro (SEO/GEO): summarises the page for search engines and AI
     intro_heading: 'How to help now',
     intro_body:
-      'This is the {emergency} page of Universidad San Francisco de Quito (USFQ Galápagos), running on the ResponseGrid platform. Here you will find the verified collection points, the supply needs validated by coordination and what NOT to bring, all updated in real time. Pick an active point, confirm it by phone before going and avoid trips that overload logistics.',
-    intro_source:
-      'Information coordinated and verified by USFQ Galápagos. ResponseGrid is free software by Global Emergency.',
+      'Collection points, validated needs and what NOT to bring, in real time. Confirm the point before going.',
+    intro_source: 'Verified by USFQ Galápagos.',
 
     // Visible FAQ + FAQPage schema (content citable by search engines and AI)
     faq_heading: 'Frequently asked questions',
@@ -388,7 +387,7 @@ export const en = {
     official_label: 'Official announcement',
     last_updated: 'Last updated:',
     aria_label: 'Official announcement',
-    source: 'Global Emergency',
+    source: 'USFQ Galápagos',
   },
 
   login: {

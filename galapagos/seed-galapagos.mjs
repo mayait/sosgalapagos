@@ -50,12 +50,10 @@ const P = {
 };
 
 const ANNOUNCEMENT = [
-  'Inundaciones por El Niño en Galápagos (noche del 30 al 31 de octubre de 2026). El COE declaró la emergencia en Santa Cruz; el barrio La Cascada (Puerto Ayora) es el más afectado. Actualizado: domingo 1 de noviembre, 12:20.',
-  'Albergues (COE Provincial y GAD Santa Cruz): en Puerto Ayora, Colegio Nacional Galápagos (Miraflores), Colegio Miguel Ángel Cazares e Iglesia de Jesucristo de los Santos de los Últimos Días; en Bellavista, el techado del barrio Las Palmas; en Santa Rosa, el coliseo Segundo Chapi. Centro de acopio oficial: Colegio Miguel Ángel Cazares.',
-  'Agua: la captación de La Camiseta ya funciona. Puerto Ayora tendrá distribución parcial cuando se llenen los tanques de El Mirador. Bellavista, sus alrededores y El Mirador siguen sin servicio. La entrega en hidrantes para tanqueros está suspendida.',
-  'Si eres damnificado, completa el formulario de línea base del COE: https://docs.google.com/forms/d/e/1FAIpQLSe-wb4SGX8Z0IxRUCjMUBgY3XFLGGc-wwmfPux6aTaGxxOCzQ/viewform',
-  'Clima: el INAMHI pronostica lluvia fuerte en Santa Cruz e Isabela. El riesgo está en la parte alta, que alimenta las encañadas. Para emergencias, llama al ECU 911.',
-  'No envíes donaciones físicas desde el continente: ponen en riesgo la bioseguridad y saturan la logística. Dona dinero a organizaciones con trazabilidad, nunca a cuentas personales, y compra en Santa Cruz. Ante la mínima duda sobre el estado de un alimento, descártalo.',
+  'Emergencia en Santa Cruz por las lluvias del 30-31 de octubre. Lo más afectado: La Cascada (Puerto Ayora).',
+  'Albergues: Colegio Nacional Galápagos, Colegio Miguel Ángel Cazares (también acopio) e Iglesia de los Santos de los Últimos Días en Puerto Ayora; techado de Las Palmas en Bellavista; coliseo Segundo Chapi en Santa Rosa.',
+  'Agua: Bellavista y El Mirador sin servicio; Puerto Ayora, parcial.',
+  'No envíes donaciones físicas desde el continente: dona a organizaciones con trazabilidad. Emergencias: ECU 911.',
 ].join('\n\n');
 
 async function main() {
