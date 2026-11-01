@@ -73,7 +73,8 @@ async function main() {
     })).data;
   }
   const E = em.id;
-  await call('PUT', `/emergencies/${E}/announcement`, { message: ANNOUNCEMENT });
+  // Sin comunicado: la portada y la página ya dan esta información (decisión 1-nov-2026).
+  // Para publicarlo: await call('PUT', `/emergencies/${E}/announcement`, { message: ANNOUNCEMENT });
   console.log('✓ emergencia', E);
 
   // 3) Organización
