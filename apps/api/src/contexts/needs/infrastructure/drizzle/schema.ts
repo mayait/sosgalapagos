@@ -39,6 +39,16 @@ export const needsTable = pgTable('needs', {
    * person a trusted integration filed this need for. Never exposed publicly.
    */
   author: jsonb('author').$type<AuthorSnapshot>(),
+  /**
+   * Restricted location capture metadata (migration 0060). The reference is
+   * PRIVATE (coordinators only); method/accuracy describe how trustworthy the
+   * point is.
+   */
+  locationReference: text('location_reference'),
+  locationMethod: text('location_method'),
+  locationAccuracy: text('location_accuracy'),
+  /** Server-derived public zone label of the snapped public point. */
+  locationZone: text('location_zone'),
 });
 
 export const needItemsTable = pgTable('need_items', {

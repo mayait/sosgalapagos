@@ -723,9 +723,11 @@ describe('Need flow (e2e)', () => {
 
       expect(need).toBeDefined();
       expect(need!.locationSensitivity).toBe('approximate');
-      // Approximate coords must differ from exact (jitter was applied)
+      // Approximate coords must differ from exact (snapped to the grid)
       expect(need!.location.latitude).not.toBe(exactLat);
       expect(need!.location.longitude).not.toBe(exactLng);
+      // The submitted (free-text) address is never published.
+      expect(need!.location.address).not.toContain('Calle Exacta 42');
       // The same request must return the same approximate point (determinism)
       const publicRes2 = await request(server)
         .get(`/emergencies/${EM}/public/needs`)
@@ -737,6 +739,66 @@ describe('Need flow (e2e)', () => {
       ).find((n) => n.id === id);
       expect(need2!.location.latitude).toBe(need!.location.latitude);
       expect(need2!.location.longitude).toBe(need!.location.longitude);
+    });
+
+    it('private location.reference is visible to coordinators but never in anonymous GETs', async () => {
+      const personalName = 'Herminia Zambrano Quishpe';
+      const created = await request(server)
+        .post(`/emergencies/${EM}/needs`)
+        .set('Authorization', `Bearer ${coordToken}`)
+        .send({
+          title: 'Reference privacy test',
+          location: {
+            address: exactAddress,
+            latitude: exactLat,
+            longitude: exactLng,
+            reference: `Casa de ${personalName}, portón verde`,
+            method: 'gps',
+            accuracyM: 30,
+          },
+          priority: 'high',
+          items: [
+            { name: 'Water', quantity: 10, unit: 'liters', category: 'water' },
+          ],
+        })
+        .expect(201);
+      const id: string = bodyId(created);
+
+      const queue = await request(server)
+        .get(`/emergencies/${EM}/needs/queue`)
+        .set('Authorization', `Bearer ${coordToken}`)
+        .expect(200);
+      const queued = (
+        queue.body as Array<{ id: string; locationDetails: unknown }>
+      ).find((n) => n.id === id);
+      expect(queued?.locationDetails).toEqual({
+        reference: `Casa de ${personalName}, portón verde`,
+        method: 'gps',
+        accuracy: '<50',
+      });
+
+      await request(server)
+        .post(`/needs/${id}/validate`)
+        .set('Authorization', `Bearer ${coordToken}`)
+        .expect(204);
+
+      const anonymous = [
+        await request(server).get(`/emergencies/${EM}/public/needs`),
+        await request(server)
+          .get(`/emergencies/${EM}/public/needs/in-bounds`)
+          .query({ minLat: 10, minLng: -67.5, maxLat: 11, maxLng: -66.5 }),
+        await request(server)
+          .get(`/emergencies/${EM}/public/needs/nearby`)
+          .query({ lat: exactLat, lng: exactLng, radius: 5000 }),
+      ];
+      for (const res of anonymous) {
+        expect(res.status).toBe(200);
+        const json = JSON.stringify(res.body);
+        expect(json).toContain('Reference privacy test');
+        expect(json).not.toContain(personalName);
+        expect(json).not.toContain('portón verde');
+        expect(json).not.toContain('locationDetails');
+      }
     });
 
     it('individual-requester need: coordinator queue returns exact coords', async () => {

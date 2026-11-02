@@ -1,4 +1,8 @@
 import { randomUUID } from 'node:crypto';
+import {
+  LocationAccuracyBucket,
+  LocationMethod,
+} from '../../../../shared/domain/location-capture';
 import { and, eq, inArray } from 'drizzle-orm';
 import { Db } from '../../../../shared/db';
 import { offersTable, offerItemsTable } from './schema';
@@ -40,6 +44,11 @@ function rowToSnapshot(
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     author: row.author ?? null,
+    locationCapture: {
+      reference: row.locationReference ?? null,
+      method: (row.locationMethod ?? null) as LocationMethod | null,
+      accuracy: (row.locationAccuracy ?? null) as LocationAccuracyBucket | null,
+    },
   };
 }
 
@@ -93,6 +102,9 @@ export class DrizzleOfferRepository implements OfferRepository {
           createdAt: s.createdAt,
           updatedAt: s.updatedAt,
           author: s.author ?? null,
+          locationReference: s.locationCapture?.reference ?? null,
+          locationMethod: s.locationCapture?.method ?? null,
+          locationAccuracy: s.locationCapture?.accuracy ?? null,
         })
         .onConflictDoUpdate({
           target: offersTable.id,

@@ -11,6 +11,10 @@ import {
 import { Resource, ResourceSnapshot, Provenance } from '../../domain/resource';
 import { AuthorSnapshot } from '../../../../shared/domain/author';
 import {
+  LocationAccuracyBucket,
+  LocationMethod,
+} from '../../../../shared/domain/location-capture';
+import {
   rowToSupplyLineSnapshot,
   supplyLineToColumns,
 } from '@globalemergency/warehouse-postgres';
@@ -220,6 +224,11 @@ function rowToSnapshot(row: Row, items: ItemsRow[] = []): ResourceSnapshot {
     disputedAt: row.disputedAt ?? null,
     disputeDismissedAt: row.disputeDismissedAt ?? null,
     author: row.author ?? null,
+    locationCapture: {
+      reference: row.locationReference ?? null,
+      method: (row.locationMethod ?? null) as LocationMethod | null,
+      accuracy: (row.locationAccuracy ?? null) as LocationAccuracyBucket | null,
+    },
     items: itemsToSnapshots(items),
   };
 }
@@ -279,6 +288,9 @@ export class DrizzleResourceRepository implements ResourceRepository {
           disputedAt: s.disputedAt ?? null,
           disputeDismissedAt: s.disputeDismissedAt ?? null,
           author: s.author ?? null,
+          locationReference: s.locationCapture?.reference ?? null,
+          locationMethod: s.locationCapture?.method ?? null,
+          locationAccuracy: s.locationCapture?.accuracy ?? null,
         })
         .onConflictDoUpdate({
           target: resourcesTable.id,

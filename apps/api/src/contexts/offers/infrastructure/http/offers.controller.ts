@@ -13,6 +13,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { toLocationCaptureInput } from '../../../../shared/infrastructure/http/location-capture.dto';
 import {
   ApiTags,
   ApiOperation,
@@ -154,6 +155,7 @@ export class OffersController {
         address: dto.location.address,
         latitude: dto.location.latitude,
         longitude: dto.location.longitude,
+        ...toLocationCaptureInput(dto.location),
       },
       targetNeedId: dto.targetNeedId ?? null,
       notes: dto.notes ?? null,

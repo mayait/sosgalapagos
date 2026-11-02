@@ -1,19 +1,29 @@
 import { Need } from '../domain/need';
 
 /**
- * Location as exposed in a NeedView. The address is nullable because the public
- * view coarsens (and may fully drop) the street line of location-sensitive
- * needs; coordinators always receive the exact, non-null address.
+ * Location as exposed in a NeedView. For location-sensitive (approximate)
+ * needs the public address is ONLY the server-derived zone label (never the
+ * submitted text); coordinators always receive the exact address.
  */
 export interface NeedLocationView {
   address: string | null;
   latitude: number;
   longitude: number;
+  /**
+   * Server-derived area label (neighbourhood / locality) of the public point
+   * of an approximate need. Null when not resolved yet or not applicable.
+   */
+  zone: string | null;
 }
 import { SupplyLineSnapshot } from '@globalemergency/warehouse-core/kernel';
 import { LocationSensitivity } from '../../../shared/domain/location-sensitivity';
-import { approximateLocation } from '../../../shared/domain/approximate-location';
+import {
+  APPROX_GRID_METERS,
+  approxRadiusMeters,
+  snapToGrid,
+} from '../../../shared/domain/approximate-location';
 import { coarsenAddress } from '../../../shared/domain/coarsen-address';
+import { LocationCaptureSnapshot } from '../../../shared/domain/location-capture';
 import { PersonnelSkill } from '../domain/need-enums';
 import { AuthorSnapshot } from '../../../shared/domain/author';
 
@@ -37,6 +47,11 @@ export interface NeedView {
   requestedCount: number | null;
   /** Optional link to the resource / final recipient (#60). */
   resourceId: string | null;
+  /**
+   * For approximate needs: radius (m) around the public point within which
+   * the real location lies — draw an area, not a pin. Null when exact.
+   */
+  approxRadiusMeters: number | null;
 }
 
 /**
@@ -46,38 +61,83 @@ export interface NeedView {
 export interface CoordinatorNeedView extends NeedView {
   skillSpecialty: string | null;
   author: AuthorSnapshot | null;
+  /** Restricted: private reference, capture method and accuracy bucket. */
+  locationDetails: LocationCaptureSnapshot | null;
+}
+
+/** Public label used when no safe zone label is available. */
+export const APPROX_ZONE_FALLBACK_LABEL = 'Zona aproximada';
+
+/**
+ * Public text for the location of an approximate need. Built ONLY from data
+ * that cannot contain what the requester typed:
+ * 1. the server-derived zone (reverse geocode of the snapped public point);
+ * 2. else, when the address itself came from a geocoder (`method` gps / map /
+ *    search / link), that label without its first segment, if ≥2 segments
+ *    remain;
+ * 3. else a generic label. Free text is never coarsened into public text: a
+ *    legacy address like "Behind the stadium, Rosa's house, green gate" would
+ *    still leak after dropping its first segment.
+ */
+export function publicZoneLabel(n: Need): string {
+  if (n.locationZone) return n.locationZone;
+  if (n.locationCapture?.hasGeocodedAddress) {
+    const coarse = coarsenAddress(n.location.address);
+    if (coarse !== null && coarse.split(',').length >= 2) return coarse;
+  }
+  return APPROX_ZONE_FALLBACK_LABEL;
+}
+
+/** Public coordinates of a need: snapped to the fixed grid when approximate. */
+export function publicPointOf(
+  n: Need,
+  gridMeters: number = APPROX_GRID_METERS,
+): { latitude: number; longitude: number } {
+  const exact = n.location;
+  if (n.locationSensitivity !== LocationSensitivity.Approximate) {
+    return { latitude: exact.latitude, longitude: exact.longitude };
+  }
+  const snapped = snapToGrid(exact.latitude, exact.longitude, gridMeters);
+  return { latitude: snapped.lat, longitude: snapped.lng };
 }
 
 /**
  * Map a Need to a public NeedView.
  *
- * When locationSensitivity is 'approximate', the coordinates exposed in the
- * response are jittered deterministically (seed = needId) so that:
- * - The same need always returns the same approximate point (no correlation).
- * - The exact position of individual requesters is never exposed publicly.
+ * When locationSensitivity is 'approximate':
+ * - coordinates are snapped to the centre of a fixed ~`gridMeters` grid cell,
+ *   so every request from the same place gets the SAME public point (nothing
+ *   to average out) — see {@link snapToGrid};
+ * - the address is only the server-derived zone ({@link publicZoneLabel});
+ * - `approxRadiusMeters` tells the map to draw an area, not a pin.
  *
+ * The private `reference` and capture metadata are never part of this view.
  * The domain aggregate always stores exact coordinates internally.
  */
-export function toPublicNeedView(n: Need): NeedView {
+export function toPublicNeedView(
+  n: Need,
+  gridMeters: number = APPROX_GRID_METERS,
+): NeedView {
   const exactLocation = n.location.toPlain();
+  const approximate = n.locationSensitivity === LocationSensitivity.Approximate;
 
   let publicLocation: NeedLocationView;
-  if (n.locationSensitivity === LocationSensitivity.Approximate) {
-    const approx = approximateLocation(
-      exactLocation.latitude,
-      exactLocation.longitude,
-      n.id.value,
-    );
+  if (approximate) {
+    const point = publicPointOf(n, gridMeters);
     publicLocation = {
-      // SECURITY: coarsen the street address too. Jittering the coordinates
-      // while returning the exact street line ("Calle X #123") would defeat the
-      // whole point of Approximate sensitivity and disclose the requester's home.
-      address: coarsenAddress(exactLocation.address),
-      latitude: approx.lat,
-      longitude: approx.lng,
+      address: publicZoneLabel(n),
+      latitude: point.latitude,
+      longitude: point.longitude,
+      zone: n.locationZone,
     };
   } else {
-    publicLocation = exactLocation;
+    // Built field by field (never spread) so nothing private can ride along.
+    publicLocation = {
+      address: exactLocation.address,
+      latitude: exactLocation.latitude,
+      longitude: exactLocation.longitude,
+      zone: null,
+    };
   }
 
   return {
@@ -99,6 +159,7 @@ export function toPublicNeedView(n: Need): NeedView {
     requiredSkill: n.requiredSkill,
     requestedCount: n.requestedCount,
     resourceId: n.resourceId,
+    approxRadiusMeters: approximate ? approxRadiusMeters(gridMeters) : null,
   };
 }
 
@@ -114,7 +175,7 @@ export function toCoordinatorNeedView(n: Need): CoordinatorNeedView {
     emergencyId: n.emergencyId.value,
     title: n.title,
     description: n.description,
-    location: n.location.toPlain(),
+    location: { ...n.location.toPlain(), zone: n.locationZone },
     locationSensitivity: n.locationSensitivity,
     priority: n.priority,
     requesterOrganizationId: n.requesterOrganizationId,
@@ -128,7 +189,10 @@ export function toCoordinatorNeedView(n: Need): CoordinatorNeedView {
     skillSpecialty: n.skillSpecialty,
     requestedCount: n.requestedCount,
     resourceId: n.resourceId,
+    // Coordinators see the exact point, so no public area radius applies.
+    approxRadiusMeters: null,
     author: n.author ? n.author.toSnapshot() : null,
+    locationDetails: n.locationCapture ? n.locationCapture.toSnapshot() : null,
   };
 }
 

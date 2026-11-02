@@ -5,6 +5,7 @@ import {
   PublicStatus,
 } from '../../domain/resource-enums';
 import { AuthorResponseDto } from '../../../../shared/infrastructure/http/author.dto';
+import { LocationDetailsResponseDto } from '../../../../shared/infrastructure/http/location-capture.dto';
 import {
   ValidityReason,
   ValidityReportStatus,
@@ -355,6 +356,15 @@ export class ResourceAdminViewDto extends ResourceViewDto {
       'on their behalf (#235). Platform-admin only — never returned publicly.',
   })
   author!: AuthorResponseDto | null;
+
+  @ApiPropertyOptional({
+    type: LocationDetailsResponseDto,
+    nullable: true,
+    description:
+      'Restricted capture metadata of the location (private reference, ' +
+      'method, GPS accuracy bucket). Platform-admin only — never public.',
+  })
+  locationDetails!: LocationDetailsResponseDto | null;
 }
 
 export class PagedAdminResourcesDto {

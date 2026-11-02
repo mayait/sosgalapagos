@@ -15,8 +15,13 @@ import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SupplyLineDto } from '../../../supplies/infrastructure/http/supply-line.dto';
 import { AuthorDto } from '../../../../shared/infrastructure/http/author.dto';
+import { LocationCaptureInputDto } from '../../../../shared/infrastructure/http/location-capture.dto';
 
-export class OfferLocationDto {
+/**
+ * Pickup/drop location of an offer plus optional capture metadata;
+ * `reference` is private (donor / coordinators only).
+ */
+export class OfferLocationDto extends LocationCaptureInputDto {
   @ApiProperty({ example: '123 Main Street, Caracas, Venezuela' })
   @IsString()
   @MinLength(2)

@@ -8,6 +8,7 @@ import { EmergencyId } from '../../../shared/domain/emergency-id';
 import { SupplyLine } from '@globalemergency/warehouse-core/kernel';
 import { Location } from '../../../shared/domain/location';
 import { Author, AuthorProps } from '../../../shared/domain/author';
+import { LocationCapture } from '../../../shared/domain/location-capture';
 import { EmergencyNotAcceptingIntakeError } from '../../emergencies/domain/emergency-not-accepting-intake.error';
 
 const ACTIVE_STATUS = 'active';
@@ -32,6 +33,10 @@ export interface SubmitOfferLocationCommand {
   address: string;
   latitude: number;
   longitude: number;
+  /** PRIVATE directions (donor / coordinators only). */
+  reference?: string | null;
+  method?: string | null;
+  accuracyM?: number | null;
 }
 
 export interface SubmitOfferItemCommand {
@@ -115,6 +120,11 @@ export class SubmitOffer {
       targetNeedId: cmd.targetNeedId,
       notes: cmd.notes,
       author: cmd.author ? Author.create(cmd.author) : null,
+      locationCapture: LocationCapture.create({
+        reference: cmd.location.reference ?? null,
+        method: cmd.location.method ?? null,
+        accuracyM: cmd.location.accuracyM ?? null,
+      }),
     });
 
     await this.repo.save(offer);

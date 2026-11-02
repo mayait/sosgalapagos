@@ -12,6 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ValidityReportThrottlerGuard } from './validity-report-throttler.guard';
+import { toLocationCaptureInput } from '../../../../shared/infrastructure/http/location-capture.dto';
 import {
   ApiTags,
   ApiOperation,
@@ -163,7 +164,12 @@ export class ResourcesController {
       type: dto.type,
       name: dto.name,
       description: dto.description ?? null,
-      location: dto.location,
+      location: {
+        address: dto.location.address,
+        latitude: dto.location.latitude,
+        longitude: dto.location.longitude,
+        ...toLocationCaptureInput(dto.location),
+      },
       ownerUserId,
       ownerOrganizationId: dto.ownerOrganizationId ?? null,
       contact: dto.contact ?? null,
