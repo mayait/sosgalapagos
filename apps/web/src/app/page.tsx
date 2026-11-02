@@ -138,6 +138,9 @@ export default async function HomePage() {
               <a href="#organizaciones" className={botonBorde}>
                 Otras organizaciones
               </a>
+              <a href="#mascotas" className={botonBorde}>
+                Mascotas
+              </a>
             </div>
           </section>
         </div>
@@ -172,6 +175,38 @@ export default async function HomePage() {
           )}
         </section>
 
+        {/* ── Para entender la emergencia: /mapas, /clima, /estudios ── */}
+        <section aria-labelledby="consulta-heading" className={tarjeta}>
+          <h2 id="consulta-heading" className={h2}>Mapas, clima y estudios</h2>
+          <p className="mt-2 max-w-3xl text-[14px] leading-relaxed text-ink-soft">
+            Información abierta para entender qué pasó y dónde está el riesgo. Sirve a vecinos, voluntarios, técnicos y
+            autoridades.
+          </p>
+          <ul className="mt-4 grid gap-3 md:grid-cols-3" role="list">
+            {PORTADA.consulta.map((c) => (
+              <li key={c.ruta}>
+                <a
+                  href={c.ruta}
+                  className="group flex h-full flex-col rounded-lg border border-line bg-surface p-4 transition-colors hover:border-black focus:outline-none focus:ring-2 focus:ring-accent"
+                >
+                  <span className="font-display text-base font-black uppercase leading-tight text-black">{c.titulo}</span>
+                  <span className="mt-0.5 text-[12px] font-semibold text-muted">sosgalapagos.org{c.ruta.replace(/\/$/, '')}</span>
+                  <span className="mt-2 text-[13.5px] leading-relaxed text-ink-soft">{c.resumen}</span>
+                  <ul className="mt-2 flex flex-col gap-1 text-[13px] leading-snug text-ink">
+                    {c.contenido.map((t) => (
+                      <li key={t} className="flex gap-1.5">
+                        <span aria-hidden="true" className="text-accent">·</span>
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                  <span className="mt-auto pt-3 text-[13px] font-bold text-black group-hover:text-accent">Abrir →</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         {/* ── Organizaciones ───────────────────────────────────────── */}
         <section id="organizaciones" aria-labelledby="org-heading" className={`${tarjeta} scroll-mt-20`}>
           <h2 id="org-heading" className={h2}>Organizaciones aliadas</h2>
@@ -198,6 +233,16 @@ export default async function HomePage() {
             {PORTADA.organizaciones.map((o) => (
               <li key={o.nombre} className="flex flex-col gap-0.5 rounded-lg border border-line bg-surface px-3 py-2.5">
                 <span className="text-[13.5px] font-semibold text-ink">{o.nombre}</span>
+                {o.whatsapp ? (
+                  <a
+                    href={`https://wa.me/${o.whatsapp.replace(/\D/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[12.5px] font-semibold text-accent underline-offset-2 hover:underline"
+                  >
+                    WhatsApp +{o.whatsapp.replace(/\D/g, '')} ↗
+                  </a>
+                ) : null}
                 {o.instagram ? (
                   <a
                     href={`https://www.instagram.com/${o.instagram}/`}
@@ -207,12 +252,49 @@ export default async function HomePage() {
                   >
                     Instagram @{o.instagram} ↗
                   </a>
-                ) : (
+                ) : null}
+                {!o.instagram && !o.whatsapp ? (
                   <span className="text-[12px] text-muted">Contactar por sus canales oficiales</span>
-                )}
+                ) : null}
               </li>
             ))}
           </ul>
+        </section>
+
+        {/* ── Mascotas ─────────────────────────────────────────────── */}
+        <section id="mascotas" aria-labelledby="mascotas-heading" className={`${tarjeta} scroll-mt-20`}>
+          <h2 id="mascotas-heading" className={h2}>Ayuda para mascotas</h2>
+          <p className="mt-2 max-w-3xl text-[14px] leading-relaxed text-ink-soft">
+            Los perros y gatos de las familias damnificadas y los refugios de animales también lo perdieron todo. Se
+            necesita alimento (croquetas) y dinero. Estas organizaciones de Santa Cruz los están atendiendo.
+          </p>
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2" role="list">
+            {PORTADA.mascotas.map((m) => (
+              <li key={m.nombre} className="flex flex-col gap-2 rounded-lg border border-line bg-surface p-4">
+                <span className="font-display text-base font-black uppercase leading-tight text-black">{m.nombre}</span>
+                {m.banco ? (
+                  <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-[13px] leading-snug">
+                    <dt className="text-muted">Banco</dt>
+                    <dd className="font-semibold text-ink">{m.banco.banco}</dd>
+                    <dt className="text-muted">{m.banco.tipo}</dt>
+                    <dd className="select-all font-mono font-semibold text-ink">{m.banco.numero}</dd>
+                    <dt className="text-muted">Titular</dt>
+                    <dd className="font-semibold text-ink">{m.banco.titular}</dd>
+                    <dt className="text-muted">C.I.</dt>
+                    <dd className="select-all font-mono font-semibold text-ink">{m.banco.cedula}</dd>
+                  </dl>
+                ) : null}
+                {m.paypal ? (
+                  <a href={m.paypal} target="_blank" rel="noopener noreferrer" className={`${botonNegro} self-start`}>
+                    Donar por PayPal ↗
+                  </a>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 text-[12.5px] text-muted">
+            Datos de donación compartidos por la coordinación de SOS Galápagos.
+          </p>
         </section>
 
         <GruposWhatsapp headingId="grupos-whatsapp-portada" />

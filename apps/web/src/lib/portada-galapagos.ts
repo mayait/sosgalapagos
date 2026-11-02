@@ -10,7 +10,7 @@
  */
 export const PORTADA = {
   emergenciaSlug: 'galapagos-2026',
-  actualizado: 'domingo 1 de noviembre de 2026, 12:20',
+  actualizado: 'lunes 2 de noviembre de 2026, 14:15',
 
   formularioCOE:
     'https://docs.google.com/forms/d/e/1FAIpQLSe-wb4SGX8Z0IxRUCjMUBgY3XFLGGc-wwmfPux6aTaGxxOCzQ/viewform',
@@ -39,6 +39,72 @@ export const PORTADA = {
     { nombre: 'Galapagos Conservancy', instagram: 'galapagosconservancy' },
     { nombre: 'Fundación ECOS' },
     { nombre: 'CAPTURGAL — Cámara Provincial de Turismo de Galápagos', instagram: 'capturgal' },
-  ] as { nombre: string; instagram?: string }[],
+  ] as { nombre: string; instagram?: string; whatsapp?: string }[],
+
+  /**
+   * Páginas de consulta del mismo dominio que sirve Caddy fuera de la app
+   * (por eso van con <a>, no con <Link>). Ver deploy/sosgalapagos/Caddyfile.
+   */
+  consulta: [
+    {
+      titulo: 'Mapas y capas',
+      ruta: '/mapas/',
+      resumen:
+        'Visor de las capas geográficas de la emergencia en Santa Cruz, San Cristóbal e Isabela, sin recortes e incluido el Parque Nacional.',
+      contenido: [
+        'Quebradas, zonas inundables, cuencas y costa baja',
+        'Vías, población expuesta por isla y puntos clave',
+        'Descarga en Shapefile o GeoJSON para QGIS o ArcGIS',
+      ],
+    },
+    {
+      titulo: 'Clima en vivo',
+      ruta: '/clima/',
+      resumen:
+        'Lluvia y temperatura de las estaciones meteorológicas de Santa Cruz y San Cristóbal. Se actualiza cada 5 minutos.',
+      contenido: [
+        'Lluvia acumulada en 24 h por estación, en un mapa',
+        'Comparación con la inundación del 30–31 de octubre',
+        'Nivel de inundación por zona (preliminar, no oficial)',
+      ],
+    },
+    {
+      titulo: 'Estudios preliminares',
+      ruta: '/estudios/',
+      resumen:
+        'Análisis topográficos e hidrológicos rápidos, con datos públicos y asistencia de IA, sin revisión profesional. Cada estudio admite comentarios.',
+      contenido: [
+        'Santa Cruz: cronología del 30 de octubre, lluvia medida, La Cascada, parte alta y cruces de quebradas con vías',
+        'San Cristóbal: puntos potenciales de inundación',
+        'No sustituyen estudios de ingeniería ni mapas oficiales',
+      ],
+    },
+  ],
+
+  /**
+   * Donaciones para animales. Datos de pago compartidos por la coordinación de la
+   * respuesta (2-nov-2026). De Juanchito solo se publica PayPal.
+   */
+  mascotas: [
+    {
+      nombre: 'Patitas Galapagueñas',
+      banco: {
+        banco: 'Pichincha',
+        tipo: 'Cuenta transaccional',
+        numero: '2203496066',
+        titular: 'Fátima Samanta Walthert',
+        // Llegó como «Teléfono», pero tiene formato de cédula (provincia 17).
+        cedula: '1757800683',
+      },
+    },
+    {
+      nombre: 'Juanchito al Rescate Galápagos',
+      paypal: 'https://paypal.me/juanchitoalrescategp',
+    },
+  ] as {
+    nombre: string;
+    banco?: { banco: string; tipo: string; numero: string; titular: string; cedula: string };
+    paypal?: string;
+  }[],
 
 } as const;
