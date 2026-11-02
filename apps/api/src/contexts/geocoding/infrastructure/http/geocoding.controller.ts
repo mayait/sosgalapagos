@@ -1,6 +1,7 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import {
+  ApiBadRequestResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
@@ -8,13 +9,25 @@ import {
   ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
 import { SearchAddress } from '../../application/search-address';
-import { GeocodeResultDto } from './geocode-result.dto';
+import {
+  InvalidReverseGeocodeQueryError,
+  ReverseGeocode,
+  ReverseGeocodeView,
+} from '../../application/reverse-geocode';
+import {
+  GeocodeResultDto,
+  ReverseGeocodeQueryDto,
+  ReverseGeocodeResponseDto,
+} from './geocode-result.dto';
 import { GeocodeResult } from '../../domain/ports/geocoding.provider';
 
 @ApiTags('geocoding')
 @Controller('geocode')
 export class GeocodingController {
-  constructor(private readonly searchAddress: SearchAddress) {}
+  constructor(
+    private readonly searchAddress: SearchAddress,
+    private readonly reverseGeocode: ReverseGeocode,
+  ) {}
 
   @Get()
   // This endpoint proxies an unauthenticated free-text query to the external
@@ -39,5 +52,36 @@ export class GeocodingController {
   })
   async search(@Query('q') q = ''): Promise<GeocodeResult[]> {
     return this.searchAddress.execute({ query: q });
+  }
+
+  @Get('reverse')
+  // Same upstream as search; 30/min per client is plenty for a picker that
+  // only asks when the user stops moving the map (results are cached 30 days).
+  @Throttle({ default: { ttl: 60_000, limit: 30 } })
+  @ApiOperation({
+    summary: 'Reverse-geocode a point into a short label',
+    description:
+      'Coordinates are rounded to 4 decimals (~11 m) before being sent to ' +
+      'the third-party geocoder. Always 200: `address` is null when nothing ' +
+      'was found or the geocoder is unavailable.',
+  })
+  @ApiOkResponse({ type: ReverseGeocodeResponseDto })
+  @ApiBadRequestResponse({ description: 'Invalid lat/lon' })
+  @ApiTooManyRequestsResponse({ description: 'Rate limit exceeded' })
+  async reverse(
+    @Query() query: ReverseGeocodeQueryDto,
+  ): Promise<ReverseGeocodeView> {
+    try {
+      return await this.reverseGeocode.execute({
+        latitude: query.lat,
+        longitude: query.lon,
+        lang: query.lang,
+      });
+    } catch (error) {
+      if (error instanceof InvalidReverseGeocodeQueryError) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
   }
 }

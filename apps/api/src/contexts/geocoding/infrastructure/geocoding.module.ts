@@ -6,6 +6,7 @@ import {
 import { NominatimGeocodingProvider } from './nominatim-geocoding.provider';
 import { MinIntervalGate } from './min-interval-gate';
 import { SearchAddress } from '../application/search-address';
+import { ReverseGeocode } from '../application/reverse-geocode';
 import { GeocodingController } from './http/geocoding.controller';
 
 /**
@@ -41,9 +42,15 @@ const searchAddressProvider = {
   useFactory: (provider: GeocodingProvider) => new SearchAddress(provider),
 };
 
+const reverseGeocodeProvider = {
+  provide: ReverseGeocode,
+  inject: [GEOCODING_PROVIDER],
+  useFactory: (provider: GeocodingProvider) => new ReverseGeocode(provider),
+};
+
 @Module({
   controllers: [GeocodingController],
-  providers: [nominatimProvider, searchAddressProvider],
-  exports: [GEOCODING_PROVIDER],
+  providers: [nominatimProvider, searchAddressProvider, reverseGeocodeProvider],
+  exports: [GEOCODING_PROVIDER, ReverseGeocode],
 })
 export class GeocodingModule {}

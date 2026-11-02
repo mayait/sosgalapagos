@@ -16,6 +16,10 @@ class FakeGeocodingProvider implements GeocodingProvider {
     this.calls.push(query);
     return Promise.resolve(this.fixture);
   }
+
+  reverse(): Promise<null> {
+    return Promise.resolve(null);
+  }
 }
 
 const FIXTURE: GeocodeResult[] = [
