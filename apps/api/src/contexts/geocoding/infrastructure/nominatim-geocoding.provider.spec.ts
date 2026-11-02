@@ -1,4 +1,5 @@
 import { NominatimGeocodingProvider } from './nominatim-geocoding.provider';
+import { MinIntervalGate } from './min-interval-gate';
 
 const NOMINATIM_RESPONSE = [
   {
@@ -136,5 +137,77 @@ describe('NominatimGeocodingProvider', () => {
     await provider.search('Zaragoza');
 
     expect(mockFetch).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('NominatimGeocodingProvider — configuration & usage policy', () => {
+  const openGate = () =>
+    new MinIntervalGate({ minIntervalMs: 0, sleep: () => Promise.resolve() });
+
+  it('uses the configured base URL and User-Agent', async () => {
+    const fetchFn = makeFetchMock(NOMINATIM_RESPONSE);
+    const provider = new NominatimGeocodingProvider({
+      baseUrl: 'https://geo.example.org/',
+      userAgent: 'MyDeploy/1.0 (ops@example.org)',
+      fetchFn,
+      gate: openGate(),
+    });
+
+    await provider.search('Quito');
+
+    const [url, init] = fetchFn.mock.calls[0] as [string, RequestInit];
+    expect(url.startsWith('https://geo.example.org/search?')).toBe(true);
+    expect((init.headers as Record<string, string>)['User-Agent']).toBe(
+      'MyDeploy/1.0 (ops@example.org)',
+    );
+  });
+
+  it('degrades to [] without calling upstream when the gate rejects', async () => {
+    const fetchFn = makeFetchMock(NOMINATIM_RESPONSE);
+    const gate = new MinIntervalGate({
+      minIntervalMs: 60_000,
+      maxWaitMs: 0,
+      now: () => 0,
+    });
+    const provider = new NominatimGeocodingProvider({ fetchFn, gate });
+
+    await provider.search('first'); // takes the free slot
+    const results = await provider.search('second');
+
+    expect(results).toEqual([]);
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not cache failures', async () => {
+    const fetchFn = jest
+      .fn()
+      .mockResolvedValueOnce({ ok: false, status: 503, json: () => null })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(NOMINATIM_RESPONSE),
+      });
+    const provider = new NominatimGeocodingProvider({
+      fetchFn,
+      gate: openGate(),
+    });
+
+    expect(await provider.search('Loja')).toEqual([]);
+    expect(await provider.search('Loja')).toHaveLength(2);
+  });
+
+  it('bounds the cache (LRU eviction)', async () => {
+    const fetchFn = makeFetchMock(NOMINATIM_RESPONSE);
+    const provider = new NominatimGeocodingProvider({
+      fetchFn,
+      gate: openGate(),
+      maxCacheEntries: 1,
+    });
+
+    await provider.search('one');
+    await provider.search('two'); // evicts "one"
+    await provider.search('one');
+
+    expect(fetchFn).toHaveBeenCalledTimes(3);
   });
 });
