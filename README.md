@@ -1,6 +1,6 @@
 # SOS Galápagos — Gestión de Emergencias · Sociedad Civil Galápagos
 
-**Plataforma para coordinar la ayuda durante las inundaciones por El Niño en Galápagos (2026).** Reúne en un solo lugar las necesidades de la población, los albergues y centros de acopio, el voluntariado y la logística. Trabaja junto a organizaciones de la sociedad civil y en coordinación con el COE.
+**Plataforma para coordinar la ayuda durante las inundaciones por El Niño en Galápagos (2026).** Reúne en un solo lugar las necesidades de la población, los refugios y centros de acopio, el voluntariado y la logística. Trabaja junto a organizaciones de la sociedad civil y en coordinación con el COE.
 
 🌐 **https://sosgalapagos.org**
 
@@ -17,7 +17,7 @@
 | **Persona afectada** | Registrar tu necesidad y encontrar el enlace al formulario oficial del COE para damnificados. |
 | **Voluntario o voluntaria** | Apuntarte con tus capacidades (camioneta, sanitario o médico, logística, cocina, idiomas, administración, apoyo general, ONG u organismo estatal), tomar tareas y unirte a los grupos de coordinación por WhatsApp. |
 | **Organización o coordinación** | Validar necesidades y puntos, crear tareas, seguir expediciones entre islas y ver todo en el mapa. |
-| **Cualquier persona** | Ver qué se necesita hoy, dónde están los albergues y el centro de acopio, el estado del agua y del clima, y a qué organizaciones con trazabilidad donar dinero. |
+| **Cualquier persona** | Ver qué se necesita hoy, dónde están los refugios y el centro de acopio, el estado del agua y del clima, y a qué organizaciones con trazabilidad donar dinero. |
 
 **Reglas de la respuesta**, que la plataforma comunica en todas sus páginas:
 - No enviar donaciones físicas desde el continente: ponen en riesgo la bioseguridad y saturan la logística.
@@ -33,7 +33,7 @@ El núcleo, que es la arquitectura, el dominio y la API, es el de ResponseGrid. 
 
 | Cambio | Dónde |
 |---|---|
-| **Portada** «Gestión de Emergencias — Sociedad Civil Galápagos». Lee en vivo las necesidades validadas y muestra albergues, agua, clima, organizaciones y grupos de WhatsApp. | `apps/web/src/app/page.tsx`, contenido en `apps/web/src/lib/portada-galapagos.ts` |
+| **Portada** «Gestión de Emergencias — Sociedad Civil Galápagos». Lee en vivo las necesidades validadas y muestra refugios, agua, clima, organizaciones y grupos de WhatsApp. | `apps/web/src/app/page.tsx`, contenido en `apps/web/src/lib/portada-galapagos.ts` |
 | **Mapa con capas cartográficas** de Galápagos: susceptibilidad a inundación, zonas inundables oficiales, quebradas y cuencas que drenan a los poblados, Parque Nacional y zona agrícola, barrios, vías, relieve y puntos clave. Se definen con un manifiesto por emergencia. | `apps/web/public/capas/galapagos-2026/`, `apps/web/src/lib/map-layers/`, [`docs/capas-emergencia.md`](docs/capas-emergencia.md) |
 | **Proceso reproducible de geodatos** (OSM, IGM, CGREG, SNGR, INEC y Copernicus) con documentación de metodología, fuentes y licencias | [`geodatos/`](geodatos/) |
 | **Co-branding** USFQ Galápagos × ResponseGrid: sistema WE WANT MORE, con rojo, negro y blanco y Zalando Sans Expanded | `apps/web/src/app/globals.css`, `apps/web/src/lib/marca.ts`, `apps/web/public/marca/` |

@@ -40,7 +40,7 @@ const P = {
   gsc: { address: 'Galapagos Science Center, Vía Universidad, Puerto Baquerizo Moreno, San Cristóbal', latitude: -0.8955, longitude: -89.6087 },
   bellavista: { address: 'Bellavista, Santa Cruz, Galápagos', latitude: -0.6945, longitude: -90.3249 },
   villamil: { address: 'Puerto Villamil, Isabela, Galápagos', latitude: -0.9561, longitude: -90.9656 },
-  // Albergues y acopio del comunicado del COE Provincial y del GAD (1-nov-2026).
+  // Refugios y acopio del comunicado del COE Provincial y del GAD (1-nov-2026).
   // Coordenadas de OpenStreetMap (extracto Geofabrik del 31-oct-2026).
   cazares: { address: 'Colegio Nacional Miguel Ángel Cazares, Puerto Ayora, Santa Cruz', latitude: -0.73861, longitude: -90.31807 }, // OSM way 126176328
   colegioNacional: { address: 'Colegio Nacional Galápagos, barrio Miraflores, Puerto Ayora, Santa Cruz', latitude: -0.73844, longitude: -90.31658 }, // OSM
@@ -51,7 +51,7 @@ const P = {
 
 const ANNOUNCEMENT = [
   'Emergencia en Santa Cruz por las lluvias del 30-31 de octubre. Lo más afectado: La Cascada (Puerto Ayora).',
-  'Albergues: Colegio Nacional Galápagos, Colegio Miguel Ángel Cazares (también acopio) e Iglesia de los Santos de los Últimos Días en Puerto Ayora; techado de Las Palmas en Bellavista; coliseo Segundo Chapi en Santa Rosa.',
+  'Refugios: Colegio Nacional Galápagos, Colegio Miguel Ángel Cazares (también acopio) e Iglesia de los Santos de los Últimos Días en Puerto Ayora; techado de Las Palmas en Bellavista; coliseo Segundo Chapi en Santa Rosa.',
   'Agua: Bellavista y El Mirador sin servicio; Puerto Ayora, parcial.',
   'No envíes donaciones físicas desde el continente: dona a organizaciones con trazabilidad. Emergencias: ECU 911.',
 ].join('\n\n');
@@ -127,38 +127,38 @@ async function main() {
       location: P.flamingo, city: 'Puerto Ayora', capacity: 15, occupancy: 15, isFinalRecipient: true,
     },
     {
-      key: 'oficina', type: 'venue', name: 'Oficina USFQ Santa Cruz — albergue temporal',
-      description: 'Aula habilitable como albergue temporal: baño, ducha y sofá cama.',
+      key: 'oficina', type: 'venue', name: 'Oficina USFQ Santa Cruz — refugio temporal',
+      description: 'Aula habilitable como refugio temporal: baño, ducha y sofá cama.',
       location: P.oficinaUsfqSC, city: 'Puerto Ayora', capacity: 4,
     },
     {
       key: 'cazares', type: 'collection_point', name: 'Centro de acopio oficial — Colegio Miguel Ángel Cazares',
-      description: 'Centro de acopio oficial y albergue. Aquí se arman los kits. Fuente: comunicado del COE Provincial y del GAD Santa Cruz (1-nov-2026). Ubicación: OpenStreetMap.',
+      description: 'Centro de acopio oficial y refugio. Aquí se arman los kits. Fuente: comunicado del COE Provincial y del GAD Santa Cruz (1-nov-2026). Ubicación: OpenStreetMap.',
       location: P.cazares, city: 'Puerto Ayora', accepts: ['hygiene', 'water', 'food_non_perishable'],
     },
     {
-      key: 'albColegioNacional', type: 'venue', name: 'Albergue — Colegio Nacional Galápagos (Miraflores)',
-      description: 'Albergue habilitado. Fuente: comunicado del COE Provincial y del GAD Santa Cruz (1-nov-2026). Ubicación: OpenStreetMap.',
+      key: 'albColegioNacional', type: 'venue', name: 'Refugio — Colegio Nacional Galápagos (Miraflores)',
+      description: 'Refugio habilitado. Fuente: comunicado del COE Provincial y del GAD Santa Cruz (1-nov-2026). Ubicación: OpenStreetMap.',
       location: P.colegioNacional, city: 'Puerto Ayora', isFinalRecipient: true,
     },
     {
-      key: 'albCazares', type: 'venue', name: 'Albergue — Colegio Miguel Ángel Cazares',
-      description: 'Albergue habilitado; es también el centro de acopio oficial. Fuente: comunicado del COE Provincial y del GAD Santa Cruz (1-nov-2026). Ubicación: OpenStreetMap.',
+      key: 'albCazares', type: 'venue', name: 'Refugio — Colegio Miguel Ángel Cazares',
+      description: 'Refugio habilitado; es también el centro de acopio oficial. Fuente: comunicado del COE Provincial y del GAD Santa Cruz (1-nov-2026). Ubicación: OpenStreetMap.',
       location: P.cazares, city: 'Puerto Ayora', isFinalRecipient: true,
     },
     {
-      key: 'albIglesia', type: 'venue', name: 'Albergue — Iglesia de Jesucristo de los Santos de los Últimos Días',
-      description: 'Albergue habilitado. Fuente: comunicado del COE Provincial y del GAD Santa Cruz (1-nov-2026). Ubicación: OpenStreetMap.',
+      key: 'albIglesia', type: 'venue', name: 'Refugio — Iglesia de Jesucristo de los Santos de los Últimos Días',
+      description: 'Refugio habilitado. Fuente: comunicado del COE Provincial y del GAD Santa Cruz (1-nov-2026). Ubicación: OpenStreetMap.',
       location: P.iglesiaSUD, city: 'Puerto Ayora', isFinalRecipient: true,
     },
     {
-      key: 'albLasPalmas', type: 'venue', name: 'Albergue — Techado del barrio Las Palmas (Bellavista)',
-      description: 'Albergue habilitado. Fuente: comunicado del COE Provincial y del GAD Santa Cruz (1-nov-2026). Ubicación aproximada (centro del barrio Las Palmas): falta ubicar el techado exacto.',
+      key: 'albLasPalmas', type: 'venue', name: 'Refugio — Techado del barrio Las Palmas (Bellavista)',
+      description: 'Refugio habilitado. Fuente: comunicado del COE Provincial y del GAD Santa Cruz (1-nov-2026). Ubicación aproximada (centro del barrio Las Palmas): falta ubicar el techado exacto.',
       location: P.lasPalmas, city: 'Bellavista', isFinalRecipient: true,
     },
     {
-      key: 'albSantaRosa', type: 'venue', name: 'Albergue — Coliseo Segundo Chapi (Santa Rosa)',
-      description: 'Albergue habilitado. Fuente: comunicado del COE Provincial y del GAD Santa Cruz (1-nov-2026). Ubicación: OpenStreetMap, donde figura como «Coliseo Cerrado de Deportes Sta. Rosa»; por confirmar que sea el mismo.',
+      key: 'albSantaRosa', type: 'venue', name: 'Refugio — Coliseo Segundo Chapi (Santa Rosa)',
+      description: 'Refugio habilitado. Fuente: comunicado del COE Provincial y del GAD Santa Cruz (1-nov-2026). Ubicación: OpenStreetMap, donde figura como «Coliseo Cerrado de Deportes Sta. Rosa»; por confirmar que sea el mismo.',
       location: P.coliseoSantaRosa, city: 'Santa Rosa', isFinalRecipient: true,
     },
   ];
@@ -221,7 +221,7 @@ async function main() {
     },
     {
       title: 'Artículos de higiene: toallas higiénicas, jabón, pasta y cepillos de dientes', priority: 'high', location: P.cazares,
-      description: 'Pedido del 1-nov para los albergues. Entregar en el centro de acopio del Colegio Miguel Ángel Cazares. Cantidades por confirmar: comprar en Santa Cruz.',
+      description: 'Pedido del 1-nov para los refugios. Entregar en el centro de acopio del Colegio Miguel Ángel Cazares. Cantidades por confirmar: comprar en Santa Cruz.',
       items: [
         { name: 'Toallas higiénicas', quantity: 1, unit: 'lote', category: 'hygiene_personal' },
         { name: 'Jabón', quantity: 1, unit: 'lote', category: 'hygiene_personal' },
@@ -260,7 +260,7 @@ async function main() {
     { title: 'Completar censo de la comunidad (personas por confirmar)', description: 'Llamar a estudiantes y colaboradores que siguen “por confirmar” y actualizar su estado. No publicar datos personales.', location: P.puertoAyora, requiredSkill: 'admin' },
     { title: 'Diagnóstico de necesidades en Bellavista / parte alta', description: 'Recorrer y reportar (parte de campo) necesidades y accesos en la parte alta. Revisar vías y quebradas en el mapa antes de salir.', location: P.bellavista, requiredSkill: 'general' },
     { title: 'Armar kits para familias acogientes (con Funcavid)', description: 'Funcavid arma entre 24 y 30 kits para familias acogientes. Sumarse al armado y a la entrega.', location: P.cazares, requiredSkill: 'logistics' },
-    { title: 'Voluntariado en el Colegio Miguel Ángel Cazares (con Fundación ECOS)', description: 'Apoyo en el centro de acopio y albergue: recepción, clasificación y armado de kits. Coordina Fundación ECOS.', location: P.cazares, requiredSkill: 'general' },
+    { title: 'Voluntariado en el Colegio Miguel Ángel Cazares (con Fundación ECOS)', description: 'Apoyo en el centro de acopio y refugio: recepción, clasificación y armado de kits. Coordina Fundación ECOS.', location: P.cazares, requiredSkill: 'general' },
     { title: 'Isabela: punto focal y diagnóstico inicial', description: 'Identificar un punto focal en Puerto Villamil y reportar si hay afectaciones o necesidades.', location: P.villamil, requiredSkill: 'general' },
   ];
   const existingTasks = (await call('GET', `/emergencies/${E}/tasks`)).data;

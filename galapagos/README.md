@@ -15,7 +15,7 @@ Lo propio de la emergencia de Galápagos que no es código de la plataforma: dat
 |---|---|
 | Emergencia | `galapagos-2026` (sin comunicado: el texto queda en `ANNOUNCEMENT` por si se quiere publicar) |
 | Organizaciones | USFQ Galápagos y las aliadas: Funcavid, Fundación Charles Darwin, Jocotoco, Galápagos Life Fund, Galapagos Conservancy, Fundación ECOS y CAPTURGAL. Solo instituciones, sin contactos personales. |
-| Puntos | Centro de acopio oficial (Colegio Miguel Ángel Cazares), 5 albergues del COE, acopio GSC en San Cristóbal, recepción de carga Viamar, Hotel Flamingo y oficina USFQ Santa Cruz |
+| Puntos | Centro de acopio oficial (Colegio Miguel Ángel Cazares), 5 refugios del COE, acopio GSC en San Cristóbal, recepción de carga Viamar, Hotel Flamingo y oficina USFQ Santa Cruz |
 | Necesidades | Las validadas del 31-oct y 1-nov: repelente y mosquiteros, agua, higiene, fundas para kits, ponchos, etc. |
 | Tareas | Tareas de voluntariado, incluidas las de Funcavid y ECOS |
 | Expediciones | GSC → Viamar |

@@ -267,7 +267,7 @@ for f in load("final/salud_msp.geojson"):
     add_pt(shape(f["geometry"]), "salud" if publico or mayor else "salud_privada", nombre_salud(p, publico), (p.get("tipologia") or "").capitalize(), "MSP 2023",
                                 institucion=p.get("institucion"), nivel=p.get("nivel"))
 for f in load("final/albergues_sngr.geojson"):
-    p = f["properties"]; add_pt(shape(f["geometry"]), "albergue", p.get("nombre"), p.get("tipo"), "SNGR 2025",
+    p = f["properties"]; add_pt(shape(f["geometry"]), "refugio", p.get("nombre"), p.get("tipo"), "SNGR 2025",
                                 capacidad_personas=p.get("capacidad_personas"), capacidad_familias=p.get("capacidad_familias"))
 for f in load("final/tsunami_zonas_seguras.geojson"):
     p = f["properties"]; add_pt(shape(f["geometry"]), "zona_segura", (p.get("nombre") or "").title(), (p.get("tipo") or "").capitalize(), "SNGR",
@@ -276,12 +276,12 @@ for f in load("final/tsunami_sirenas.geojson"):
     p = f["properties"]; add_pt(shape(f["geometry"]), "sirena", p.get("codigo"), p.get("referencia"), "SNGR SAT")
 for f in load("final/educacion_mineduc.geojson"):
     p = f["properties"]; add_pt(shape(f["geometry"]), "educacion", (p.get("nom_instit") or p.get("nombre") or "").title(), (p.get("nom_sosten") or "").capitalize(), "MINEDUC 2021")
-MAP = {"salud": "salud", "emergencia": "emergencia", "refugio": "albergue", "educacion": "educacion", "gobierno": "gobierno", "agua": "agua",
+MAP = {"salud": "salud", "emergencia": "emergencia", "refugio": "refugio", "educacion": "educacion", "gobierno": "gobierno", "agua": "agua",
        "energia": "energia", "transporte": "transporte", "telecom": "telecom", "abastecimiento": "abastecimiento", "alojamiento": "alojamiento",
        "encuentro": "encuentro", "otros": "otros"}
 for f in load("final/puntos_clave.geojson"):
     p = f["properties"]
-    if p["categoria"] == "refugio" and p.get("subtipo") in ("shelter",): continue   # paradas/techos en OSM, no albergues
+    if p["categoria"] == "refugio" and p.get("subtipo") in ("shelter",): continue   # paradas/techos en OSM, no refugios
     cat = MAP[p["categoria"]]
     if cat == "salud" and p.get("subtipo") not in ("hospital", "clinic"): cat = "salud_privada"
     add_pt(shape(f["geometry"]), cat, p.get("nombre"), p.get("subtipo"), p["fuente"])
