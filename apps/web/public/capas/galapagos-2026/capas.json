@@ -731,7 +731,7 @@
      "titulo": "Nombres de calles",
      "archivo": "nombres_vias.geojson",
      "tipo": "punto",
-     "visible": true,
+     "visible": false,
      "visible_movil": false,
      "zoom_min": 16,
      "solo_rotulo": true,
@@ -740,7 +740,7 @@
       "permanente": true
      },
      "fuente": "OpenStreetMap, 31-oct-2026",
-     "descripcion": "Se ven al acercar el mapa."
+     "descripcion": "Rótulos propios de calles; útiles sobre el mapa satelital o topográfico."
     },
     {
      "id": "rutas",
@@ -1046,20 +1046,12 @@
  ],
  "mapas_base": [
   {
-   "id": "claro",
-   "titulo": "Claro",
-   "url": "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
-   "atribucion": "Esri, HERE, Garmin, © OpenStreetMap",
-   "maxZoom": 19,
-   "maxNativeZoom": 16,
-   "defecto": true
-  },
-  {
    "id": "calles",
    "titulo": "Calles",
    "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
    "atribucion": "© OpenStreetMap",
-   "maxZoom": 19
+   "maxZoom": 19,
+   "defecto": true
   },
   {
    "id": "satelite",
