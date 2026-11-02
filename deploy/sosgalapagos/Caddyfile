@@ -41,10 +41,11 @@ www.{$SITE_DOMAIN} {
 	redir /mapas /mapas/ permanent
 	handle_path /mapas/* {
 		root * /srv/mapas
-		header Cache-Control "public, max-age=600, stale-while-revalidate=86400"
 		# La página y sus índices se revalidan siempre (ETag): un cambio se ve al instante.
 		@indices path / /index.html *.json
 		header @indices Cache-Control "no-cache"
+		@archivos not path / /index.html *.json
+		header @archivos Cache-Control "public, max-age=600, stale-while-revalidate=86400"
 		@geojson path *.geojson
 		header @geojson Content-Type "application/geo+json; charset=utf-8"
 		@zip path *.zip
