@@ -5,6 +5,7 @@ import type { components } from '@reliefhub/api-client';
 import { requireSession, authHeaders, redirectToLogin } from '@/lib/auth';
 import { parseSupplyLines } from '@/lib/supply-lines';
 import { localizeBackendError } from '@/lib/backend-error-messages';
+import { parseLocationFields } from '@/lib/geo/location-form-fields';
 import { getT } from '@/i18n/server';
 import { getCategories } from '@/adapters/get-categories';
 
@@ -47,9 +48,6 @@ export async function submitPeticion(
   const rawTitle = formData.get('title');
   const rawDescription = formData.get('description');
   const rawPriority = formData.get('priority');
-  const rawAddress = formData.get('address');
-  const rawLatitude = formData.get('latitude');
-  const rawLongitude = formData.get('longitude');
   const rawOrgId = formData.get('organizationId');
   const rawItems = formData.get('items');
 
@@ -62,19 +60,19 @@ export async function submitPeticion(
     return { status: 'error', message: t.peticion.err_invalid_priority };
   }
 
-  const latStr = typeof rawLatitude === 'string' ? rawLatitude.trim() : '';
-  const lonStr = typeof rawLongitude === 'string' ? rawLongitude.trim() : '';
-
-  if (latStr === '' || lonStr === '') {
-    return { status: 'error', message: t.peticion.err_location_required };
+  const parsedLocation = parseLocationFields(formData, {
+    defaultAddress: t.common.default_address,
+  });
+  if (!parsedLocation.ok) {
+    return {
+      status: 'error',
+      message:
+        parsedLocation.error === 'required'
+          ? t.peticion.err_location_required
+          : t.locationPicker.err_invalid_point,
+    };
   }
-
-  const address =
-    typeof rawAddress === 'string' && rawAddress.trim() !== ''
-      ? rawAddress.trim()
-      : t.common.default_address;
-  const latitude = Number(latStr);
-  const longitude = Number(lonStr);
+  const { location } = parsedLocation;
 
   if (typeof rawItems !== 'string' || rawItems.trim() === '') {
     return { status: 'error', message: t.peticion.err_items_required };
@@ -116,7 +114,7 @@ export async function submitPeticion(
         title,
         ...(description !== undefined ? { description } : {}),
         priority: rawPriority,
-        location: { address, latitude, longitude },
+        location,
         ...(requesterOrganizationId !== undefined ? { requesterOrganizationId } : {}),
         ...(resourceId !== undefined ? { resourceId } : {}),
         items,

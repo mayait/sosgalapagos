@@ -12,6 +12,7 @@ import { FormField } from '@/components/molecules/form-field';
 import { FormSuccessScreen } from '@/components/molecules/form-success-screen';
 import { DraftRestoredBanner } from '@/components/atoms/draft-restored-banner';
 import { useFormDraft } from '@/lib/use-form-draft';
+import { clearLocationDraft } from '@/components/organisms/location-picker';
 import type { Messages } from '@/i18n/messages/es';
 
 const INITIAL_STATE: PeticionState = { status: 'idle' };
@@ -62,8 +63,11 @@ export function PeticionForm({
   );
 
   useEffect(() => {
-    if (state.status === 'success') clearDraft();
-  }, [state.status, clearDraft]);
+    if (state.status === 'success') {
+      clearDraft();
+      clearLocationDraft(`peticion-${slug}`);
+    }
+  }, [state.status, clearDraft, slug]);
 
   const priorities = [
     { value: 'low', label: t.priority_low },

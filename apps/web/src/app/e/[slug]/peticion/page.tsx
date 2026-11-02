@@ -4,6 +4,7 @@ import { getEmergencyBySlug } from '@/lib/emergencies';
 import { requireSession } from '@/lib/auth';
 import { OrgSelector } from '@/components/molecules/org-selector';
 import { LocationPicker } from '@/components/organisms/location-picker';
+import { getEmergencyMapView } from '@/lib/emergency-map-view';
 import { submitPeticion } from './actions';
 import { PeticionForm } from './peticion-form';
 import { ItemsField } from './items-field';
@@ -58,7 +59,10 @@ export default async function PeticionPage({ params, searchParams }: Props) {
     notFound();
   }
 
-  const categories = await getCategories(locale);
+  const [categories, mapView] = await Promise.all([
+    getCategories(locale),
+    getEmergencyMapView(emergency.id),
+  ]);
   const boundAction = submitPeticion.bind(null, slug, emergency.id);
 
   return (
@@ -75,7 +79,14 @@ export default async function PeticionPage({ params, searchParams }: Props) {
               action={boundAction}
               slug={slug}
               {...(resourceId !== undefined ? { resourceId } : {})}
-              locationPicker={<LocationPicker variant="peticion" />}
+              locationPicker={
+                <LocationPicker
+                  variant="peticion"
+                  initialView={mapView.initialView}
+                  searchViewbox={mapView.searchViewbox}
+                  draftKey={`peticion-${slug}`}
+                />
+              }
               orgSelector={<OrgSelector />}
               itemsField={<ItemsField t={t.peticion} categories={categories} />}
               t={t.peticion}
