@@ -33,7 +33,7 @@ www.{$SITE_DOMAIN} {
 	# Capas del mapa y logos: cacheables en el navegador y en Cloudflare.
 	# «>» reemplaza el Cache-Control que manda Next (max-age=0) en vez de
 	# duplicarlo. /_next/static ya llega como immutable desde Next.
-	@estaticos path /capas/* /marca/*
+	@estaticos path /capas/* /marca/* /videos/*
 	header @estaticos >Cache-Control "public, max-age=3600, stale-while-revalidate=86400"
 
 	handle {

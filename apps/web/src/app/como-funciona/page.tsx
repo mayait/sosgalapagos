@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { ContentPage, ContentSection } from '@/components/organisms/content-page';
+import { VIDEO_PRINCIPAL, VIDEOS_TEMAS } from '@/lib/videos-como-funciona';
 import { StepsIllustration } from '@/components/atoms/illustrations';
 import { getT } from '@/i18n/server';
 
@@ -61,6 +62,44 @@ export default async function HowItWorksPage() {
           </li>
         ))}
       </ol>
+
+      <ContentSection heading="Videos explicativos">
+        <p>Mira en menos de un minuto cómo usar cada parte de la plataforma.</p>
+        <div className="mt-4 grid gap-4 sm:grid-cols-[minmax(0,240px)_1fr] sm:items-start">
+          <figure className="mx-auto flex w-full max-w-[280px] flex-col gap-2 sm:max-w-none">
+            <video
+              src={VIDEO_PRINCIPAL.src}
+              poster={VIDEO_PRINCIPAL.poster}
+              controls
+              playsInline
+              preload="none"
+              className="aspect-[9/16] w-full rounded-card border border-line bg-black object-cover"
+            />
+            <figcaption className="text-[14px] font-bold text-navy">
+              {VIDEO_PRINCIPAL.titulo} <span className="font-normal text-muted">· {VIDEO_PRINCIPAL.duracion}</span>
+            </figcaption>
+          </figure>
+          <ul className="grid grid-cols-2 gap-3">
+            {VIDEOS_TEMAS.map((v) => (
+              <li key={v.src}>
+                <figure className="flex flex-col gap-1.5">
+                  <video
+                    src={v.src}
+                    poster={v.poster}
+                    controls
+                    playsInline
+                    preload="none"
+                    className="aspect-[9/16] w-full rounded-card border border-line bg-black object-cover"
+                  />
+                  <figcaption className="text-[13px] font-bold text-navy">
+                    {v.titulo} <span className="font-normal text-muted">· {v.duracion}</span>
+                  </figcaption>
+                </figure>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </ContentSection>
 
       <ContentSection heading={h.trust_heading}>
         <p>{h.trust_intro}</p>
