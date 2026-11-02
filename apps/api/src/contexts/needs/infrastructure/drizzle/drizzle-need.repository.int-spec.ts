@@ -236,6 +236,23 @@ describe('DrizzleNeedRepository (integration)', () => {
     expect(found!.managingOrganizationId).toBe(orgId);
   });
 
+  it('save() persiste título, descripción y prioridad editados en moderación', async () => {
+    const need = makeNeed({ title: 'Se necesitan manos' });
+    await repo.save(need);
+
+    need.edit({
+      title: 'Se necesitan voluntarios',
+      description: 'Ya no se recibe más ropa',
+      priority: Priority.Urgent,
+    });
+    await repo.save(need);
+
+    const found = await repo.findById(need.id);
+    expect(found!.title).toBe('Se necesitan voluntarios');
+    expect(found!.description).toBe('Ya no se recibe más ropa');
+    expect(found!.priority).toBe(Priority.Urgent);
+  });
+
   it('save() re-syncs items correctly (items do not duplicate)', async () => {
     const need = makeNeed();
     await repo.save(need);
