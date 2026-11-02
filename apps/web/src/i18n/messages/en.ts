@@ -2808,6 +2808,7 @@ export const en = {
     search_button: 'Search',
     searching: 'Searching…',
     search_results_label: 'Search results',
+    search_results_one: '1 result. Pick it to mark it.',
     search_results_count: '{count} results. Pick one.',
     search_no_results: 'We could not find that place. Try another name or mark the point on the map.',
     search_error: 'Search is not available right now. Mark the point on the map or paste coordinates.',

@@ -60,7 +60,8 @@ function Controller({
   // el teclado sobre el mapa (no por un cambio de tamaño ni por `recenter`).
   const userRef = useRef(false);
   const programmaticRef = useRef(false);
-  const lastSeqRef = useRef<number | null>(recenter?.seq ?? null);
+  // El estado del selector empieza con seq 0: solo un aumento posterior recentra.
+  const lastSeqRef = useRef<number>(recenter?.seq ?? 0);
   // Los callbacks cambian en cada render del padre: se leen desde una ref para
   // no volver a registrar los eventos de Leaflet.
   const handlersRef = useRef({ onMoveEnd, onEnter, onEscape });

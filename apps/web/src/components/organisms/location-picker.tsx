@@ -221,6 +221,7 @@ export function LocationPicker({
   // ── Foco ──────────────────────────────────────────────────────────────────
   const cardHeadingRef = useRef<HTMLHeadingElement>(null);
   const focusCard = () => {
+    setGps((g) => (g.status === 'error' ? { status: 'idle' } : g));
     // Tras el render que muestra la tarjeta.
     requestAnimationFrame(() => cardHeadingRef.current?.focus());
   };
@@ -300,9 +301,11 @@ export function LocationPicker({
         status: 'done',
         results,
         message:
-          results.length > 0
-            ? t.search_results_count.replace('{count}', String(results.length))
-            : t.search_no_results,
+          results.length === 1
+            ? t.search_results_one
+            : results.length > 1
+              ? t.search_results_count.replace('{count}', String(results.length))
+              : t.search_no_results,
       });
     } catch {
       if (!ctrl.signal.aborted) setSearch({ status: 'error', results: [], message: t.search_error });
@@ -474,6 +477,103 @@ export function LocationPicker({
     mapHint: `${uid}-map-hint`,
   };
 
+  // ── Tarjeta de confirmación (en escritorio va debajo del mapa: así no lo desplaza) ──
+  const card =
+    point !== null ? (
+          <section
+            aria-labelledby={ids.card}
+            className="flex flex-col gap-3 rounded-lg border-2 border-success bg-success-soft/40 p-4"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h3
+                  id={ids.card}
+                  ref={cardHeadingRef}
+                  tabIndex={-1}
+                  className="text-base font-bold text-ink focus:outline-none"
+                >
+                  <span aria-hidden="true">✓ </span>
+                  {t.marked_title} · <span className="font-semibold">{zoneText}</span>
+                </h3>
+                <p className="mt-0.5 text-xs text-muted">
+                  {t.coordinates
+                    .replace('{lat}', point.latitude.toFixed(5))
+                    .replace('{lng}', point.longitude.toFixed(5))}
+                </p>
+                {method === 'gps' && accuracyM !== null && (
+                  <p className="mt-1 text-sm text-ink-soft">
+                    {t.gps_accuracy.replace('{meters}', String(accuracyM))}
+                  </p>
+                )}
+                {method === 'gps' && accuracyM !== null && accuracyM > LOW_ACCURACY_M && (
+                  <p className="mt-1 text-sm font-semibold text-warning">{t.gps_low_accuracy}</p>
+                )}
+              </div>
+              {!mapFailed && (
+                <button
+                  type="button"
+                  onClick={onChange}
+                  className="min-h-12 shrink-0 rounded-lg px-3 text-sm font-bold text-navy underline underline-offset-4 hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-navy"
+                >
+                  {t.change}
+                </button>
+              )}
+            </div>
+
+            {/* Vista previa estática (celular): no atrapa el scroll. */}
+            {!isDesktop && !mapFailed && (
+              <div className="relative h-40 overflow-hidden rounded-lg border border-line">
+                <MapErrorBoundary onError={handleMapError}>
+                  <LocationPickerMap
+                    key={`${point.latitude},${point.longitude}`}
+                    center={point}
+                    zoom={MARKED_ZOOM}
+                    interactive={false}
+                    onReady={handleMapReady}
+                    ariaLabel={t.preview_label}
+                  />
+                </MapErrorBoundary>
+                <button
+                  type="button"
+                  onClick={(e) => openDialog(e.currentTarget)}
+                  aria-label={t.preview_label}
+                  className="absolute inset-0 z-[700] h-full w-full bg-transparent focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-navy"
+                />
+              </div>
+            )}
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor={ids.reference} className="text-sm font-semibold text-ink">
+                {t.reference_label}
+              </label>
+              <input
+                id={ids.reference}
+                name="reference"
+                type="text"
+                maxLength={REFERENCE_MAX_LENGTH}
+                value={reference}
+                onChange={(e) => dispatch({ type: 'set-reference', value: e.target.value })}
+                placeholder={t.reference_placeholder}
+                aria-describedby={ids.referenceHelp}
+                autoComplete="off"
+                className={TEXT_INPUT}
+              />
+              <p id={ids.referenceHelp} className="text-xs text-muted">
+                {t.reference_help}
+              </p>
+              {state.suggestion !== null && reference === '' && (
+                <button
+                  type="button"
+                  onClick={() => dispatch({ type: 'use-suggestion' })}
+                  className="min-h-12 self-start rounded-full border border-line bg-white px-4 text-sm font-medium text-ink hover:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-navy"
+                >
+                  {t.use_suggestion.replace('{name}', state.suggestion)}
+                </button>
+              )}
+            </div>
+          </section>
+    ) : null;
+
   return (
     <div className="flex flex-col gap-4">
       <p id={ids.privacy} className="rounded-lg bg-surface-alt px-3 py-2 text-sm text-ink-soft">
@@ -485,101 +585,7 @@ export function LocationPicker({
         {announcement}
       </p>
 
-      {/* ── Tarjeta de confirmación ── */}
-      {point !== null && (
-        <section
-          aria-labelledby={ids.card}
-          className="flex flex-col gap-3 rounded-lg border-2 border-success bg-success-soft/40 p-4"
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h3
-                id={ids.card}
-                ref={cardHeadingRef}
-                tabIndex={-1}
-                className="text-base font-bold text-ink focus:outline-none"
-              >
-                <span aria-hidden="true">✓ </span>
-                {t.marked_title} · <span className="font-semibold">{zoneText}</span>
-              </h3>
-              <p className="mt-0.5 text-xs text-muted">
-                {t.coordinates
-                  .replace('{lat}', point.latitude.toFixed(5))
-                  .replace('{lng}', point.longitude.toFixed(5))}
-              </p>
-              {method === 'gps' && accuracyM !== null && (
-                <p className="mt-1 text-sm text-ink-soft">
-                  {t.gps_accuracy.replace('{meters}', String(accuracyM))}
-                </p>
-              )}
-              {method === 'gps' && accuracyM !== null && accuracyM > LOW_ACCURACY_M && (
-                <p className="mt-1 text-sm font-semibold text-warning">{t.gps_low_accuracy}</p>
-              )}
-            </div>
-            {!mapFailed && (
-              <button
-                type="button"
-                onClick={onChange}
-                className="min-h-12 shrink-0 rounded-lg px-3 text-sm font-bold text-navy underline underline-offset-4 hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-navy"
-              >
-                {t.change}
-              </button>
-            )}
-          </div>
-
-          {/* Vista previa estática (celular): no atrapa el scroll. */}
-          {!isDesktop && !mapFailed && (
-            <div className="relative h-40 overflow-hidden rounded-lg border border-line">
-              <MapErrorBoundary onError={handleMapError}>
-                <LocationPickerMap
-                  key={`${point.latitude},${point.longitude}`}
-                  center={point}
-                  zoom={MARKED_ZOOM}
-                  interactive={false}
-                  onReady={handleMapReady}
-                  ariaLabel={t.preview_label}
-                />
-              </MapErrorBoundary>
-              <button
-                type="button"
-                onClick={(e) => openDialog(e.currentTarget)}
-                aria-label={t.preview_label}
-                className="absolute inset-0 z-[700] h-full w-full bg-transparent focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-navy"
-              />
-            </div>
-          )}
-
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor={ids.reference} className="text-sm font-semibold text-ink">
-              {t.reference_label}
-            </label>
-            <input
-              id={ids.reference}
-              name="reference"
-              type="text"
-              maxLength={REFERENCE_MAX_LENGTH}
-              value={reference}
-              onChange={(e) => dispatch({ type: 'set-reference', value: e.target.value })}
-              placeholder={t.reference_placeholder}
-              aria-describedby={ids.referenceHelp}
-              autoComplete="off"
-              className={TEXT_INPUT}
-            />
-            <p id={ids.referenceHelp} className="text-xs text-muted">
-              {t.reference_help}
-            </p>
-            {state.suggestion !== null && reference === '' && (
-              <button
-                type="button"
-                onClick={() => dispatch({ type: 'use-suggestion' })}
-                className="min-h-12 self-start rounded-full border border-line bg-white px-4 text-sm font-medium text-ink hover:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-navy"
-              >
-                {t.use_suggestion.replace('{name}', state.suggestion)}
-              </button>
-            )}
-          </div>
-        </section>
-      )}
+      {!isDesktop && card}
 
       {/* ── 1 y 2: GPS y marcar en el mapa ── */}
       <div className="grid gap-3 sm:grid-cols-2">
@@ -626,6 +632,8 @@ export function LocationPicker({
           </p>
         </div>
       )}
+
+      {isDesktop && card}
 
       {mapFailed && (
         <p role="alert" className="rounded-lg border border-warning bg-warning-soft px-3 py-2 text-sm text-warning">

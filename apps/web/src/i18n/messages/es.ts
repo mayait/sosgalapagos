@@ -2854,6 +2854,7 @@ export const es = {
     search_button: 'Buscar',
     searching: 'Buscando…',
     search_results_label: 'Resultados de la búsqueda',
+    search_results_one: '1 resultado. Elígelo para marcarlo.',
     search_results_count: '{count} resultados. Elige uno.',
     search_no_results: 'No encontramos ese lugar. Prueba con otro nombre o marca el punto en el mapa.',
     search_error: 'La búsqueda no está disponible ahora. Marca el punto en el mapa o pega unas coordenadas.',
