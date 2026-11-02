@@ -8,8 +8,9 @@ import 'leaflet.markercluster';
 import { MapContainer, useMap } from 'react-leaflet';
 import { MapPinchZoom } from '@/components/organisms/map-pinch-zoom';
 // Centro inicial antes de encuadrar los puntos: Puerto Ayora (Santa Cruz), prioridad de la respuesta.
-const GALAPAGOS_DEFAULT_CENTER: [number, number] = [-0.742, -90.315];
-const GALAPAGOS_DEFAULT_ZOOM = 13;
+// Vista inicial fija: centro de Puerto Ayora (Santa Cruz) a nivel de calles.
+const GALAPAGOS_DEFAULT_CENTER: [number, number] = [-0.7435, -90.3145];
+const GALAPAGOS_DEFAULT_ZOOM = 16;
 import { EmergencyLayers } from './emergency-layers';
 import { useEffect, useRef, useState } from 'react';
 import { useLocale } from '@/i18n/locale-context';
@@ -325,46 +326,6 @@ function MapReadyEmitter({
   return null;
 }
 
-// ── Inner component that fits the bounds ONCE, on the first non-empty data ─────
-function BoundsFitter({ points }: { points: MapPoint[] }) {
-  const map = useMap();
-  const hasFittedRef = useRef(false);
-
-  useEffect(() => {
-    // Fit the view to the data only ONCE (the initial SSR points). The wrapper
-    // re-fetches in-bounds points on every moveend/zoomend and replaces the
-    // marker set, so `points` changes whenever the user pans or zooms. Without
-    // this guard fitBounds re-ran on each fetch, yanking the user's zoom/pan and
-    // looping fit → moveend → fetch → fit (the user could never zoom in).
-    // Markers still update live; only the view is left under the user's control
-    // after the first fit.
-    if (hasFittedRef.current) return;
-    if (points.length === 0) return;
-    hasFittedRef.current = true;
-
-    if (points.length === 1) {
-      const p = points[0];
-      if (p !== undefined) {
-        map.setView([p.lat, p.lng], 13);
-      }
-      return;
-    }
-
-    // Prioridad Santa Cruz: si hay puntos en la isla, el encuadre inicial se
-    // limita a ellos (los acopios del continente o de otras islas no alejan
-    // la vista). Si no, Galápagos; si tampoco, todos los puntos.
-    const inBox = (s: number, w: number, n: number, e: number) =>
-      points.filter((p) => p.lat >= s && p.lat <= n && p.lng >= w && p.lng <= e);
-    const santaCruz = inBox(-0.86, -90.6, -0.4, -90.15);
-    const galapagos = inBox(-1.5, -92.1, 0.7, -89.0);
-    const focus = santaCruz.length > 0 ? santaCruz : galapagos.length > 0 ? galapagos : points;
-    const bounds = L.latLngBounds(focus.map((p) => [p.lat, p.lng]));
-    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
-  }, [map, points]);
-
-  return null;
-}
-
 // ── Main component ────────────────────────────────────────────────────────────
 export default function EmergencyMap({
   points,
@@ -389,7 +350,6 @@ export default function EmergencyMap({
         <MapPinchZoom />
 
         {onMapReady && <MapReadyEmitter onMapReady={onMapReady} />}
-        <BoundsFitter points={points} />
         <ApproximateZonesLayer points={points} slug={slug} />
         <ClusteredMarkersLayer points={points} slug={slug} />
         <GeolocateControl />
