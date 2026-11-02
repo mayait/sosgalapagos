@@ -116,6 +116,7 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - /srv/sosgalapagos-mapas:/srv/mapas:ro
+      - /srv/sosgalapagos-clima:/srv/clima:ro
       - /srv/sosgalapagos-estudios:/srv/estudios:ro
       - caddydata:/data
       - caddyconfig:/config

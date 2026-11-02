@@ -74,6 +74,24 @@ www.{$SITE_DOMAIN} {
 		}
 	}
 
+	# Clima en vivo: dashboard estático + los JSON agregados que reescribe cada
+	# 5 min el recolector del host (systemd sosgalapagos-clima.timer). Solo se
+	# sirven la página y esos JSON: no hay descargas ni otros archivos, y la
+	# página no se indexa (algunas fuentes aún no son públicas).
+	redir /clima /clima/ permanent
+	handle_path /clima/* {
+		root * /srv/clima
+		header X-Robots-Tag "noindex, nofollow"
+		header Cache-Control "no-cache"
+		@permitido path / /index.html /datos/estado.json /datos/horario.json /datos/diario.json
+		handle @permitido {
+			file_server
+		}
+		handle {
+			respond 404
+		}
+	}
+
 	# Sitios privados con contraseña que no viven en este repositorio. Cada archivo
 	# /srv/sosgalapagos-privado/caddy/*.caddy del servidor define su ruta, su usuario
 	# y el hash de su contraseña, y sirve archivos de /srv/sosgalapagos-privado/sitios.
