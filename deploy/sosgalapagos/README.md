@@ -58,6 +58,7 @@ docker compose logs -f api web caddy
 ./backup.sh                      # copia de Postgres (en cron diario: ver el script)
 ```
 
+- **Vencimiento de puntos:** `vencimientos.sh` cierra cada 10 minutos los puntos cuya fecha de vencimiento ya pasó (ofertas de comida, ropa, alojamiento o transporte que llegan de WhatsApp) y activa los «en preparación» cuando llega su hora. Las fechas viven en `/etc/sosgalapagos/vencimientos.tsv` del servidor; para prorrogar un punto se edita su línea. La instalación está en la cabecera del script.
 - **Copias de seguridad:** `backup.sh` guarda 14 días en `/var/backups/sosgalapagos`. Hay que copiarlas fuera del servidor, por ejemplo a Cloudflare R2.
 - **Secretos:** solo en `.env` del servidor, con permisos 600. Nunca en git.
 - **IP real:** la web reenvía a la API la IP del usuario (`CF-Connecting-IP`) con `INTERNAL_PROXY_SECRET`. Así el rate limit es por persona y no global. Para que esa cabecera sea confiable, el firewall solo debe aceptar tráfico web desde Cloudflare.
