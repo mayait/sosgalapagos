@@ -121,65 +121,6 @@ interface EmergencyMapProps {
   slug?: string;
 }
 
-// ── Inner component that draws the shaded zone of approximate needs ──────────
-// Approximate needs (private requesters) are shown ONLY as a shaded zone, with
-// no pin in the centre: a pin would suggest an exact location. The zone is
-// clickable and opens the same popup as a marker.
-const DEFAULT_APPROX_RADIUS_METERS = 500;
-const APPROX_ZONE_OPTIONS: L.CircleOptions = {
-  color: '#e11b22', // brand accent — same family as the need marker
-  fillColor: '#e11b22',
-  fillOpacity: 0.16,
-  weight: 1.5,
-  opacity: 0.55,
-  interactive: true,
-};
-
-export function isApproximateNeed(p: MapPoint): boolean {
-  return p.kind === 'need' && p.approximate === true;
-}
-
-function ApproximateZonesLayer({ points, slug }: { points: MapPoint[]; slug?: string }) {
-  const map = useMap();
-  const locale = useLocale();
-  const groupRef = useRef<L.LayerGroup | null>(null);
-
-  useEffect(() => {
-    const tc = getMessages(locale).ui;
-    if (groupRef.current === null) {
-      groupRef.current = L.layerGroup().addTo(map);
-    }
-    const group = groupRef.current;
-    group.clearLayers();
-
-    for (const p of points) {
-      if (!isApproximateNeed(p)) continue;
-      const radius =
-        p.approxRadiusMeters !== undefined && p.approxRadiusMeters > 0
-          ? p.approxRadiusMeters
-          : DEFAULT_APPROX_RADIUS_METERS;
-      L.circle([p.lat, p.lng], { ...APPROX_ZONE_OPTIONS, radius })
-        .bindPopup(buildPopupHtml(p, tc, slug))
-        .addTo(group);
-    }
-
-    return () => {
-      group.clearLayers();
-    };
-  }, [map, points, locale, slug]);
-
-  useEffect(() => {
-    return () => {
-      if (groupRef.current !== null) {
-        map.removeLayer(groupRef.current);
-        groupRef.current = null;
-      }
-    };
-  }, [map]);
-
-  return null;
-}
-
 // ── XSS helper ───────────────────────────────────────────────────────────────
 function escapeHtml(s: string): string {
   return s
@@ -268,8 +209,8 @@ function ClusteredMarkersLayer({
     group.clearLayers();
 
     for (const point of points) {
-      // Approximate needs are drawn only as a shaded zone (no centre pin).
-      if (isApproximateNeed(point)) continue;
+      // Peticiones aproximadas: pin normal en el centro de su celda de la
+      // cuadrícula pública (~500 m), que ya no es la ubicación real.
       const icon =
         point.kind === 'resource' ? resourceIcon(point.status) : ICONS.red;
 
@@ -350,7 +291,6 @@ export default function EmergencyMap({
         <MapPinchZoom />
 
         {onMapReady && <MapReadyEmitter onMapReady={onMapReady} />}
-        <ApproximateZonesLayer points={points} slug={slug} />
         <ClusteredMarkersLayer points={points} slug={slug} />
         <GeolocateControl />
       </MapContainer>
