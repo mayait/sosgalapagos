@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { OfferStatus } from '../../domain/offer-enums';
 import { SupplyLineResponseDto } from '../../../supplies/infrastructure/http/supply-line.dto';
 import { AuthorResponseDto } from '../../../../shared/infrastructure/http/author.dto';
+import { LocationDetailsResponseDto } from '../../../../shared/infrastructure/http/location-capture.dto';
 
 export class SubmitOfferResponseDto {
   @ApiProperty({
@@ -71,4 +72,12 @@ export class OfferViewDto {
       'their behalf (#235). Coordinator/owner-only — never returned publicly.',
   })
   author!: AuthorResponseDto | null;
+  @ApiPropertyOptional({
+    type: LocationDetailsResponseDto,
+    nullable: true,
+    description:
+      'Restricted capture metadata of the location (private reference, ' +
+      'method, GPS accuracy bucket). Coordinator/owner-only.',
+  })
+  locationDetails!: LocationDetailsResponseDto | null;
 }

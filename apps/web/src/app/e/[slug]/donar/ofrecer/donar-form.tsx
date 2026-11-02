@@ -10,6 +10,7 @@ import { FormField } from '@/components/molecules/form-field';
 import { FormSuccessScreen } from '@/components/molecules/form-success-screen';
 import { DraftRestoredBanner } from '@/components/atoms/draft-restored-banner';
 import { useFormDraft } from '@/lib/use-form-draft';
+import { clearLocationDraft } from '@/components/organisms/location-picker';
 import { useLocale } from '@/i18n/locale-context';
 import { SupplyLineFields } from '@/components/molecules/supply-line-fields';
 import type { SupplyLine } from '@/domain/supplies/supply-line';
@@ -73,8 +74,11 @@ export function DonarForm({
   const { clearDraft, wasRestored } = useFormDraft(draftKey, draftValues, draftSetters);
 
   useEffect(() => {
-    if (state.status === 'success') clearDraft();
-  }, [state.status, clearDraft]);
+    if (state.status === 'success') {
+      clearDraft();
+      clearLocationDraft(`donar-${slug}`);
+    }
+  }, [state.status, clearDraft, slug]);
 
   // The single-line SupplyLine model driving <SupplyLineFields>; its parts are
   // the same controlled strings the draft mechanism persists (draft values must

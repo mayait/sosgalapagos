@@ -20,8 +20,13 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Priority, PersonnelSkill } from '../../domain/need-enums';
 import { SupplyLineDto } from '../../../supplies/infrastructure/http/supply-line.dto';
 import { AuthorDto } from '../../../../shared/infrastructure/http/author.dto';
+import { LocationCaptureInputDto } from '../../../../shared/infrastructure/http/location-capture.dto';
 
-export class NeedLocationDto {
+/**
+ * Location of a need. Optional `reference` / `method` / `accuracyM` come from
+ * {@link LocationCaptureInputDto}; `reference` is private (coordinators only).
+ */
+export class NeedLocationDto extends LocationCaptureInputDto {
   @ApiProperty({ example: '123 Main Street, Caracas, Venezuela' })
   @IsString()
   @MinLength(2)

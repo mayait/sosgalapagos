@@ -591,7 +591,7 @@ export const en = {
     name_placeholder: 'e.g. Red Cross Madrid',
     description_label: 'Description',
     description_placeholder: 'Additional information about the resource…',
-    location_label: 'Location',
+    location_label: 'Where is the point?',
 
     type_collection_point: 'Collection point',
     type_delivery_point: 'Delivery point',
@@ -635,7 +635,7 @@ export const en = {
     // server-action messages
     err_invalid_type: 'Invalid resource type.',
     err_name_too_short: 'Name must be at least 2 characters.',
-    err_location_required: 'Select a location.',
+    err_location_required: 'Mark the location: use your location, mark it on the map or search for a known place.',
     err_invalid_items:
       'Check the materials: each line needs a name, quantity and category.',
     err_register_failed: 'Couldn’t register. Please try again.',
@@ -653,7 +653,7 @@ export const en = {
     description_placeholder:
       'Detail the need so coordination can evaluate it…',
     priority_label: 'Priority',
-    location_label: 'Location',
+    location_label: 'Where is the help needed?',
 
     priority_low: 'Low',
     priority_medium: 'Medium',
@@ -685,7 +685,9 @@ export const en = {
     // server-action messages
     err_title_too_short: 'Title must be at least 2 characters.',
     err_invalid_priority: 'Invalid priority.',
-    err_location_required: 'Select a location.',
+    err_rate_limited:
+      'You have sent many requests in a short time. Wait a while and try again, or contact coordination if it is urgent.',
+    err_location_required: 'Mark the location: use your location, mark it on the map or search for a known place.',
     err_items_required: 'Add at least one item.',
     err_invalid_items: 'Check the items: each one needs a name, quantity and category.',
     err_submit_failed: 'Couldn’t submit the request. Please try again.',
@@ -715,7 +717,7 @@ export const en = {
     quantity_placeholder: '50',
     unit_label: 'Unit',
     unit_placeholder: 'e.g. bags, litres, boxes',
-    location_label: 'Supply location',
+    location_label: 'Where can the items be picked up?',
     notes_label: 'Additional notes',
     notes_placeholder: 'e.g. Available Monday to Friday in the morning',
 
@@ -732,7 +734,7 @@ export const en = {
     err_invalid_category: 'Invalid category.',
     err_description_too_short: 'Specify the supply or item (at least 2 characters).',
     err_invalid_quantity: 'Quantity must be a positive whole number.',
-    err_location_required: 'Select a location.',
+    err_location_required: 'Mark the location: use your location, mark it on the map or search for a known place.',
     err_submit_failed: 'Couldn’t submit the offer. Please try again.',
   },
 
@@ -2763,11 +2765,6 @@ export const en = {
     modal_close: 'Close',
     template_dont_bring_items: '{count} “what not to bring” items',
     created: 'Created',
-    search_address: 'Search address',
-    address_placeholder: '123 Main St, London…',
-    searching: 'Searching…',
-    geocode_results: 'Geocoding results',
-    map_showing: 'Map showing: {address}',
     photos_optional: 'Photos (optional)',
     select_images: 'Select images',
     uploading: 'Uploading…',
@@ -2796,6 +2793,71 @@ export const en = {
     map_layers_upload_hint: 'Show your own GeoJSON on the map (this browser only).',
     map_layers_upload_ok: 'Layer “{name}” loaded (this browser only).',
     map_layers_upload_error: 'Could not read the file. It must be valid GeoJSON.',
+  },
+
+  locationPicker: {
+    privacy_peticion:
+      'Mark a nearby landmark — your exact home is not needed. The public map only shows the approximate area; the exact point and directions are only seen by the coordination team.',
+    privacy_registrar:
+      'The location of the point is published on the map so people can get there. The directions are only seen by the coordination team.',
+    privacy_donar:
+      'The exact point and directions are only seen by the coordination team, to organise the pickup. They are not published.',
+    use_my_location: 'Use my location',
+    locating: 'Finding your location…',
+    mark_on_map: 'Mark on the map',
+    search_known_place: 'Search for a known place',
+    search_placeholder: 'E.g. school, park, church, neighbourhood…',
+    search_button: 'Search',
+    searching: 'Searching…',
+    search_results_label: 'Search results',
+    search_results_one: '1 result. Pick it to mark it.',
+    search_results_count: '{count} results. Pick one.',
+    search_no_results: 'We could not find that place. Try another name or mark the point on the map.',
+    search_error: 'Search is not available right now. Mark the point on the map or paste coordinates.',
+    search_too_short: 'Type at least 3 letters.',
+    link_toggle: 'Do you have a location link?',
+    link_label: 'Paste a Google Maps or OpenStreetMap link, or coordinates',
+    link_placeholder: 'https://maps.app.goo.gl/… or -0.7432, -90.3122',
+    link_button: 'Use this link',
+    link_expanding: 'Opening the link…',
+    link_invalid: 'We could not find a location in that text.',
+    link_out_of_range: 'Those coordinates are not valid. Check that latitude comes first.',
+    link_short_failed: 'We could not open that short link.',
+    link_help:
+      'To copy coordinates in Google Maps: press and hold the place until a pin appears, tap the coordinates shown at the top (e.g. -0.7432, -90.3122) to copy them and paste them here.',
+    gps_denied:
+      'We do not have permission to see your location. Allow it in your browser settings or mark the point on the map.',
+    gps_unavailable:
+      'Your location could not be found. Check that location is turned on in your phone or mark the point on the map.',
+    gps_timeout: 'Finding your location took too long. Try outdoors or mark the point on the map.',
+    gps_unsupported: 'This browser cannot share your location. Mark the point on the map.',
+    gps_accuracy: 'Approximate accuracy: {meters} m',
+    gps_low_accuracy: 'Accuracy is low (over 100 m). Check the point on the map and move it if needed.',
+    dialog_title: 'Move the map until the pin is on the place',
+    dialog_keyboard_hint: 'Arrows: move · + and −: zoom · Enter: confirm · Esc: cancel',
+    confirm_place: 'Confirm this place',
+    cancel: 'Cancel',
+    zoom_in: 'Zoom in',
+    zoom_out: 'Zoom out',
+    map_label: 'Map to choose the location. The pin is fixed in the centre: move the map under it.',
+    map_hint_desktop:
+      'Drag the map until the pin is on the place. To zoom, pinch or use Ctrl + wheel. With the keyboard: arrows to move, + and − to zoom, Enter to mark.',
+    map_loading: 'Loading the map…',
+    map_failed: 'The map did not load. You can search for a known place, use your location or paste coordinates.',
+    marked_title: 'Place marked',
+    near: 'Near: {zone}',
+    marked_fallback: 'Point marked on the map',
+    zone_loading: 'Looking up the area name…',
+    change: 'Change',
+    preview_label: 'Preview of the marked place. Tap to change it.',
+    coordinates: 'Coordinates: {lat}, {lng}',
+    reference_label: 'Directions to get there (recommended)',
+    reference_help: 'Anything that would help someone find the place. Only the coordination team sees it.',
+    reference_placeholder: 'E.g. blue house next to the court, green gate',
+    use_suggestion: 'Use “{name}” as directions',
+    announce_marked: 'Place marked: near {zone}',
+    announce_marked_no_zone: 'Place marked on the map',
+    err_invalid_point: 'The location is not valid. Mark it again on the map.',
   },
 
   nav: {

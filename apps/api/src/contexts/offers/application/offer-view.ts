@@ -2,6 +2,7 @@ import { DonationOffer } from '../domain/donation-offer';
 import { LocationProps } from '../../../shared/domain/location';
 import { SupplyLineSnapshot } from '@globalemergency/warehouse-core/kernel';
 import { AuthorSnapshot } from '../../../shared/domain/author';
+import { LocationCaptureSnapshot } from '../../../shared/domain/location-capture';
 
 export interface OfferView {
   id: string;
@@ -22,6 +23,11 @@ export interface OfferView {
    * the contact here.
    */
   author: AuthorSnapshot | null;
+  /**
+   * Restricted location capture metadata (private reference, method,
+   * accuracy bucket). Same gating as `author`: coordinator/owner only.
+   */
+  locationDetails: LocationCaptureSnapshot | null;
 }
 
 export function toOfferView(o: DonationOffer): OfferView {
@@ -39,5 +45,6 @@ export function toOfferView(o: DonationOffer): OfferView {
     createdAt: o.createdAt.toISOString(),
     updatedAt: o.updatedAt.toISOString(),
     author: o.author ? o.author.toSnapshot() : null,
+    locationDetails: o.locationCapture ? o.locationCapture.toSnapshot() : null,
   };
 }

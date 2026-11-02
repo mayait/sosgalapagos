@@ -2,6 +2,8 @@ import { NeedRepository, NeedFilters } from '../domain/ports/need.repository';
 import { EmergencyId } from '../../../shared/domain/emergency-id';
 import { Priority } from '../domain/need-enums';
 import { NeedView, toPublicNeedView } from './need-view';
+import { NeedZoneQueue } from '../domain/ports/need-zone';
+import { scheduleMissingZones } from './resolve-need-zone';
 
 export interface GetPublicNeedsQuery {
   emergencyId: string;
@@ -15,7 +17,10 @@ export interface GetPublicNeedsQuery {
 }
 
 export class GetPublicNeeds {
-  constructor(private readonly repo: NeedRepository) {}
+  constructor(
+    private readonly repo: NeedRepository,
+    private readonly zoneQueue?: NeedZoneQueue,
+  ) {}
 
   async execute(q: GetPublicNeedsQuery): Promise<NeedView[]> {
     const filters: NeedFilters = {};
@@ -33,6 +38,9 @@ export class GetPublicNeeds {
       Object.keys(filters).length > 0 ? filters : undefined,
       pagination,
     );
-    return validated.map(toPublicNeedView);
+    // Legacy/new approximate needs without a zone get it resolved in the
+    // background; this response uses the safe fallback label meanwhile.
+    scheduleMissingZones(this.zoneQueue, validated);
+    return validated.map((n) => toPublicNeedView(n));
   }
 }

@@ -32,6 +32,7 @@ import {
 } from '../../domain/donation-intake-errors';
 import { SupplyLineValidationError } from '@globalemergency/warehouse-core/kernel';
 import { InvalidAuthorError } from '../../../../shared/domain/author';
+import { InvalidLocationCaptureError } from '../../../../shared/domain/location-capture';
 
 type DomainError =
   | OfferNotFoundError
@@ -54,7 +55,8 @@ type DomainError =
   | DonationIntakeLineLimitError
   | DonationIntakeReceptionReasonRequiredError
   | SupplyLineValidationError
-  | InvalidAuthorError;
+  | InvalidAuthorError
+  | InvalidLocationCaptureError;
 
 @Catch(
   OfferNotFoundError,
@@ -78,6 +80,7 @@ type DomainError =
   DonationIntakeReceptionReasonRequiredError,
   SupplyLineValidationError,
   InvalidAuthorError,
+  InvalidLocationCaptureError,
 )
 export class OffersDomainExceptionFilter implements ExceptionFilter {
   catch(exception: DomainError, host: ArgumentsHost): void {
@@ -106,7 +109,8 @@ export class OffersDomainExceptionFilter implements ExceptionFilter {
                           ? HttpStatus.BAD_REQUEST
                           : exception instanceof SupplyLineValidationError
                             ? HttpStatus.BAD_REQUEST
-                            : exception instanceof InvalidAuthorError
+                            : exception instanceof InvalidAuthorError ||
+                                exception instanceof InvalidLocationCaptureError
                               ? HttpStatus.BAD_REQUEST
                               : exception instanceof
                                   EmergencyNotAcceptingIntakeError

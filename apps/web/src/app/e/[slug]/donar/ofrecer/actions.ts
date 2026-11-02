@@ -4,6 +4,7 @@ import { api } from '@/lib/api';
 import type { components } from '@reliefhub/api-client';
 import { requireSession, authHeaders, redirectToLogin } from '@/lib/auth';
 import { localizeBackendError } from '@/lib/backend-error-messages';
+import { parseLocationFields } from '@/lib/geo/location-form-fields';
 import { getT } from '@/i18n/server';
 import { getCategories } from '@/adapters/get-categories';
 import { isMaterialCategory } from '@/domain/supplies/category';
@@ -31,9 +32,6 @@ export async function submitOffer(
   const rawQuantity = formData.get('quantity');
   const rawUnit = formData.get('unit');
   const rawSupplyId = formData.get('supplyId');
-  const rawAddress = formData.get('address');
-  const rawLatitude = formData.get('latitude');
-  const rawLongitude = formData.get('longitude');
   const rawOrgId = formData.get('organizationId');
   const rawNotes = formData.get('notes');
   const rawTargetNeedId = formData.get('targetNeedId');
@@ -66,19 +64,19 @@ export async function submitOffer(
     return { status: 'error', message: t.donar.err_invalid_quantity };
   }
 
-  const latStr = typeof rawLatitude === 'string' ? rawLatitude.trim() : '';
-  const lonStr = typeof rawLongitude === 'string' ? rawLongitude.trim() : '';
-
-  if (latStr === '' || lonStr === '') {
-    return { status: 'error', message: t.donar.err_location_required };
+  const parsedLocation = parseLocationFields(formData, {
+    defaultAddress: t.common.default_address,
+  });
+  if (!parsedLocation.ok) {
+    return {
+      status: 'error',
+      message:
+        parsedLocation.error === 'required'
+          ? t.donar.err_location_required
+          : t.locationPicker.err_invalid_point,
+    };
   }
-
-  const address =
-    typeof rawAddress === 'string' && rawAddress.trim() !== ''
-      ? rawAddress.trim()
-      : t.common.default_address;
-  const latitude = Number(latStr);
-  const longitude = Number(lonStr);
+  const { location } = parsedLocation;
 
   const unit =
     typeof rawUnit === 'string' && rawUnit.trim() !== ''
@@ -122,7 +120,7 @@ export async function submitOffer(
             ...(supplyId !== undefined ? { supplyId } : {}),
           },
         ],
-        location: { address, latitude, longitude },
+        location,
         ...(targetNeedId !== undefined ? { targetNeedId } : {}),
         ...(donorOrganizationId !== undefined ? { donorOrganizationId } : {}),
         ...(notes !== undefined ? { notes } : {}),

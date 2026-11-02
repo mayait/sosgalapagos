@@ -25,8 +25,35 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ValidityReason } from '../../domain/resource-validity-report';
 import { SupplyLineDto } from '../../../supplies/infrastructure/http/supply-line.dto';
 import { AuthorDto } from '../../../../shared/infrastructure/http/author.dto';
+import { LocationCaptureInputDto } from '../../../../shared/infrastructure/http/location-capture.dto';
 
 export class LocationDto {
+  @ApiProperty({ example: 'Calle Mayor 1, Valencia' })
+  @IsString()
+  @MinLength(1)
+  address!: string;
+
+  @ApiProperty({ example: 39.4699, description: 'Latitude between -90 and 90' })
+  @IsNumber()
+  @Min(-90)
+  @Max(90)
+  latitude!: number;
+
+  @ApiProperty({
+    example: -0.3763,
+    description: 'Longitude between -180 and 180',
+  })
+  @IsNumber()
+  @Min(-180)
+  @Max(180)
+  longitude!: number;
+}
+
+/**
+ * Location given when registering a resource: the point itself plus the
+ * optional capture metadata. `reference` is private (owner/coordination).
+ */
+export class RegisterResourceLocationDto extends LocationCaptureInputDto {
   @ApiProperty({ example: 'Calle Mayor 1, Valencia' })
   @IsString()
   @MinLength(1)
@@ -64,12 +91,12 @@ export class RegisterResourceDto {
   description?: string;
 
   @ApiProperty({
-    type: LocationDto,
+    type: RegisterResourceLocationDto,
     description: 'Physical location of the resource',
   })
   @ValidateNested()
-  @Type(() => LocationDto)
-  location!: LocationDto;
+  @Type(() => RegisterResourceLocationDto)
+  location!: RegisterResourceLocationDto;
 
   @ApiPropertyOptional({
     format: 'uuid',

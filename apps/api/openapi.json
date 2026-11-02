@@ -2979,6 +2979,9 @@
           },
           "403": {
             "description": "Service account lacks the need:create grant at this scope"
+          },
+          "429": {
+            "description": "Too many needs filed (10 per hour per user and per IP; coordinators and integrations are exempt)"
           }
         },
         "security": [
@@ -3288,7 +3291,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/NeedViewDto"
+                    "$ref": "#/components/schemas/CoordinatorNeedViewDto"
                   }
                 }
               }
@@ -3532,7 +3535,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NeedViewDto"
+                  "$ref": "#/components/schemas/CoordinatorNeedViewDto"
                 }
               }
             }
@@ -3581,7 +3584,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/NeedViewDto"
+                    "$ref": "#/components/schemas/CoordinatorNeedViewDto"
                   }
                 }
               }
@@ -3722,6 +3725,167 @@
         "summary": "Create a task from a personnel need (coordinator only)",
         "tags": [
           "needs"
+        ]
+      }
+    },
+    "/geocode": {
+      "get": {
+        "operationId": "GeocodingController_search",
+        "parameters": [
+          {
+            "name": "viewbox",
+            "required": false,
+            "in": "query",
+            "description": "Bias results towards this box: `west,south,east,north` in degrees. A preference only (results outside are still returned). Ignored when malformed.",
+            "schema": {
+              "example": "-3.80,40.35,-3.60,40.50",
+              "type": "string"
+            }
+          },
+          {
+            "name": "lang",
+            "required": false,
+            "in": "query",
+            "description": "Preferred label language (`xx` or `xx-YY`). Anything else is ignored.",
+            "schema": {
+              "example": "es",
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "description": "Address or place name to search",
+            "schema": {
+              "example": "Madrid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Geocoding results (empty array when query is shorter than 3 characters)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GeocodeResultDto"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "summary": "Geocode a free-text address query (Nominatim / OpenStreetMap)",
+        "tags": [
+          "geocoding"
+        ]
+      }
+    },
+    "/geocode/expand-link": {
+      "get": {
+        "description": "Only `https://maps.app.goo.gl/…` and `https://goo.gl/maps/…` are accepted. The server follows at most 3 redirects, connecting only to those hosts; the final Google Maps URL is returned without being fetched.",
+        "operationId": "GeocodingController_expandLink",
+        "parameters": [
+          {
+            "name": "url",
+            "required": true,
+            "in": "query",
+            "description": "Short link to expand",
+            "schema": {
+              "example": "https://maps.app.goo.gl/AbCdEf123",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpandMapLinkResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Not an allowed map short link"
+          },
+          "422": {
+            "description": "The short link could not be resolved"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "summary": "Expand a map short link (maps.app.goo.gl) to its final URL",
+        "tags": [
+          "geocoding"
+        ]
+      }
+    },
+    "/geocode/reverse": {
+      "get": {
+        "description": "Coordinates are rounded to 4 decimals (~11 m) before being sent to the third-party geocoder. Always 200: `address` is null when nothing was found or the geocoder is unavailable.",
+        "operationId": "GeocodingController_reverse",
+        "parameters": [
+          {
+            "name": "lat",
+            "required": true,
+            "in": "query",
+            "description": "Latitude between -90 and 90",
+            "schema": {
+              "example": 40.4168,
+              "type": "number"
+            }
+          },
+          {
+            "name": "lon",
+            "required": true,
+            "in": "query",
+            "description": "Longitude between -180 and 180",
+            "schema": {
+              "example": -3.7038,
+              "type": "number"
+            }
+          },
+          {
+            "name": "lang",
+            "required": false,
+            "in": "query",
+            "description": "Preferred label language (`xx` or `xx-YY`). Anything else is ignored.",
+            "schema": {
+              "example": "es",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReverseGeocodeResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid lat/lon"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "summary": "Reverse-geocode a point into a short label",
+        "tags": [
+          "geocoding"
         ]
       }
     },
@@ -4175,44 +4339,6 @@
         "summary": "Revoke an accreditation (accreditation:revoke)",
         "tags": [
           "accreditations"
-        ]
-      }
-    },
-    "/geocode": {
-      "get": {
-        "operationId": "GeocodingController_search",
-        "parameters": [
-          {
-            "name": "q",
-            "required": true,
-            "in": "query",
-            "description": "Address or place name to search",
-            "schema": {
-              "example": "Madrid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Geocoding results (empty array when query is shorter than 3 characters)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/GeocodeResultDto"
-                  }
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded"
-          }
-        },
-        "summary": "Geocode a free-text address query (Nominatim / OpenStreetMap)",
-        "tags": [
-          "geocoding"
         ]
       }
     },
@@ -9160,7 +9286,7 @@
           "phone": {
             "type": "string",
             "example": "+58 412 555 0101",
-            "description": "Teléfono de contacto (obligatorio)"
+            "description": "Teléfono de contacto (opcional)"
           },
           "acceptedTerms": {
             "type": "boolean",
@@ -9177,7 +9303,6 @@
           "email",
           "password",
           "name",
-          "phone",
           "acceptedTerms",
           "acceptedPrivacy"
         ]
@@ -9200,7 +9325,7 @@
           "phone": {
             "type": "string",
             "example": "+58 412 555 0101",
-            "description": "Teléfono de contacto (obligatorio)"
+            "description": "Teléfono de contacto (opcional)"
           },
           "acceptedTerms": {
             "type": "boolean",
@@ -9214,7 +9339,6 @@
           }
         },
         "required": [
-          "phone",
           "acceptedTerms",
           "acceptedPrivacy"
         ]
@@ -10077,9 +10201,33 @@
           "unreadCount"
         ]
       },
-      "LocationDto": {
+      "RegisterResourceLocationDto": {
         "type": "object",
         "properties": {
+          "reference": {
+            "type": "string",
+            "example": "Portón verde detrás de la escuela",
+            "maxLength": 200,
+            "description": "PRIVATE directions to reach the point. Only coordinators/owners can read it; it is never returned by anonymous/public endpoints."
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "gps",
+              "map",
+              "search",
+              "link",
+              "zone"
+            ],
+            "example": "map",
+            "description": "How the point was set: device GPS, picked on the map, a search result, a pasted link, or only an approximate zone."
+          },
+          "accuracyM": {
+            "type": "number",
+            "example": 25,
+            "minimum": 0,
+            "description": "GPS accuracy in metres. Stored only as a bucket (<50, 50-200, >200)."
+          },
           "address": {
             "type": "string",
             "example": "Calle Mayor 1, Valencia"
@@ -10215,7 +10363,7 @@
             "description": "Physical location of the resource",
             "allOf": [
               {
-                "$ref": "#/components/schemas/LocationDto"
+                "$ref": "#/components/schemas/RegisterResourceLocationDto"
               }
             ]
           },
@@ -10407,6 +10555,30 @@
       "VerifyResourceDto": {
         "type": "object",
         "properties": {}
+      },
+      "LocationDto": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "example": "Calle Mayor 1, Valencia"
+          },
+          "latitude": {
+            "type": "number",
+            "example": 39.4699,
+            "description": "Latitude between -90 and 90"
+          },
+          "longitude": {
+            "type": "number",
+            "example": -0.3763,
+            "description": "Longitude between -180 and 180"
+          }
+        },
+        "required": [
+          "address",
+          "latitude",
+          "longitude"
+        ]
       },
       "EditResourceDto": {
         "type": "object",
@@ -11468,6 +11640,37 @@
           "verified"
         ]
       },
+      "LocationDetailsResponseDto": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "nullable": true,
+            "description": "Private directions to reach the point."
+          },
+          "method": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "gps",
+              "map",
+              "search",
+              "link",
+              "zone"
+            ]
+          },
+          "accuracy": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "<50",
+              "50-200",
+              ">200"
+            ],
+            "description": "GPS accuracy bucket in metres."
+          }
+        }
+      },
       "ResourceAdminViewDto": {
         "type": "object",
         "properties": {
@@ -11647,6 +11850,16 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/AuthorResponseDto"
+              }
+            ]
+          },
+          "locationDetails": {
+            "nullable": true,
+            "description": "Restricted capture metadata of the location (private reference, method, GPS accuracy bucket). Platform-admin only — never public.",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LocationDetailsResponseDto"
               }
             ]
           }
@@ -11889,6 +12102,16 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/AuthorResponseDto"
+              }
+            ]
+          },
+          "locationDetails": {
+            "nullable": true,
+            "description": "Restricted capture metadata of the location (private reference, method, GPS accuracy bucket). Platform-admin only — never public.",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LocationDetailsResponseDto"
               }
             ]
           },
@@ -12308,6 +12531,30 @@
       "NeedLocationDto": {
         "type": "object",
         "properties": {
+          "reference": {
+            "type": "string",
+            "example": "Portón verde detrás de la escuela",
+            "maxLength": 200,
+            "description": "PRIVATE directions to reach the point. Only coordinators/owners can read it; it is never returned by anonymous/public endpoints."
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "gps",
+              "map",
+              "search",
+              "link",
+              "zone"
+            ],
+            "example": "map",
+            "description": "How the point was set: device GPS, picked on the map, a search result, a pasted link, or only an approximate zone."
+          },
+          "accuracyM": {
+            "type": "number",
+            "example": 25,
+            "minimum": 0,
+            "description": "GPS accuracy in metres. Stored only as a bucket (<50, 50-200, >200)."
+          },
           "address": {
             "type": "string",
             "example": "123 Main Street, Caracas, Venezuela"
@@ -12438,17 +12685,24 @@
         "properties": {
           "address": {
             "type": "string",
-            "example": "Caracas",
+            "example": "Chacao, Caracas",
             "nullable": true,
-            "description": "Street line is coarsened (locality only) or dropped for needs with approximate location sensitivity to protect the requester’s privacy."
+            "description": "For needs with approximate location sensitivity this is ONLY a server-derived area label (or a generic \"approximate zone\" text), never the submitted address. Coordinators get the exact address."
           },
           "latitude": {
             "type": "number",
-            "example": 10.4806
+            "example": 10.4806,
+            "description": "For approximate needs: centre of a fixed ~500 m grid cell (the same place always yields the same public point)."
           },
           "longitude": {
             "type": "number",
             "example": -66.9036
+          },
+          "zone": {
+            "type": "string",
+            "example": "Chacao, Caracas",
+            "nullable": true,
+            "description": "Server-derived area label (neighbourhood / locality) of the public point of an approximate need; null until resolved or when exact."
           }
         },
         "required": [
@@ -12488,7 +12742,7 @@
               "approximate"
             ],
             "example": "approximate",
-            "description": "When \"approximate\", the coordinates in location are jittered for privacy. Coordinators always receive exact coordinates regardless of this value."
+            "description": "When \"approximate\", the coordinates in location are snapped to a fixed grid cell centre for privacy (draw an area of approxRadiusMeters, not a pin). Coordinators always receive exact coordinates regardless of this value."
           },
           "priority": {
             "type": "string",
@@ -12569,6 +12823,12 @@
             "format": "uuid",
             "nullable": true,
             "description": "Linked resource / final recipient id (#60), or null if standalone."
+          },
+          "approxRadiusMeters": {
+            "type": "number",
+            "example": 354,
+            "nullable": true,
+            "description": "Approximate needs only: the real location lies within this many metres of the public point. Null when the location is exact."
           }
         },
         "required": [
@@ -12615,7 +12875,7 @@
               "approximate"
             ],
             "example": "approximate",
-            "description": "When \"approximate\", the coordinates in location are jittered for privacy. Coordinators always receive exact coordinates regardless of this value."
+            "description": "When \"approximate\", the coordinates in location are snapped to a fixed grid cell centre for privacy (draw an area of approxRadiusMeters, not a pin). Coordinators always receive exact coordinates regardless of this value."
           },
           "priority": {
             "type": "string",
@@ -12697,6 +12957,12 @@
             "nullable": true,
             "description": "Linked resource / final recipient id (#60), or null if standalone."
           },
+          "approxRadiusMeters": {
+            "type": "number",
+            "example": 354,
+            "nullable": true,
+            "description": "Approximate needs only: the real location lies within this many metres of the public point. Null when the location is exact."
+          },
           "distanceMeters": {
             "type": "number",
             "example": 1850,
@@ -12742,6 +13008,165 @@
         },
         "required": [
           "items"
+        ]
+      },
+      "CoordinatorNeedViewDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          },
+          "emergencyId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "11111111-1111-4111-8111-111111111111"
+          },
+          "title": {
+            "type": "string",
+            "example": "Alimentos para 50 familias"
+          },
+          "description": {
+            "type": "string",
+            "example": "Descripción detallada",
+            "nullable": true
+          },
+          "location": {
+            "$ref": "#/components/schemas/NeedLocationResponseDto"
+          },
+          "locationSensitivity": {
+            "type": "string",
+            "enum": [
+              "public",
+              "approximate"
+            ],
+            "example": "approximate",
+            "description": "When \"approximate\", the coordinates in location are snapped to a fixed grid cell centre for privacy (draw an area of approxRadiusMeters, not a pin). Coordinators always receive exact coordinates regardless of this value."
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "urgent"
+            ],
+            "example": "high"
+          },
+          "requesterOrganizationId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "managingOrganizationId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SupplyLineResponseDto"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "validated",
+              "rejected",
+              "fulfilled"
+            ],
+            "example": "pending"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "expiresAt": {
+            "type": "string",
+            "example": "2024-01-03T00:00:00.000Z",
+            "nullable": true,
+            "description": "Timestamp when the need expires (48 h after validation). Null for legacy needs."
+          },
+          "lastVerifiedAt": {
+            "type": "string",
+            "example": "2024-01-01T12:00:00.000Z",
+            "nullable": true,
+            "description": "Timestamp when the need was last verified by a coordinator."
+          },
+          "requiredSkill": {
+            "type": "string",
+            "enum": [
+              "driving",
+              "medical",
+              "logistics",
+              "cooking",
+              "languages",
+              "admin",
+              "general",
+              "ngo",
+              "government"
+            ],
+            "nullable": true,
+            "description": "Required volunteer skill (personnel needs only)"
+          },
+          "requestedCount": {
+            "type": "number",
+            "example": 3,
+            "nullable": true,
+            "description": "Number of personnel needed"
+          },
+          "resourceId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Linked resource / final recipient id (#60), or null if standalone."
+          },
+          "approxRadiusMeters": {
+            "type": "number",
+            "example": 354,
+            "nullable": true,
+            "description": "Approximate needs only: the real location lies within this many metres of the public point. Null when the location is exact."
+          },
+          "skillSpecialty": {
+            "type": "string",
+            "example": "Médico urgencias pediátricas",
+            "nullable": true,
+            "description": "Free-text specialty detail (coordinator-only)"
+          },
+          "author": {
+            "nullable": true,
+            "description": "Restricted contact of the real requester when filed by an integration on their behalf (#235). Coordinator-only — never returned publicly.",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthorResponseDto"
+              }
+            ]
+          },
+          "locationDetails": {
+            "nullable": true,
+            "description": "Restricted capture metadata of the location: private reference (directions), capture method and GPS accuracy bucket. Coordinator-only — never returned publicly.",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LocationDetailsResponseDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "emergencyId",
+          "title",
+          "location",
+          "locationSensitivity",
+          "priority",
+          "items",
+          "status",
+          "createdAt"
         ]
       },
       "EditNeedDto": {
@@ -12961,6 +13386,69 @@
           "createdAt",
           "updatedAt",
           "assignments"
+        ]
+      },
+      "GeocodeResultDto": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "example": "Madrid, Community of Madrid, Spain"
+          },
+          "latitude": {
+            "type": "number",
+            "example": 40.4165,
+            "description": "Decimal degrees latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "example": -3.70256,
+            "description": "Decimal degrees longitude"
+          }
+        },
+        "required": [
+          "address",
+          "latitude",
+          "longitude"
+        ]
+      },
+      "ExpandMapLinkResponseDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "example": "https://www.google.com/maps/place/40.4168,-3.7038",
+            "description": "Final map URL the short link redirects to (never fetched by the server; the client parses the coordinates from it)."
+          }
+        },
+        "required": [
+          "url"
+        ]
+      },
+      "ReverseGeocodeResponseDto": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "example": "Calle Mayor, Sol, Madrid, Comunidad de Madrid",
+            "nullable": true,
+            "description": "Short label for the point, or null when nothing was found."
+          },
+          "latitude": {
+            "type": "number",
+            "example": 40.4168,
+            "description": "Latitude actually looked up (rounded to 4 decimals)."
+          },
+          "longitude": {
+            "type": "number",
+            "example": -3.7038,
+            "description": "Longitude actually looked up (rounded to 4 decimals)."
+          }
+        },
+        "required": [
+          "address",
+          "latitude",
+          "longitude"
         ]
       },
       "CreateOrganizationDto": {
@@ -13396,30 +13884,6 @@
           "grantedAt"
         ]
       },
-      "GeocodeResultDto": {
-        "type": "object",
-        "properties": {
-          "address": {
-            "type": "string",
-            "example": "Madrid, Community of Madrid, Spain"
-          },
-          "latitude": {
-            "type": "number",
-            "example": 40.4165,
-            "description": "Decimal degrees latitude"
-          },
-          "longitude": {
-            "type": "number",
-            "example": -3.70256,
-            "description": "Decimal degrees longitude"
-          }
-        },
-        "required": [
-          "address",
-          "latitude",
-          "longitude"
-        ]
-      },
       "NeedsMetricsDto": {
         "type": "object",
         "properties": {
@@ -13488,6 +13952,30 @@
       "OfferLocationDto": {
         "type": "object",
         "properties": {
+          "reference": {
+            "type": "string",
+            "example": "Portón verde detrás de la escuela",
+            "maxLength": 200,
+            "description": "PRIVATE directions to reach the point. Only coordinators/owners can read it; it is never returned by anonymous/public endpoints."
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "gps",
+              "map",
+              "search",
+              "link",
+              "zone"
+            ],
+            "example": "map",
+            "description": "How the point was set: device GPS, picked on the map, a search result, a pasted link, or only an approximate zone."
+          },
+          "accuracyM": {
+            "type": "number",
+            "example": 25,
+            "minimum": 0,
+            "description": "GPS accuracy in metres. Stored only as a bucket (<50, 50-200, >200)."
+          },
           "address": {
             "type": "string",
             "example": "123 Main Street, Caracas, Venezuela"
@@ -13655,6 +14143,16 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/AuthorResponseDto"
+              }
+            ]
+          },
+          "locationDetails": {
+            "nullable": true,
+            "description": "Restricted capture metadata of the location (private reference, method, GPS accuracy bucket). Coordinator/owner-only.",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LocationDetailsResponseDto"
               }
             ]
           }

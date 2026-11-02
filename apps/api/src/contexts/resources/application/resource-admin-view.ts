@@ -6,6 +6,7 @@ import {
   toResourceDetailView,
 } from './resource-view';
 import { AuthorSnapshot } from '../../../shared/domain/author';
+import { LocationCaptureSnapshot } from '../../../shared/domain/location-capture';
 
 /**
  * Admin list/detail view: the existing {@link ResourceView} plus the owning
@@ -24,6 +25,11 @@ export interface ResourceAdminView extends ResourceView {
    * which share the public {@link ResourceView} shape.
    */
   author: AuthorSnapshot | null;
+  /**
+   * Restricted location capture metadata (private reference, method,
+   * accuracy bucket). Admin console only — never on public/coordination views.
+   */
+  locationDetails: LocationCaptureSnapshot | null;
 }
 
 /**
@@ -44,6 +50,7 @@ export function toResourceAdminView(
     emergencyId: r.emergencyId.value,
     emergencyName,
     author: r.author ? r.author.toSnapshot() : null,
+    locationDetails: r.locationCapture ? r.locationCapture.toSnapshot() : null,
   };
 }
 
@@ -56,5 +63,6 @@ export function toResourceAdminDetailView(
     emergencyId: r.emergencyId.value,
     emergencyName,
     author: r.author ? r.author.toSnapshot() : null,
+    locationDetails: r.locationCapture ? r.locationCapture.toSnapshot() : null,
   };
 }

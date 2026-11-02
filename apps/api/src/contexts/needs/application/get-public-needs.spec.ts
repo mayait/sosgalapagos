@@ -89,9 +89,10 @@ describe('GetPublicNeeds', () => {
 
     const result = await getPublicNeeds.execute({ emergencyId: EM });
     expect(result[0].description).toBe('Urgent water need');
-    // Individual requester → Approximate sensitivity → the street line is
-    // coarsened to the locality only (privacy; the exact address must not leak).
-    expect(result[0].location.address).toBe('Caracas');
+    // Individual requester → Approximate sensitivity → the submitted address
+    // is never published; without a resolved zone a generic label is used.
+    expect(result[0].location.address).toBe('Zona aproximada');
+    expect(result[0].location.address).not.toContain('Plaza Bolívar');
     expect(result[0].items).toHaveLength(2);
   });
 

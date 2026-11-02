@@ -30,6 +30,10 @@ import {
   supplyLineToColumns,
 } from '@globalemergency/warehouse-postgres';
 import { LocationSensitivity } from '../../../../shared/domain/location-sensitivity';
+import {
+  LocationAccuracyBucket,
+  LocationMethod,
+} from '../../../../shared/domain/location-capture';
 
 type NeedsRow = typeof needsTable.$inferSelect;
 type ItemsRow = typeof needItemsTable.$inferSelect;
@@ -61,6 +65,12 @@ function rowToSnapshot(row: NeedsRow, items: ItemsRow[]): NeedSnapshot {
     requestedCount: row.requestedCount ?? null,
     resourceId: row.resourceId ?? null,
     author: row.author ?? null,
+    locationCapture: {
+      reference: row.locationReference ?? null,
+      method: (row.locationMethod ?? null) as LocationMethod | null,
+      accuracy: (row.locationAccuracy ?? null) as LocationAccuracyBucket | null,
+    },
+    locationZone: row.locationZone ?? null,
   };
 }
 
@@ -95,6 +105,10 @@ export class DrizzleNeedRepository implements NeedRepository {
           requestedCount: s.requestedCount ?? null,
           resourceId: s.resourceId ?? null,
           author: s.author ?? null,
+          locationReference: s.locationCapture?.reference ?? null,
+          locationMethod: s.locationCapture?.method ?? null,
+          locationAccuracy: s.locationCapture?.accuracy ?? null,
+          locationZone: s.locationZone ?? null,
         })
         .onConflictDoUpdate({
           target: needsTable.id,
@@ -127,6 +141,13 @@ export class DrizzleNeedRepository implements NeedRepository {
         );
       }
     });
+  }
+
+  async updateLocationZone(id: NeedId, zone: string | null): Promise<void> {
+    await this.db
+      .update(needsTable)
+      .set({ locationZone: zone })
+      .where(eq(needsTable.id, id.value));
   }
 
   async findById(id: NeedId): Promise<Need | null> {

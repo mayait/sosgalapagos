@@ -11,6 +11,7 @@ import { Card } from '@/components/atoms/card';
 import { PageHeading } from '@/components/atoms/page-heading';
 import { getT } from '@/i18n/server';
 import { getCategories } from '@/adapters/get-categories';
+import { getEmergencyMapView } from '@/lib/emergency-map-view';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -42,7 +43,10 @@ export default async function RegistrarPage({ params }: Props) {
     notFound();
   }
 
-  const categories = await getCategories(locale);
+  const [categories, mapView] = await Promise.all([
+    getCategories(locale),
+    getEmergencyMapView(emergency.id),
+  ]);
   const boundAction = registerResource.bind(null, slug, emergency.id);
 
   return (
@@ -58,7 +62,14 @@ export default async function RegistrarPage({ params }: Props) {
             <RegistrarForm
               action={boundAction}
               slug={slug}
-              locationPicker={<LocationPicker />}
+              locationPicker={
+                <LocationPicker
+                  variant="registrar"
+                  initialView={mapView.initialView}
+                  searchViewbox={mapView.searchViewbox}
+                  draftKey={`registrar-${slug}`}
+                />
+              }
               orgSelector={<OrgSelector />}
               t={t.registrar}
               backToEmergencyLabel={t.common.back_to_emergency}

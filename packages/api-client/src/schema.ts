@@ -1163,6 +1163,63 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/geocode": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Geocode a free-text address query (Nominatim / OpenStreetMap) */
+        get: operations["GeocodingController_search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/geocode/expand-link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Expand a map short link (maps.app.goo.gl) to its final URL
+         * @description Only `https://maps.app.goo.gl/…` and `https://goo.gl/maps/…` are accepted. The server follows at most 3 redirects, connecting only to those hosts; the final Google Maps URL is returned without being fetched.
+         */
+        get: operations["GeocodingController_expandLink"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/geocode/reverse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Reverse-geocode a point into a short label
+         * @description Coordinates are rounded to 4 decimals (~11 m) before being sent to the third-party geocoder. Always 200: `address` is null when nothing was found or the geocoder is unavailable.
+         */
+        get: operations["GeocodingController_reverse"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/organizations": {
         parameters: {
             query?: never;
@@ -1297,23 +1354,6 @@ export interface paths {
         post?: never;
         /** Revoke an accreditation (accreditation:revoke) */
         delete: operations["AccreditationsController_revokeAccreditation"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/geocode": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Geocode a free-text address query (Nominatim / OpenStreetMap) */
-        get: operations["GeocodingController_search"];
-        put?: never;
-        post?: never;
-        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -2801,10 +2841,10 @@ export interface components {
             /** @example Jane Doe */
             name: string;
             /**
-             * @description Teléfono de contacto (obligatorio)
+             * @description Teléfono de contacto (opcional)
              * @example +58 412 555 0101
              */
-            phone: string;
+            phone?: string;
             /**
              * @description Aceptación de las condiciones del servicio (debe ser true)
              * @example true
@@ -2822,10 +2862,10 @@ export interface components {
         };
         OnboardingDto: {
             /**
-             * @description Teléfono de contacto (obligatorio)
+             * @description Teléfono de contacto (opcional)
              * @example +58 412 555 0101
              */
-            phone: string;
+            phone?: string;
             /**
              * @description Aceptación de las condiciones del servicio (debe ser true)
              * @example true
@@ -3119,7 +3159,23 @@ export interface components {
             notifications: components["schemas"]["NotificationDto"][];
             unreadCount: number;
         };
-        LocationDto: {
+        RegisterResourceLocationDto: {
+            /**
+             * @description PRIVATE directions to reach the point. Only coordinators/owners can read it; it is never returned by anonymous/public endpoints.
+             * @example Portón verde detrás de la escuela
+             */
+            reference?: string;
+            /**
+             * @description How the point was set: device GPS, picked on the map, a search result, a pasted link, or only an approximate zone.
+             * @example map
+             * @enum {string}
+             */
+            method?: "gps" | "map" | "search" | "link" | "zone";
+            /**
+             * @description GPS accuracy in metres. Stored only as a bucket (<50, 50-200, >200).
+             * @example 25
+             */
+            accuracyM?: number;
             /** @example Calle Mayor 1, Valencia */
             address: string;
             /**
@@ -3206,7 +3262,7 @@ export interface components {
             /** @example Centro de acopio principal */
             description?: string;
             /** @description Physical location of the resource */
-            location: components["schemas"]["LocationDto"];
+            location: components["schemas"]["RegisterResourceLocationDto"];
             /**
              * Format: uuid
              * @description Organization offering this resource (optional)
@@ -3326,6 +3382,20 @@ export interface components {
             items: components["schemas"]["SupplyLineDto"][];
         };
         VerifyResourceDto: Record<string, never>;
+        LocationDto: {
+            /** @example Calle Mayor 1, Valencia */
+            address: string;
+            /**
+             * @description Latitude between -90 and 90
+             * @example 39.4699
+             */
+            latitude: number;
+            /**
+             * @description Longitude between -180 and 180
+             * @example -0.3763
+             */
+            longitude: number;
+        };
         EditResourceDto: {
             /**
              * @description Motivo de la edición (obligatorio, para trazabilidad)
@@ -3858,6 +3928,17 @@ export interface components {
             /** @example terremotovenezuela.app */
             source?: string | null;
         };
+        LocationDetailsResponseDto: {
+            /** @description Private directions to reach the point. */
+            reference?: string | null;
+            /** @enum {string|null} */
+            method?: "gps" | "map" | "search" | "link" | "zone" | null;
+            /**
+             * @description GPS accuracy bucket in metres.
+             * @enum {string|null}
+             */
+            accuracy?: "<50" | "50-200" | ">200" | null;
+        };
         ResourceAdminViewDto: {
             /**
              * Format: uuid
@@ -3974,6 +4055,8 @@ export interface components {
             emergencyName: string | null;
             /** @description Restricted contact of the real registrant when filed by an integration on their behalf (#235). Platform-admin only — never returned publicly. */
             author?: components["schemas"]["AuthorResponseDto"] | null;
+            /** @description Restricted capture metadata of the location (private reference, method, GPS accuracy bucket). Platform-admin only — never public. */
+            locationDetails?: components["schemas"]["LocationDetailsResponseDto"] | null;
         };
         PagedAdminResourcesDto: {
             items: components["schemas"]["ResourceAdminViewDto"][];
@@ -4100,6 +4183,8 @@ export interface components {
             emergencyName: string | null;
             /** @description Restricted contact of the real registrant when filed by an integration on their behalf (#235). Platform-admin only — never returned publicly. */
             author?: components["schemas"]["AuthorResponseDto"] | null;
+            /** @description Restricted capture metadata of the location (private reference, method, GPS accuracy bucket). Platform-admin only — never public. */
+            locationDetails?: components["schemas"]["LocationDetailsResponseDto"] | null;
             /**
              * @description Distinct categories of material this place has declared
              * @example [
@@ -4275,6 +4360,22 @@ export interface components {
             threshold: number | null;
         };
         NeedLocationDto: {
+            /**
+             * @description PRIVATE directions to reach the point. Only coordinators/owners can read it; it is never returned by anonymous/public endpoints.
+             * @example Portón verde detrás de la escuela
+             */
+            reference?: string;
+            /**
+             * @description How the point was set: device GPS, picked on the map, a search result, a pasted link, or only an approximate zone.
+             * @example map
+             * @enum {string}
+             */
+            method?: "gps" | "map" | "search" | "link" | "zone";
+            /**
+             * @description GPS accuracy in metres. Stored only as a bucket (<50, 50-200, >200).
+             * @example 25
+             */
+            accuracyM?: number;
             /** @example 123 Main Street, Caracas, Venezuela */
             address: string;
             /**
@@ -4341,14 +4442,22 @@ export interface components {
         };
         NeedLocationResponseDto: {
             /**
-             * @description Street line is coarsened (locality only) or dropped for needs with approximate location sensitivity to protect the requester’s privacy.
-             * @example Caracas
+             * @description For needs with approximate location sensitivity this is ONLY a server-derived area label (or a generic "approximate zone" text), never the submitted address. Coordinators get the exact address.
+             * @example Chacao, Caracas
              */
             address?: string | null;
-            /** @example 10.4806 */
+            /**
+             * @description For approximate needs: centre of a fixed ~500 m grid cell (the same place always yields the same public point).
+             * @example 10.4806
+             */
             latitude: number;
             /** @example -66.9036 */
             longitude: number;
+            /**
+             * @description Server-derived area label (neighbourhood / locality) of the public point of an approximate need; null until resolved or when exact.
+             * @example Chacao, Caracas
+             */
+            zone?: string | null;
         };
         NeedViewDto: {
             /**
@@ -4367,7 +4476,7 @@ export interface components {
             description?: string | null;
             location: components["schemas"]["NeedLocationResponseDto"];
             /**
-             * @description When "approximate", the coordinates in location are jittered for privacy. Coordinators always receive exact coordinates regardless of this value.
+             * @description When "approximate", the coordinates in location are snapped to a fixed grid cell centre for privacy (draw an area of approxRadiusMeters, not a pin). Coordinators always receive exact coordinates regardless of this value.
              * @example approximate
              * @enum {string}
              */
@@ -4414,6 +4523,11 @@ export interface components {
              * @description Linked resource / final recipient id (#60), or null if standalone.
              */
             resourceId?: string | null;
+            /**
+             * @description Approximate needs only: the real location lies within this many metres of the public point. Null when the location is exact.
+             * @example 354
+             */
+            approxRadiusMeters?: number | null;
         };
         NearbyNeedViewDto: {
             /**
@@ -4432,7 +4546,7 @@ export interface components {
             description?: string | null;
             location: components["schemas"]["NeedLocationResponseDto"];
             /**
-             * @description When "approximate", the coordinates in location are jittered for privacy. Coordinators always receive exact coordinates regardless of this value.
+             * @description When "approximate", the coordinates in location are snapped to a fixed grid cell centre for privacy (draw an area of approxRadiusMeters, not a pin). Coordinators always receive exact coordinates regardless of this value.
              * @example approximate
              * @enum {string}
              */
@@ -4480,6 +4594,11 @@ export interface components {
              */
             resourceId?: string | null;
             /**
+             * @description Approximate needs only: the real location lies within this many metres of the public point. Null when the location is exact.
+             * @example 354
+             */
+            approxRadiusMeters?: number | null;
+            /**
              * @description Distance in meters from the queried location to the (public) need location.
              * @example 1850
              */
@@ -4490,6 +4609,85 @@ export interface components {
         };
         InBoundsNeedsDto: {
             items: components["schemas"]["NeedViewDto"][];
+        };
+        CoordinatorNeedViewDto: {
+            /**
+             * Format: uuid
+             * @example 3fa85f64-5717-4562-b3fc-2c963f66afa6
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @example 11111111-1111-4111-8111-111111111111
+             */
+            emergencyId: string;
+            /** @example Alimentos para 50 familias */
+            title: string;
+            /** @example Descripción detallada */
+            description?: string | null;
+            location: components["schemas"]["NeedLocationResponseDto"];
+            /**
+             * @description When "approximate", the coordinates in location are snapped to a fixed grid cell centre for privacy (draw an area of approxRadiusMeters, not a pin). Coordinators always receive exact coordinates regardless of this value.
+             * @example approximate
+             * @enum {string}
+             */
+            locationSensitivity: "public" | "approximate";
+            /**
+             * @example high
+             * @enum {string}
+             */
+            priority: "low" | "medium" | "high" | "urgent";
+            /** Format: uuid */
+            requesterOrganizationId?: string | null;
+            /** Format: uuid */
+            managingOrganizationId?: string | null;
+            items: components["schemas"]["SupplyLineResponseDto"][];
+            /**
+             * @example pending
+             * @enum {string}
+             */
+            status: "pending" | "validated" | "rejected" | "fulfilled";
+            /** @example 2024-01-01T00:00:00.000Z */
+            createdAt: string;
+            /**
+             * @description Timestamp when the need expires (48 h after validation). Null for legacy needs.
+             * @example 2024-01-03T00:00:00.000Z
+             */
+            expiresAt?: string | null;
+            /**
+             * @description Timestamp when the need was last verified by a coordinator.
+             * @example 2024-01-01T12:00:00.000Z
+             */
+            lastVerifiedAt?: string | null;
+            /**
+             * @description Required volunteer skill (personnel needs only)
+             * @enum {string|null}
+             */
+            requiredSkill?: "driving" | "medical" | "logistics" | "cooking" | "languages" | "admin" | "general" | "ngo" | "government" | null;
+            /**
+             * @description Number of personnel needed
+             * @example 3
+             */
+            requestedCount?: number | null;
+            /**
+             * Format: uuid
+             * @description Linked resource / final recipient id (#60), or null if standalone.
+             */
+            resourceId?: string | null;
+            /**
+             * @description Approximate needs only: the real location lies within this many metres of the public point. Null when the location is exact.
+             * @example 354
+             */
+            approxRadiusMeters?: number | null;
+            /**
+             * @description Free-text specialty detail (coordinator-only)
+             * @example Médico urgencias pediátricas
+             */
+            skillSpecialty?: string | null;
+            /** @description Restricted contact of the real requester when filed by an integration on their behalf (#235). Coordinator-only — never returned publicly. */
+            author?: components["schemas"]["AuthorResponseDto"] | null;
+            /** @description Restricted capture metadata of the location: private reference (directions), capture method and GPS accuracy bucket. Coordinator-only — never returned publicly. */
+            locationDetails?: components["schemas"]["LocationDetailsResponseDto"] | null;
         };
         EditNeedDto: {
             /**
@@ -4580,6 +4778,44 @@ export interface components {
                 checkedOutAt?: string | null;
                 status?: string;
             }[];
+        };
+        GeocodeResultDto: {
+            /** @example Madrid, Community of Madrid, Spain */
+            address: string;
+            /**
+             * @description Decimal degrees latitude
+             * @example 40.4165
+             */
+            latitude: number;
+            /**
+             * @description Decimal degrees longitude
+             * @example -3.70256
+             */
+            longitude: number;
+        };
+        ExpandMapLinkResponseDto: {
+            /**
+             * @description Final map URL the short link redirects to (never fetched by the server; the client parses the coordinates from it).
+             * @example https://www.google.com/maps/place/40.4168,-3.7038
+             */
+            url: string;
+        };
+        ReverseGeocodeResponseDto: {
+            /**
+             * @description Short label for the point, or null when nothing was found.
+             * @example Calle Mayor, Sol, Madrid, Comunidad de Madrid
+             */
+            address: string | null;
+            /**
+             * @description Latitude actually looked up (rounded to 4 decimals).
+             * @example 40.4168
+             */
+            latitude: number;
+            /**
+             * @description Longitude actually looked up (rounded to 4 decimals).
+             * @example -3.7038
+             */
+            longitude: number;
         };
         CreateOrganizationDto: {
             /** @example Red Cross Spain */
@@ -4725,20 +4961,6 @@ export interface components {
             grantedAt: string;
             evidence?: Record<string, never> | null;
         };
-        GeocodeResultDto: {
-            /** @example Madrid, Community of Madrid, Spain */
-            address: string;
-            /**
-             * @description Decimal degrees latitude
-             * @example 40.4165
-             */
-            latitude: number;
-            /**
-             * @description Decimal degrees longitude
-             * @example -3.70256
-             */
-            longitude: number;
-        };
         NeedsMetricsDto: {
             /**
              * @description Total needs registered for this emergency
@@ -4778,6 +5000,22 @@ export interface components {
             resources: components["schemas"]["ResourcesMetricsDto"];
         };
         OfferLocationDto: {
+            /**
+             * @description PRIVATE directions to reach the point. Only coordinators/owners can read it; it is never returned by anonymous/public endpoints.
+             * @example Portón verde detrás de la escuela
+             */
+            reference?: string;
+            /**
+             * @description How the point was set: device GPS, picked on the map, a search result, a pasted link, or only an approximate zone.
+             * @example map
+             * @enum {string}
+             */
+            method?: "gps" | "map" | "search" | "link" | "zone";
+            /**
+             * @description GPS accuracy in metres. Stored only as a bucket (<50, 50-200, >200).
+             * @example 25
+             */
+            accuracyM?: number;
             /** @example 123 Main Street, Caracas, Venezuela */
             address: string;
             /**
@@ -4856,6 +5094,8 @@ export interface components {
             updatedAt: string;
             /** @description Restricted contact of the real donor when filed by an integration on their behalf (#235). Coordinator/owner-only — never returned publicly. */
             author?: components["schemas"]["AuthorResponseDto"] | null;
+            /** @description Restricted capture metadata of the location (private reference, method, GPS accuracy bucket). Coordinator/owner-only. */
+            locationDetails?: components["schemas"]["LocationDetailsResponseDto"] | null;
         };
         MatchOfferDto: {
             /**
@@ -8795,6 +9035,13 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Too many needs filed (10 per hour per user and per IP; coordinators and integrations are exempt) */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     NeedsController_listPublic: {
@@ -8920,7 +9167,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["NeedViewDto"][];
+                    "application/json": components["schemas"]["CoordinatorNeedViewDto"][];
                 };
             };
             /** @description Missing or invalid token */
@@ -9158,7 +9405,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["NeedViewDto"];
+                    "application/json": components["schemas"]["CoordinatorNeedViewDto"];
                 };
             };
             /** @description Missing or invalid token */
@@ -9202,7 +9449,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["NeedViewDto"][];
+                    "application/json": components["schemas"]["CoordinatorNeedViewDto"][];
                 };
             };
             /** @description Missing or invalid token */
@@ -9316,6 +9563,123 @@ export interface operations {
             };
             /** @description Need not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GeocodingController_search: {
+        parameters: {
+            query: {
+                /** @description Bias results towards this box: `west,south,east,north` in degrees. A preference only (results outside are still returned). Ignored when malformed. */
+                viewbox?: string;
+                /** @description Preferred label language (`xx` or `xx-YY`). Anything else is ignored. */
+                lang?: string;
+                /** @description Address or place name to search */
+                q: unknown;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Geocoding results (empty array when query is shorter than 3 characters) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GeocodeResultDto"][];
+                };
+            };
+            /** @description Rate limit exceeded */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GeocodingController_expandLink: {
+        parameters: {
+            query: {
+                /** @description Short link to expand */
+                url: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpandMapLinkResponseDto"];
+                };
+            };
+            /** @description Not an allowed map short link */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The short link could not be resolved */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Rate limit exceeded */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GeocodingController_reverse: {
+        parameters: {
+            query: {
+                /** @description Latitude between -90 and 90 */
+                lat: number;
+                /** @description Longitude between -180 and 180 */
+                lon: number;
+                /** @description Preferred label language (`xx` or `xx-YY`). Anything else is ignored. */
+                lang?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReverseGeocodeResponseDto"];
+                };
+            };
+            /** @description Invalid lat/lon */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Rate limit exceeded */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9720,36 +10084,6 @@ export interface operations {
             };
             /** @description Accreditation not found */
             404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    GeocodingController_search: {
-        parameters: {
-            query: {
-                /** @description Address or place name to search */
-                q: unknown;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Geocoding results (empty array when query is shorter than 3 characters) */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GeocodeResultDto"][];
-                };
-            };
-            /** @description Rate limit exceeded */
-            429: {
                 headers: {
                     [name: string]: unknown;
                 };

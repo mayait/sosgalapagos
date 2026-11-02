@@ -51,6 +51,20 @@ import { TaskRepository } from '../../volunteers/domain/ports/task.repository';
 import { DrizzleVolunteerRepository } from '../../volunteers/infrastructure/drizzle/drizzle-volunteer.repository';
 import { DrizzleTaskRepository } from '../../volunteers/infrastructure/drizzle/drizzle-task.repository';
 import { toBullMqConnection } from '../../../shared/bullmq-connection';
+import { GeocodingModule } from '../../geocoding/infrastructure/geocoding.module';
+import { ReverseGeocode } from '../../geocoding/application/reverse-geocode';
+import {
+  NEED_ZONE_QUEUE,
+  NEED_ZONE_RESOLVER,
+  NeedZoneQueue,
+  NeedZoneResolver,
+} from '../domain/ports/need-zone';
+import { ResolveNeedZone } from '../application/resolve-need-zone';
+import { GeocodingNeedZoneResolver } from './geocoding-need-zone-resolver';
+import {
+  InProcessNeedZoneQueue,
+  NoopNeedZoneQueue,
+} from './in-process-need-zone-queue';
 
 export const EVENT_QUEUE = Symbol('NeedsEventQueue');
 
@@ -100,6 +114,32 @@ const resourceReaderProvider = {
   useFactory: (db: Db): NeedResourceReader => new DrizzleNeedResourceReader(db),
 };
 
+// ── Public zone of approximate needs (reverse geocode, off the hot path) ─────
+
+const needZoneResolverProvider = {
+  provide: NEED_ZONE_RESOLVER,
+  inject: [ReverseGeocode],
+  useFactory: (reverseGeocode: ReverseGeocode): NeedZoneResolver =>
+    new GeocodingNeedZoneResolver(reverseGeocode),
+};
+
+const resolveNeedZoneProvider = {
+  provide: ResolveNeedZone,
+  inject: [NEED_REPOSITORY, NEED_ZONE_RESOLVER],
+  useFactory: (repo: NeedRepository, resolver: NeedZoneResolver) =>
+    new ResolveNeedZone(repo, resolver),
+};
+
+const needZoneQueueProvider = {
+  provide: NEED_ZONE_QUEUE,
+  inject: [ResolveNeedZone],
+  useFactory: (resolveNeedZone: ResolveNeedZone): NeedZoneQueue =>
+    // Never call the third-party geocoder from the test suite.
+    process.env.NODE_ENV === 'test'
+      ? new NoopNeedZoneQueue()
+      : new InProcessNeedZoneQueue((id) => resolveNeedZone.execute(id)),
+};
+
 const createNeedProvider = {
   provide: CreateNeed,
   inject: [
@@ -107,13 +147,15 @@ const createNeedProvider = {
     EVENT_BUS,
     NEED_EMERGENCY_STATUS_READER,
     NEED_RESOURCE_READER,
+    NEED_ZONE_QUEUE,
   ],
   useFactory: (
     repo: NeedRepository,
     bus: EventBus,
     statusReader: NeedEmergencyStatusReader,
     resourceReader: NeedResourceReader,
-  ) => new CreateNeed(repo, bus, statusReader, resourceReader),
+    zoneQueue: NeedZoneQueue,
+  ) => new CreateNeed(repo, bus, statusReader, resourceReader, zoneQueue),
 };
 
 const validateNeedProvider = {
@@ -138,20 +180,23 @@ const discardNeedProvider = {
 
 const getPublicNeedsProvider = {
   provide: GetPublicNeeds,
-  inject: [NEED_REPOSITORY],
-  useFactory: (repo: NeedRepository) => new GetPublicNeeds(repo),
+  inject: [NEED_REPOSITORY, NEED_ZONE_QUEUE],
+  useFactory: (repo: NeedRepository, zoneQueue: NeedZoneQueue) =>
+    new GetPublicNeeds(repo, zoneQueue),
 };
 
 const getNearbyNeedsProvider = {
   provide: GetNearbyNeeds,
-  inject: [NEED_REPOSITORY],
-  useFactory: (repo: NeedRepository) => new GetNearbyNeeds(repo),
+  inject: [NEED_REPOSITORY, NEED_ZONE_QUEUE],
+  useFactory: (repo: NeedRepository, zoneQueue: NeedZoneQueue) =>
+    new GetNearbyNeeds(repo, zoneQueue),
 };
 
 const getNeedsInBoundsProvider = {
   provide: GetNeedsInBounds,
-  inject: [NEED_REPOSITORY],
-  useFactory: (repo: NeedRepository) => new GetNeedsInBounds(repo),
+  inject: [NEED_REPOSITORY, NEED_ZONE_QUEUE],
+  useFactory: (repo: NeedRepository, zoneQueue: NeedZoneQueue) =>
+    new GetNeedsInBounds(repo, zoneQueue),
 };
 
 const getNeedsQueueProvider = {
@@ -221,7 +266,7 @@ const createTaskFromNeedProvider = {
 };
 
 @Module({
-  imports: [DatabaseModule, IdentityModule],
+  imports: [DatabaseModule, IdentityModule, GeocodingModule],
   controllers: [NeedsController],
   providers: [
     eventQueueProvider,
@@ -229,6 +274,9 @@ const createTaskFromNeedProvider = {
     emergencyStatusReaderProvider,
     resourceReaderProvider,
     eventBusProvider,
+    needZoneResolverProvider,
+    resolveNeedZoneProvider,
+    needZoneQueueProvider,
     createNeedProvider,
     validateNeedProvider,
     editNeedProvider,

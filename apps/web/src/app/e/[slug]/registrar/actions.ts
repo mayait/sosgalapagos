@@ -4,6 +4,7 @@ import { api } from '@/lib/api';
 import type { components } from '@reliefhub/api-client';
 import { requireSession, authHeaders, redirectToLogin } from '@/lib/auth';
 import { parseSupplyLines } from '@/lib/supply-lines';
+import { parseLocationFields } from '@/lib/geo/location-form-fields';
 import { localizeBackendError } from '@/lib/backend-error-messages';
 import { getT } from '@/i18n/server';
 import { getCategories } from '@/adapters/get-categories';
@@ -43,9 +44,6 @@ export async function registerResource(
   const rawType = formData.get('type');
   const rawName = formData.get('name');
   const rawDescription = formData.get('description');
-  const rawAddress = formData.get('address');
-  const rawLatitude = formData.get('latitude');
-  const rawLongitude = formData.get('longitude');
   const rawOrgId = formData.get('organizationId');
 
   const name = typeof rawName === 'string' ? rawName.trim() : '';
@@ -57,19 +55,19 @@ export async function registerResource(
     return { status: 'error', message: t.registrar.err_name_too_short };
   }
 
-  const latStr = typeof rawLatitude === 'string' ? rawLatitude.trim() : '';
-  const lonStr = typeof rawLongitude === 'string' ? rawLongitude.trim() : '';
-
-  if (latStr === '' || lonStr === '') {
-    return { status: 'error', message: t.registrar.err_location_required };
+  const parsedLocation = parseLocationFields(formData, {
+    defaultAddress: t.common.default_address,
+  });
+  if (!parsedLocation.ok) {
+    return {
+      status: 'error',
+      message:
+        parsedLocation.error === 'required'
+          ? t.registrar.err_location_required
+          : t.locationPicker.err_invalid_point,
+    };
   }
-
-  const address =
-    typeof rawAddress === 'string' && rawAddress.trim() !== ''
-      ? rawAddress.trim()
-      : t.common.default_address;
-  const latitude = Number(latStr);
-  const longitude = Number(lonStr);
+  const { location } = parsedLocation;
 
   const description =
     typeof rawDescription === 'string' && rawDescription.trim() !== ''
@@ -103,7 +101,7 @@ export async function registerResource(
         type: rawType,
         name,
         ...(description !== undefined ? { description } : {}),
-        location: { address, latitude, longitude },
+        location,
         ...(ownerOrganizationId !== undefined ? { ownerOrganizationId } : {}),
         ...(items.length > 0 ? { items } : {}),
       },

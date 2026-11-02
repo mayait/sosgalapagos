@@ -26,6 +26,10 @@ export const offersTable = pgTable('offers', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
   /** Restricted self-reported author attribution (#235). Never public. */
   author: jsonb('author').$type<AuthorSnapshot>(),
+  // Restricted location capture metadata (0060_location_reference_zone).
+  locationReference: text('location_reference'),
+  locationMethod: text('location_method'),
+  locationAccuracy: text('location_accuracy'),
 });
 
 /**

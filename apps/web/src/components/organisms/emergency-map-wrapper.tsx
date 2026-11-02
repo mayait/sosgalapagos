@@ -163,6 +163,7 @@ export function EmergencyMapWrapper({ points, emergencyId, containerClassName, s
           label: n.title,
           kind: 'need',
           approximate: n.locationSensitivity === 'approximate',
+          ...(typeof n.approxRadiusMeters === 'number' ? { approxRadiusMeters: n.approxRadiusMeters } : {}),
         });
       }
       setAllMapPoints(nextPoints);

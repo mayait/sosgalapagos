@@ -19,6 +19,10 @@ import {
   SupplyLineSnapshot,
 } from '@globalemergency/warehouse-core/kernel';
 import { Author, AuthorSnapshot } from '../../../shared/domain/author';
+import {
+  LocationCapture,
+  LocationCaptureSnapshot,
+} from '../../../shared/domain/location-capture';
 
 export interface CreateDonationOfferProps {
   id: OfferId;
@@ -31,6 +35,8 @@ export interface CreateDonationOfferProps {
   notes: string | null;
   /** Restricted author attribution when filed via integration (#235). */
   author?: Author | null;
+  /** Restricted location capture metadata (private reference, method…). */
+  locationCapture?: LocationCapture | null;
 }
 
 /** Fields a coordinator may change. Omit a field to keep it. */
@@ -55,6 +61,8 @@ export interface DonationOfferSnapshot {
   updatedAt: Date;
   /** Optional (legacy-safe) restricted author attribution (#235). */
   author?: AuthorSnapshot | null;
+  /** Optional (legacy-safe) restricted location capture metadata. */
+  locationCapture?: LocationCaptureSnapshot | null;
 }
 
 /**
@@ -81,6 +89,7 @@ export class DonationOffer {
     public readonly createdAt: Date,
     private _updatedAt: Date,
     public readonly author: Author | null,
+    public readonly locationCapture: LocationCapture | null,
   ) {}
 
   static create(props: CreateDonationOfferProps): DonationOffer {
@@ -102,6 +111,7 @@ export class DonationOffer {
       now,
       now,
       props.author ?? null,
+      props.locationCapture ?? null,
     );
     offer.events.push(
       new OfferCreated(offer.id.value, {
@@ -127,6 +137,7 @@ export class DonationOffer {
       s.createdAt,
       s.updatedAt,
       s.author ? Author.fromSnapshot(s.author) : null,
+      LocationCapture.fromSnapshot(s.locationCapture),
     );
   }
 
@@ -239,6 +250,9 @@ export class DonationOffer {
       createdAt: this.createdAt,
       updatedAt: this._updatedAt,
       author: this.author ? this.author.toSnapshot() : null,
+      locationCapture: this.locationCapture
+        ? this.locationCapture.toSnapshot()
+        : null,
     };
   }
 

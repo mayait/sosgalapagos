@@ -28,6 +28,10 @@ import {
   SupplyLineSnapshot,
 } from '@globalemergency/warehouse-core/kernel';
 import { Author, AuthorSnapshot } from '../../../shared/domain/author';
+import {
+  LocationCapture,
+  LocationCaptureSnapshot,
+} from '../../../shared/domain/location-capture';
 
 export type Provenance = {
   sourceName: string;
@@ -64,6 +68,8 @@ export interface RegisterResourceProps {
   items?: SupplyLine[];
   /** Restricted author attribution when registered via integration (#235). */
   author?: Author | null;
+  /** Restricted location capture metadata (private reference, method…). */
+  locationCapture?: LocationCapture | null;
 }
 
 /** Fields a coordinator may change while verifying. Omit a field to keep it. */
@@ -113,6 +119,8 @@ export interface ResourceSnapshot {
   disputeDismissedAt?: Date | null;
   /** Optional (legacy-safe) restricted author attribution (#235). */
   author?: AuthorSnapshot | null;
+  /** Optional (legacy-safe) restricted location capture metadata. */
+  locationCapture?: LocationCaptureSnapshot | null;
 }
 
 /**
@@ -155,6 +163,7 @@ export class Resource {
     private _disputedAt: Date | null,
     private _disputeDismissedAt: Date | null,
     public readonly author: Author | null,
+    public readonly locationCapture: LocationCapture | null,
   ) {}
 
   static register(props: RegisterResourceProps): Resource {
@@ -188,6 +197,7 @@ export class Resource {
       null,
       null,
       props.author ?? null,
+      props.locationCapture ?? null,
     );
     r.events.push(
       new ResourceRegistered(r.id.value, {
@@ -230,6 +240,7 @@ export class Resource {
       s.disputedAt ?? null,
       s.disputeDismissedAt ?? null,
       s.author ? Author.fromSnapshot(s.author) : null,
+      LocationCapture.fromSnapshot(s.locationCapture),
     );
   }
 
@@ -535,6 +546,9 @@ export class Resource {
       disputedAt: this._disputedAt,
       disputeDismissedAt: this._disputeDismissedAt,
       author: this.author ? this.author.toSnapshot() : null,
+      locationCapture: this.locationCapture
+        ? this.locationCapture.toSnapshot()
+        : null,
     };
   }
 

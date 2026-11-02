@@ -5,6 +5,7 @@ import { requireSession } from '@/lib/auth';
 import { api } from '@/lib/api';
 import { OrgSelector } from '@/components/molecules/org-selector';
 import { LocationPicker } from '@/components/organisms/location-picker';
+import { getEmergencyMapView } from '@/lib/emergency-map-view';
 import { submitOffer } from './actions';
 import { DonarForm } from './donar-form';
 import { AppBar } from '@/components/organisms/app-bar';
@@ -46,7 +47,11 @@ export default async function DonarPage({ params, searchParams }: Props) {
     notFound();
   }
 
-  const categories = (await getCategories(locale)).filter(isMaterialCategory);
+  const [allCategories, mapView] = await Promise.all([
+    getCategories(locale),
+    getEmergencyMapView(emergency.id),
+  ]);
+  const categories = allCategories.filter(isMaterialCategory);
 
   const rawNeedId =
     typeof resolvedSearchParams.needId === 'string'
@@ -85,7 +90,14 @@ export default async function DonarPage({ params, searchParams }: Props) {
               slug={slug}
               targetNeedTitle={targetNeedTitle}
               targetNeedId={targetNeedId}
-              locationPicker={<LocationPicker />}
+              locationPicker={
+                <LocationPicker
+                  variant="donar"
+                  initialView={mapView.initialView}
+                  searchViewbox={mapView.searchViewbox}
+                  draftKey={`donar-${slug}`}
+                />
+              }
               orgSelector={<OrgSelector />}
               t={t.donar}
               backToEmergencyLabel={t.common.back_to_emergency}

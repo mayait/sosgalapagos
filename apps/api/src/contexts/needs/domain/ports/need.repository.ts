@@ -15,6 +15,11 @@ export interface NeedFilters {
 export interface NeedRepository {
   save(need: Need): Promise<void>;
   findById(id: NeedId): Promise<Need | null>;
+  /**
+   * Persist only the server-derived public zone label of a need (resolved
+   * asynchronously, after creation).
+   */
+  updateLocationZone(id: NeedId, zone: string | null): Promise<void>;
   findValidatedByEmergency(
     emergencyId: EmergencyId,
     filters?: NeedFilters,

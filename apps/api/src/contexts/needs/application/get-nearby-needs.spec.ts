@@ -156,8 +156,8 @@ describe('GetNearbyNeeds', () => {
     const useCase = new GetNearbyNeeds(repo);
 
     // A sensitive need located EXACTLY at the query point. Because its public
-    // view jitters the coordinates, the exposed distance is derived from the
-    // jittered point and must therefore be strictly greater than 0.
+    // view snaps the coordinates to a grid cell centre, the exposed distance is
+    // derived from that public point and must therefore be greater than 0.
     await repo.save(
       makeValidated(
         'Sensitive',
@@ -178,9 +178,9 @@ describe('GetNearbyNeeds', () => {
     expect(result.items).toHaveLength(1);
     const item = result.items[0];
     expect(item.locationSensitivity).toBe('approximate');
-    // Exposed distance comes from the jittered point (≤ 300 m jitter radius).
+    // Exposed distance comes from the snapped point (≤ half cell diagonal).
     expect(item.distanceMeters).toBeGreaterThan(0);
-    expect(item.distanceMeters).toBeLessThanOrEqual(350);
+    expect(item.distanceMeters).toBeLessThanOrEqual(354);
     // The exposed coordinates are not the exact origin.
     const movedLat = item.location.latitude !== ORIGIN_LAT;
     const movedLng = item.location.longitude !== ORIGIN_LNG;

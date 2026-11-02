@@ -12,6 +12,9 @@ import { SupplyLine } from '@globalemergency/warehouse-core/kernel';
 import { EmergencyNotAcceptingIntakeError } from '../../emergencies/domain/emergency-not-accepting-intake.error';
 import { LocationSensitivity } from '../../../shared/domain/location-sensitivity';
 import { Author, AuthorProps } from '../../../shared/domain/author';
+import { LocationCapture } from '../../../shared/domain/location-capture';
+import { NeedZoneQueue } from '../domain/ports/need-zone';
+import { scheduleMissingZones } from './resolve-need-zone';
 
 const ACTIVE_STATUS = 'active';
 
@@ -31,6 +34,12 @@ export interface CreateNeedLocationCommand {
   address: string;
   latitude: number;
   longitude: number;
+  /** PRIVATE directions (coordinators only). */
+  reference?: string | null;
+  /** How the point was set (gps / map / search / link / zone). */
+  method?: string | null;
+  /** GPS accuracy in metres; stored as a bucket. */
+  accuracyM?: number | null;
 }
 
 export interface CreateNeedCommand {
@@ -66,6 +75,11 @@ export class CreateNeed {
      * (fail closed) rather than persisted unverified.
      */
     private readonly resourceReader?: NeedResourceReader,
+    /**
+     * Optional — schedules the background resolution of the public zone
+     * label of approximate needs (kept out of the request hot path).
+     */
+    private readonly zoneQueue?: NeedZoneQueue,
   ) {}
 
   async execute(cmd: CreateNeedCommand): Promise<{ id: string }> {
@@ -94,6 +108,12 @@ export class CreateNeed {
       address: cmd.location.address,
       latitude: cmd.location.latitude,
       longitude: cmd.location.longitude,
+    });
+
+    const locationCapture = LocationCapture.create({
+      reference: cmd.location.reference ?? null,
+      method: cmd.location.method ?? null,
+      accuracyM: cmd.location.accuracyM ?? null,
     });
 
     const items = cmd.items.map((i) =>
@@ -132,10 +152,12 @@ export class CreateNeed {
       requestedCount: cmd.requestedCount ?? null,
       resourceId: cmd.resourceId ?? null,
       author: cmd.author ? Author.create(cmd.author) : null,
+      locationCapture,
     });
 
     await this.repo.save(need);
     await this.bus.publish(need.pullDomainEvents());
+    scheduleMissingZones(this.zoneQueue, [need]);
     return { id: need.id.value };
   }
 }

@@ -52,6 +52,11 @@ export const resourcesTable = pgTable('resources', {
   occupancy: integer('occupancy'),
   sourceOrganisation: text('source_organisation'),
   sourceUrl: text('source_url'),
+  // restricted location capture metadata (0060_location_reference_zone).
+  // location_reference is PRIVATE: never selected into public views.
+  locationReference: text('location_reference'),
+  locationMethod: text('location_method'),
+  locationAccuracy: text('location_accuracy'),
 });
 
 // Reportes ciudadanos de validez de un punto (0031_resource_validity_reports):

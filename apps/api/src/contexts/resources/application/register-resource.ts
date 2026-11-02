@@ -8,6 +8,7 @@ import { EmergencyId } from '../../../shared/domain/emergency-id';
 import { ResourceType } from '../domain/resource-enums';
 import { Location, LocationProps } from '../../../shared/domain/location';
 import { Author, AuthorProps } from '../../../shared/domain/author';
+import { LocationCapture } from '../../../shared/domain/location-capture';
 import { EmergencyNotAcceptingIntakeError } from '../../emergencies/domain/emergency-not-accepting-intake.error';
 
 const ACTIVE_STATUS = 'active';
@@ -17,7 +18,12 @@ export interface RegisterResourceCommand {
   type: ResourceType;
   name: string;
   description?: string | null;
-  location: LocationProps;
+  location: LocationProps & {
+    /** PRIVATE directions (owner / coordinators only). */
+    reference?: string | null;
+    method?: string | null;
+    accuracyM?: number | null;
+  };
   ownerUserId: string;
   ownerOrganizationId?: string | null;
   // enriched optional fields
@@ -72,7 +78,16 @@ export class RegisterResource {
       type: cmd.type,
       name: cmd.name,
       description: cmd.description ?? null,
-      location: Location.create(cmd.location),
+      location: Location.create({
+        address: cmd.location.address,
+        latitude: cmd.location.latitude,
+        longitude: cmd.location.longitude,
+      }),
+      locationCapture: LocationCapture.create({
+        reference: cmd.location.reference ?? null,
+        method: cmd.location.method ?? null,
+        accuracyM: cmd.location.accuracyM ?? null,
+      }),
       ownerUserId: cmd.ownerUserId,
       ownerOrganizationId: cmd.ownerOrganizationId ?? null,
       contact: cmd.contact ?? null,

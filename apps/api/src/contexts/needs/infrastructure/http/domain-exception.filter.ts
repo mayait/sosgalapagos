@@ -14,6 +14,7 @@ import {
 } from '../../domain/need-errors';
 import { EmergencyNotAcceptingIntakeError } from '../../../emergencies/domain/emergency-not-accepting-intake.error';
 import { InvalidAuthorError } from '../../../../shared/domain/author';
+import { InvalidLocationCaptureError } from '../../../../shared/domain/location-capture';
 import { SupplyLineValidationError } from '@globalemergency/warehouse-core/kernel';
 
 type DomainError =
@@ -24,6 +25,7 @@ type DomainError =
   | NeedResourceNotInEmergencyError
   | EmergencyNotAcceptingIntakeError
   | InvalidAuthorError
+  | InvalidLocationCaptureError
   | SupplyLineValidationError;
 
 // Only catches domain errors from the needs context; everything else falls through
@@ -36,6 +38,7 @@ type DomainError =
   NeedResourceNotInEmergencyError,
   EmergencyNotAcceptingIntakeError,
   InvalidAuthorError,
+  InvalidLocationCaptureError,
   SupplyLineValidationError,
 )
 export class NeedsDomainExceptionFilter implements ExceptionFilter {
@@ -47,6 +50,7 @@ export class NeedsDomainExceptionFilter implements ExceptionFilter {
         : exception instanceof NeedTitleRequiredError ||
             exception instanceof NeedResourceNotInEmergencyError ||
             exception instanceof InvalidAuthorError ||
+            exception instanceof InvalidLocationCaptureError ||
             exception instanceof SupplyLineValidationError
           ? HttpStatus.BAD_REQUEST
           : HttpStatus.CONFLICT;

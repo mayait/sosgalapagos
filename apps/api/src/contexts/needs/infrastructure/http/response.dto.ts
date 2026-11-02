@@ -3,6 +3,7 @@ import { Priority, NeedStatus, PersonnelSkill } from '../../domain/need-enums';
 import { LocationSensitivity } from '../../../../shared/domain/location-sensitivity';
 import { SupplyLineResponseDto } from '../../../supplies/infrastructure/http/supply-line.dto';
 import { AuthorResponseDto } from '../../../../shared/infrastructure/http/author.dto';
+import { LocationDetailsResponseDto } from '../../../../shared/infrastructure/http/location-capture.dto';
 
 export class CreateNeedResponseDto {
   @ApiProperty({
@@ -14,20 +15,36 @@ export class CreateNeedResponseDto {
 
 export class NeedLocationResponseDto {
   @ApiPropertyOptional({
-    example: 'Caracas',
+    example: 'Chacao, Caracas',
     nullable: true,
     type: String,
     description:
-      'Street line is coarsened (locality only) or dropped for needs with ' +
-      'approximate location sensitivity to protect the requester’s privacy.',
+      'For needs with approximate location sensitivity this is ONLY a ' +
+      'server-derived area label (or a generic "approximate zone" text), ' +
+      'never the submitted address. Coordinators get the exact address.',
   })
   address!: string | null;
 
-  @ApiProperty({ example: 10.4806 })
+  @ApiProperty({
+    example: 10.4806,
+    description:
+      'For approximate needs: centre of a fixed ~500 m grid cell (the same ' +
+      'place always yields the same public point).',
+  })
   latitude!: number;
 
   @ApiProperty({ example: -66.9036 })
   longitude!: number;
+
+  @ApiPropertyOptional({
+    example: 'Chacao, Caracas',
+    nullable: true,
+    type: String,
+    description:
+      'Server-derived area label (neighbourhood / locality) of the public ' +
+      'point of an approximate need; null until resolved or when exact.',
+  })
+  zone!: string | null;
 }
 
 export class NeedViewDto {
@@ -60,7 +77,8 @@ export class NeedViewDto {
     enum: ['public', 'approximate'],
     example: 'approximate',
     description:
-      'When "approximate", the coordinates in location are jittered for privacy. ' +
+      'When "approximate", the coordinates in location are snapped to a fixed grid ' +
+      'cell centre for privacy (draw an area of approxRadiusMeters, not a pin). ' +
       'Coordinators always receive exact coordinates regardless of this value.',
   })
   locationSensitivity!: LocationSensitivity;
@@ -128,6 +146,16 @@ export class NeedViewDto {
       'Linked resource / final recipient id (#60), or null if standalone.',
   })
   resourceId!: string | null;
+
+  @ApiPropertyOptional({
+    example: 354,
+    nullable: true,
+    type: Number,
+    description:
+      'Approximate needs only: the real location lies within this many ' +
+      'metres of the public point. Null when the location is exact.',
+  })
+  approxRadiusMeters!: number | null;
 }
 
 /** A validated need annotated with its distance from the queried point (#57). */
@@ -170,6 +198,16 @@ export class CoordinatorNeedViewDto extends NeedViewDto {
       'on their behalf (#235). Coordinator-only — never returned publicly.',
   })
   author!: AuthorResponseDto | null;
+
+  @ApiPropertyOptional({
+    type: LocationDetailsResponseDto,
+    nullable: true,
+    description:
+      'Restricted capture metadata of the location: private reference ' +
+      '(directions), capture method and GPS accuracy bucket. ' +
+      'Coordinator-only — never returned publicly.',
+  })
+  locationDetails!: LocationDetailsResponseDto | null;
 }
 
 export class VolunteerSuggestionDto {

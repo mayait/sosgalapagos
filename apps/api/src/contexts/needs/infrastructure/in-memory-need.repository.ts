@@ -13,6 +13,12 @@ export class InMemoryNeedRepository implements NeedRepository {
     return Promise.resolve();
   }
 
+  updateLocationZone(id: NeedId, zone: string | null): Promise<void> {
+    const snap = this.store.get(id.value);
+    if (snap) this.store.set(id.value, { ...snap, locationZone: zone });
+    return Promise.resolve();
+  }
+
   findById(id: NeedId): Promise<Need | null> {
     const snap = this.store.get(id.value);
     return Promise.resolve(snap ? Need.fromSnapshot(snap) : null);

@@ -17,6 +17,10 @@ import {
 } from '@globalemergency/warehouse-core/kernel';
 import { LocationSensitivity } from '../../../shared/domain/location-sensitivity';
 import { Author, AuthorSnapshot } from '../../../shared/domain/author';
+import {
+  LocationCapture,
+  LocationCaptureSnapshot,
+} from '../../../shared/domain/location-capture';
 
 /** Hours a validated need stays visible before it expires. */
 export const NEED_VALIDITY_HOURS = 48;
@@ -52,6 +56,11 @@ export interface CreateNeedProps {
    * RESTRICTED — never exposed on public reads.
    */
   author?: Author | null;
+  /**
+   * Optional capture metadata of the location (private reference, method,
+   * accuracy bucket). RESTRICTED — the reference is never exposed publicly.
+   */
+  locationCapture?: LocationCapture | null;
 }
 
 /** Fields a coordinator may change while validating. Omit a field to keep it. */
@@ -86,6 +95,13 @@ export interface NeedSnapshot {
   resourceId?: string | null;
   /** Optional (legacy-safe) restricted author attribution (#235). */
   author?: AuthorSnapshot | null;
+  /** Optional (legacy-safe) restricted location capture metadata. */
+  locationCapture?: LocationCaptureSnapshot | null;
+  /**
+   * Optional server-derived public zone label (neighbourhood / locality of
+   * the snapped public point). Null until resolved.
+   */
+  locationZone?: string | null;
 }
 
 export class Need {
@@ -113,6 +129,8 @@ export class Need {
     public readonly requestedCount: number | null,
     public readonly resourceId: string | null,
     public readonly author: Author | null,
+    public readonly locationCapture: LocationCapture | null,
+    private _locationZone: string | null,
   ) {}
 
   static create(props: CreateNeedProps): Need {
@@ -148,6 +166,8 @@ export class Need {
       props.requestedCount ?? null,
       props.resourceId ?? null,
       props.author ?? null,
+      props.locationCapture ?? null,
+      null,
     );
     need.events.push(
       new NeedCreated(need.id.value, {
@@ -181,6 +201,8 @@ export class Need {
       s.requestedCount ?? null,
       s.resourceId ?? null,
       s.author ? Author.fromSnapshot(s.author) : null,
+      LocationCapture.fromSnapshot(s.locationCapture),
+      s.locationZone ?? null,
     );
   }
 
@@ -210,6 +232,16 @@ export class Need {
 
   get lastVerifiedAt(): Date | null {
     return this._lastVerifiedAt;
+  }
+
+  /** Server-derived public zone label, or null when not (yet) resolved. */
+  get locationZone(): string | null {
+    return this._locationZone;
+  }
+
+  /** Record the server-derived public zone (blank → null). */
+  setLocationZone(zone: string | null): void {
+    this._locationZone = zone?.trim() || null;
   }
 
   validate(): void {
@@ -317,6 +349,10 @@ export class Need {
       requestedCount: this.requestedCount,
       resourceId: this.resourceId,
       author: this.author ? this.author.toSnapshot() : null,
+      locationCapture: this.locationCapture
+        ? this.locationCapture.toSnapshot()
+        : null,
+      locationZone: this._locationZone,
     };
   }
 

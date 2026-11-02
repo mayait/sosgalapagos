@@ -25,7 +25,10 @@ import {
   ApiUnauthorizedResponse,
   ApiForbiddenResponse,
   ApiOkResponse,
+  ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
+import { NeedCreationThrottlerGuard } from './need-creation-throttler.guard';
+import { toLocationCaptureInput } from '../../../../shared/infrastructure/http/location-capture.dto';
 import { CreateNeed } from '../../application/create-need';
 import { ValidateNeed } from '../../application/validate-need';
 import { EditNeed, EditNeedCommand } from '../../application/edit-need';
@@ -59,6 +62,7 @@ import {
 import { setAuditContext } from '../../../audit/infrastructure/http/audit-context';
 import {
   CreateNeedResponseDto,
+  CoordinatorNeedViewDto,
   NeedViewDto,
   NearbyNeedsResponseDto,
   InBoundsNeedsDto,
@@ -102,7 +106,11 @@ export class NeedsController {
 
   @Post('emergencies/:emergencyId/needs')
   @HttpCode(201)
-  @UseGuards(JwtOrApiKeyAuthGuard, ServiceAccountPermissionGuard)
+  @UseGuards(
+    JwtOrApiKeyAuthGuard,
+    ServiceAccountPermissionGuard,
+    NeedCreationThrottlerGuard,
+  )
   @RequirePermission('need:create')
   @ApiBearerAuth()
   @ApiSecurity('api-key')
@@ -131,6 +139,11 @@ export class NeedsController {
   @ApiForbiddenResponse({
     description: 'Service account lacks the need:create grant at this scope',
   })
+  @ApiTooManyRequestsResponse({
+    description:
+      'Too many needs filed (10 per hour per user and per IP; coordinators ' +
+      'and integrations are exempt)',
+  })
   async create(
     @Param('emergencyId', ParseUUIDPipe) emergencyId: string,
     @Body() dto: CreateNeedDto,
@@ -147,6 +160,7 @@ export class NeedsController {
         address: dto.location.address,
         latitude: dto.location.latitude,
         longitude: dto.location.longitude,
+        ...toLocationCaptureInput(dto.location),
       },
       priority: dto.priority,
       items: dto.items.map((i) => ({
@@ -324,7 +338,10 @@ export class NeedsController {
     required: false,
     description: 'Filter by need priority',
   })
-  @ApiOkResponse({ description: 'List of pending needs', type: [NeedViewDto] })
+  @ApiOkResponse({
+    description: 'List of pending needs',
+    type: [CoordinatorNeedViewDto],
+  })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
   @ApiForbiddenResponse({
     description: 'Coordinator role required for this emergency',
@@ -467,7 +484,7 @@ export class NeedsController {
     summary: 'Renew a need (reset expiresAt to now+48h) — coordinator only',
   })
   @ApiParam({ name: 'needId', description: 'Need UUID', format: 'uuid' })
-  @ApiOkResponse({ description: 'Need renewed', type: NeedViewDto })
+  @ApiOkResponse({ description: 'Need renewed', type: CoordinatorNeedViewDto })
   @ApiNotFoundResponse({ description: 'Need not found' })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
   @ApiForbiddenResponse({ description: 'Coordinator role required' })
@@ -491,7 +508,7 @@ export class NeedsController {
   })
   @ApiOkResponse({
     description: 'List of expired validated needs',
-    type: [NeedViewDto],
+    type: [CoordinatorNeedViewDto],
   })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
   @ApiForbiddenResponse({ description: 'Coordinator role required' })
