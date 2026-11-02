@@ -2,6 +2,7 @@ import {
   GeocodeResult,
   GeocodingProvider,
   ReverseGeocodeResult,
+  SearchBias,
 } from '../domain/ports/geocoding.provider';
 import { LruTtlCache } from './lru-ttl-cache';
 import { MinIntervalGate } from './min-interval-gate';
@@ -203,13 +204,25 @@ export class NominatimGeocodingProvider implements GeocodingProvider {
       options.fetchFn ?? ((input, init) => globalThis.fetch(input, init));
   }
 
-  async search(query: string): Promise<GeocodeResult[]> {
-    const cached = this.searchCache.get(query);
+  /**
+   * Free-text search. An optional viewbox only BIASES ranking
+   * (`bounded=0`): results outside it are still returned. We never send
+   * `countrycodes` — emergencies cross borders and aid points can be abroad.
+   */
+  async search(query: string, bias?: SearchBias): Promise<GeocodeResult[]> {
+    const viewbox = bias?.viewbox
+      ? `${bias.viewbox.west},${bias.viewbox.south},${bias.viewbox.east},${bias.viewbox.north}`
+      : '';
+    const lang = bias?.lang ?? '';
+    const key = `${query}|${viewbox}|${lang}`;
+    const cached = this.searchCache.get(key);
     if (cached) return cached.value;
 
     const url =
       `${this.baseUrl}/search` +
-      `?format=jsonv2&addressdetails=0&limit=5&q=${encodeURIComponent(query)}`;
+      `?format=jsonv2&addressdetails=0&limit=5&q=${encodeURIComponent(query)}` +
+      (viewbox ? `&viewbox=${encodeURIComponent(viewbox)}&bounded=0` : '') +
+      (lang ? `&accept-language=${encodeURIComponent(lang)}` : '');
 
     const items = await this.gate.run(
       () => this.fetchJson<NominatimItem[]>(url),
@@ -225,7 +238,7 @@ export class NominatimGeocodingProvider implements GeocodingProvider {
       longitude: Number(item.lon),
     }));
 
-    this.searchCache.set(query, results);
+    this.searchCache.set(key, results);
     return results;
   }
 

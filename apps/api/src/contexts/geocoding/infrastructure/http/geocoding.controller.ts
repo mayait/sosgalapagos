@@ -44,14 +44,38 @@ export class GeocodingController {
     description: 'Address or place name to search',
     example: 'Madrid',
   })
+  @ApiQuery({
+    name: 'viewbox',
+    required: false,
+    description:
+      'Bias results towards this box: `west,south,east,north` in degrees. ' +
+      'A preference only (results outside are still returned). Ignored when ' +
+      'malformed.',
+    example: '-3.80,40.35,-3.60,40.50',
+  })
+  @ApiQuery({
+    name: 'lang',
+    required: false,
+    description:
+      'Preferred label language (`xx` or `xx-YY`). Anything else is ignored.',
+    example: 'es',
+  })
   @ApiOkResponse({
     description:
       'Geocoding results (empty array when query is shorter than 3 characters)',
     type: GeocodeResultDto,
     isArray: true,
   })
-  async search(@Query('q') q = ''): Promise<GeocodeResult[]> {
-    return this.searchAddress.execute({ query: q });
+  async search(
+    @Query('q') q = '',
+    @Query('viewbox') viewbox?: string,
+    @Query('lang') lang?: string,
+  ): Promise<GeocodeResult[]> {
+    return this.searchAddress.execute({
+      query: typeof q === 'string' ? q : '',
+      viewbox: typeof viewbox === 'string' ? viewbox : undefined,
+      lang: typeof lang === 'string' ? lang : undefined,
+    });
   }
 
   @Get('reverse')

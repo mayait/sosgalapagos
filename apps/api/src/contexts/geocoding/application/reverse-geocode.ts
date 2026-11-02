@@ -2,6 +2,7 @@ import {
   GeocodingProvider,
   ReverseGeocodeResult,
 } from '../domain/ports/geocoding.provider';
+import { sanitizeLang } from './geocode-params';
 
 export interface ReverseGeocodeQuery {
   latitude: number;
@@ -30,9 +31,6 @@ export class InvalidReverseGeocodeQueryError extends Error {
  */
 export const REVERSE_DECIMALS = 4;
 
-/** BCP-47-ish language allowlist: `es`, `en`, `pt-BR`… */
-const LANG_PATTERN = /^[a-z]{2}(-[A-Z]{2})?$/;
-
 export function roundCoordinate(value: number, decimals = REVERSE_DECIMALS) {
   const factor = 10 ** decimals;
   const rounded = Math.round(value * factor) / factor;
@@ -40,12 +38,7 @@ export function roundCoordinate(value: number, decimals = REVERSE_DECIMALS) {
   return rounded === 0 ? 0 : rounded;
 }
 
-/** Returns the language when it matches the allowlist, else `undefined`. */
-export function sanitizeLang(lang: string | undefined): string | undefined {
-  if (lang === undefined) return undefined;
-  const trimmed = lang.trim();
-  return LANG_PATTERN.test(trimmed) ? trimmed : undefined;
-}
+export { sanitizeLang };
 
 function assertCoordinates(latitude: number, longitude: number): void {
   if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {

@@ -18,8 +18,23 @@ export interface ReverseGeocodeResult {
   zone: string | null;
 }
 
+/** Bounding box (degrees) used to bias a search towards an area. */
+export interface SearchViewbox {
+  west: number;
+  south: number;
+  east: number;
+  north: number;
+}
+
+export interface SearchBias {
+  /** Prefer results inside this box — a preference, never a restriction. */
+  viewbox?: SearchViewbox;
+  /** Preferred language of the labels (already sanitized). */
+  lang?: string;
+}
+
 export interface GeocodingProvider {
-  search(query: string): Promise<GeocodeResult[]>;
+  search(query: string, bias?: SearchBias): Promise<GeocodeResult[]>;
   /**
    * Reverse-geocode a point. Resolves `null` when nothing is found OR the
    * upstream is unavailable — callers must treat it as "no label".

@@ -210,4 +210,41 @@ describe('NominatimGeocodingProvider — configuration & usage policy', () => {
 
     expect(fetchFn).toHaveBeenCalledTimes(3);
   });
+
+  it('sends the viewbox as a bias (bounded=0) and never countrycodes', async () => {
+    const fetchFn = makeFetchMock(NOMINATIM_RESPONSE);
+    const provider = new NominatimGeocodingProvider({
+      fetchFn,
+      gate: openGate(),
+    });
+
+    await provider.search('Mercado', {
+      viewbox: { west: -3.8, south: 40.35, east: -3.6, north: 40.5 },
+      lang: 'es',
+    });
+
+    const [url] = fetchFn.mock.calls[0] as [string];
+    expect(url).toContain(
+      `viewbox=${encodeURIComponent('-3.8,40.35,-3.6,40.5')}`,
+    );
+    expect(url).toContain('bounded=0');
+    expect(url).toContain('accept-language=es');
+    expect(url).not.toContain('countrycodes');
+  });
+
+  it('keys the cache by query + viewbox + language', async () => {
+    const fetchFn = makeFetchMock(NOMINATIM_RESPONSE);
+    const provider = new NominatimGeocodingProvider({
+      fetchFn,
+      gate: openGate(),
+    });
+    const viewbox = { west: 0, south: 0, east: 1, north: 1 };
+
+    await provider.search('Mercado');
+    await provider.search('Mercado', { viewbox });
+    await provider.search('Mercado', { viewbox, lang: 'en' });
+    await provider.search('Mercado', { viewbox, lang: 'en' });
+
+    expect(fetchFn).toHaveBeenCalledTimes(3);
+  });
 });
