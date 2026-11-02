@@ -91,6 +91,15 @@ services:
     expose:
       - '3001'
 
+  # Comentarios públicos de /estudios (servicio mínimo: Python + SQLite).
+  comentarios:
+    build: ./comentarios
+    restart: unless-stopped
+    volumes:
+      - comentariosdata:/datos
+    expose:
+      - '8080'
+
   caddy:
     image: caddy:2
     restart: unless-stopped
@@ -98,6 +107,7 @@ services:
     depends_on:
       - web
       - api
+      - comentarios
     # Solo IPv4: Cloudflare llega por el registro A, y el filtro de
     # firewall-cloudflare.sh (cadena DOCKER-USER) es de iptables IPv4.
     ports:
@@ -106,6 +116,7 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - /srv/sosgalapagos-mapas:/srv/mapas:ro
+      - /srv/sosgalapagos-estudios:/srv/estudios:ro
       - caddydata:/data
       - caddyconfig:/config
       # Sitios privados con contraseña (configuración y archivos solo en el servidor).
@@ -113,6 +124,7 @@ services:
       - /srv/sosgalapagos-privado/sitios:/srv/privado:ro
 
 volumes:
+  comentariosdata:
   pgdata:
   redisdata:
   uploads:

@@ -55,6 +55,25 @@ www.{$SITE_DOMAIN} {
 		}
 	}
 
+	# Estudios técnicos (páginas estáticas en /srv/sosgalapagos-estudios, publicadas con
+	# geodatos/scripts/publicar_estudios.sh) y su API de comentarios.
+	handle_path /estudios/api/* {
+		reverse_proxy comentarios:8080
+	}
+	redir /estudios /estudios/ permanent
+	handle_path /estudios/* {
+		root * /srv/estudios
+		@paginas path / *.html */ *.json
+		header @paginas Cache-Control "no-cache"
+		@recursos not path / *.html */ *.json
+		header @recursos Cache-Control "public, max-age=600, stale-while-revalidate=86400"
+		@geojson path *.geojson
+		header @geojson Content-Type "application/geo+json; charset=utf-8"
+		file_server {
+			precompressed gzip
+		}
+	}
+
 	# Sitios privados con contraseña que no viven en este repositorio. Cada archivo
 	# /srv/sosgalapagos-privado/caddy/*.caddy del servidor define su ruta, su usuario
 	# y el hash de su contraseña, y sirve archivos de /srv/sosgalapagos-privado/sitios.
