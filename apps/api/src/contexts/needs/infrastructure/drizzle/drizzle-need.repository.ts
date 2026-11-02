@@ -113,6 +113,11 @@ export class DrizzleNeedRepository implements NeedRepository {
         .onConflictDoUpdate({
           target: needsTable.id,
           set: {
+            // Editables en moderación (PATCH /needs/:id): sin esto la edición
+            // devolvía 204 y quedaba en la auditoría, pero no se guardaba.
+            title: s.title,
+            description: s.description,
+            priority: s.priority,
             status: s.status,
             managingOrganizationId: s.managingOrganizationId,
             expiresAt: s.expiresAt,
