@@ -108,6 +108,9 @@ services:
       - /srv/sosgalapagos-mapas:/srv/mapas:ro
       - caddydata:/data
       - caddyconfig:/config
+      # Sitios privados con contraseña (configuración y archivos solo en el servidor).
+      - /srv/sosgalapagos-privado/caddy:/etc/caddy/privado:ro
+      - /srv/sosgalapagos-privado/sitios:/srv/privado:ro
 
 volumes:
   pgdata:
