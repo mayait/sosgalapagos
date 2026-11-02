@@ -24,6 +24,10 @@ export default function PrivacidadPage() {
         <li>Lo que pones en los formularios (cuenta, voluntariado, donaciones): nombre, correo y teléfono.</li>
         <li>Como voluntario, además: tus habilidades, disponibilidad y vehículo.</li>
         <li>Si entras con Google o Facebook, solo recibimos tu nombre y correo.</li>
+        <li>
+          La ubicación que marcas al pedir ayuda, registrar un punto u ofrecer una donación, y la referencia para llegar
+          si la escribes.
+        </li>
       </ul>
 
       <h2>Para qué</h2>
@@ -31,6 +35,26 @@ export default function PrivacidadPage() {
 
       <h2>Quién los ve</h2>
       <p>Solo el equipo de coordinación. Lo que publicas (necesidades, puntos de acopio) es público, sin datos personales.</p>
+
+      <h2>La ubicación de las peticiones</h2>
+      <p>
+        El punto exacto que marcas al pedir ayuda y la referencia para llegar solo los ve el equipo de coordinación. En
+        el mapa público solo aparece la zona aproximada, un círculo de unos 500 metros, nunca el punto exacto. Los puntos
+        de acopio sí se publican en su lugar exacto, para que la gente pueda llegar.
+      </p>
+
+      <h2>Servicios de terceros</h2>
+      <ul>
+        <li>
+          El mapa usa OpenStreetMap: tu navegador descarga las imágenes del mapa desde sus servidores, que ven tu
+          dirección IP como cualquier página web.
+        </li>
+        <li>
+          Para buscar lugares y nombrar la zona usamos Nominatim, de OpenStreetMap. Lo consultamos desde nuestro
+          servidor y solo le enviamos el texto que buscas o coordenadas redondeadas (a unos 10 metros), sin tus datos.
+        </li>
+        <li>«Usar mi ubicación» solo funciona si das permiso en tu teléfono o navegador.</li>
+      </ul>
 
       <h2>Tus derechos</h2>
       <p>
@@ -40,7 +64,11 @@ export default function PrivacidadPage() {
       </p>
 
       <h2>Cuánto tiempo</h2>
-      <p>Mientras dure la emergencia. Después borramos o anonimizamos los datos personales.</p>
+      <p>
+        Mientras dure la emergencia. Después borramos o anonimizamos los datos personales, incluidos el punto exacto y la
+        referencia de las peticiones. Si marcas una ubicación en un formulario y no lo envías, queda guardada solo en tu
+        navegador y se borra a las 24 horas o al enviarlo.
+      </p>
     </main>
   );
 }
