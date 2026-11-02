@@ -126,6 +126,10 @@ export async function submitPeticion(
     return redirectToLogin(peticionPath);
   }
 
+  if (response.status === 429) {
+    return { status: 'error', message: t.peticion.err_rate_limited };
+  }
+
   if (response.status === 409) {
     return {
       status: 'error',

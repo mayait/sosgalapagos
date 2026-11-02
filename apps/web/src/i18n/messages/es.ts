@@ -715,6 +715,8 @@ export const es = {
     // server-action messages
     err_title_too_short: 'El título debe tener al menos 2 caracteres.',
     err_invalid_priority: 'Prioridad no válida.',
+    err_rate_limited:
+      'Has enviado muchas peticiones en poco tiempo. Espera un rato y vuelve a intentarlo, o escribe a coordinación si es urgente.',
     err_location_required: 'Marca la ubicación: usa tu ubicación, márcala en el mapa o busca un lugar conocido.',
     err_items_required: 'Añade al menos un artículo.',
     err_invalid_items: 'Revisa los artículos: cada uno necesita nombre, cantidad y categoría.',
