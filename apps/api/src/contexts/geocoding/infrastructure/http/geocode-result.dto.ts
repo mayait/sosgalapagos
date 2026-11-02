@@ -49,6 +49,16 @@ export class ReverseGeocodeQueryDto {
   lang?: string;
 }
 
+export class ExpandMapLinkResponseDto {
+  @ApiProperty({
+    example: 'https://www.google.com/maps/place/40.4168,-3.7038',
+    description:
+      'Final map URL the short link redirects to (never fetched by the ' +
+      'server; the client parses the coordinates from it).',
+  })
+  url!: string;
+}
+
 export class ReverseGeocodeResponseDto {
   @ApiProperty({
     example: 'Calle Mayor, Sol, Madrid, Comunidad de Madrid',
