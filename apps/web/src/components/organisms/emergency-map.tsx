@@ -64,11 +64,17 @@ export interface MapPoint {
   /** Only meaningful for kind === 'resource'. Controls marker colour. */
   status?: ResourcePublicStatus;
   /**
-   * F09 — When true the coordinates are approximate (±300 m jitter applied
-   * by the backend). An uncertainty circle is drawn around the marker.
+   * F09 — When true the coordinates are approximate (the backend snaps them to
+   * a fixed grid). The need is drawn as a shaded zone with no centre pin.
    * Only meaningful for kind === 'need'. Resources are always 'public'.
    */
   approximate?: boolean;
+  /**
+   * Radius in meters of the public zone of an approximate need: the API snaps
+   * the point to the centre of a fixed grid cell and sends the radius that
+   * covers it (354 m for a 500 m cell). Defaults to 500 m when absent.
+   */
+  approxRadiusMeters?: number;
   /** Rich popup fields — only present for kind === 'resource' (Task 8) */
   resourceType?: string;
   city?: string | null;
@@ -114,43 +120,61 @@ interface EmergencyMapProps {
   slug?: string;
 }
 
-// ── Inner component that draws uncertainty circles for approximate needs ──────
-const APPROX_RADIUS_METERS = 300;
-const APPROX_CIRCLE_OPTIONS: L.CircleOptions = {
-  radius: APPROX_RADIUS_METERS,
-  color: '#ef4444',       // red-500 — matches the need marker colour
-  fillColor: '#ef4444',
-  fillOpacity: 0.08,
-  weight: 1,
-  opacity: 0.35,
-  interactive: false,
+// ── Inner component that draws the shaded zone of approximate needs ──────────
+// Approximate needs (private requesters) are shown ONLY as a shaded zone, with
+// no pin in the centre: a pin would suggest an exact location. The zone is
+// clickable and opens the same popup as a marker.
+const DEFAULT_APPROX_RADIUS_METERS = 500;
+const APPROX_ZONE_OPTIONS: L.CircleOptions = {
+  color: '#e11b22', // brand accent — same family as the need marker
+  fillColor: '#e11b22',
+  fillOpacity: 0.16,
+  weight: 1.5,
+  opacity: 0.55,
+  interactive: true,
 };
 
-function ApproximateCirclesLayer({ points }: { points: MapPoint[] }) {
+export function isApproximateNeed(p: MapPoint): boolean {
+  return p.kind === 'need' && p.approximate === true;
+}
+
+function ApproximateZonesLayer({ points, slug }: { points: MapPoint[]; slug?: string }) {
   const map = useMap();
+  const locale = useLocale();
   const groupRef = useRef<L.LayerGroup | null>(null);
 
-  const approximatePoints = points.filter(
-    (p) => p.kind === 'need' && p.approximate === true,
-  );
-
   useEffect(() => {
+    const tc = getMessages(locale).ui;
     if (groupRef.current === null) {
       groupRef.current = L.layerGroup().addTo(map);
     }
     const group = groupRef.current;
     group.clearLayers();
 
-    for (const p of approximatePoints) {
-      L.circle([p.lat, p.lng], APPROX_CIRCLE_OPTIONS).addTo(group);
+    for (const p of points) {
+      if (!isApproximateNeed(p)) continue;
+      const radius =
+        p.approxRadiusMeters !== undefined && p.approxRadiusMeters > 0
+          ? p.approxRadiusMeters
+          : DEFAULT_APPROX_RADIUS_METERS;
+      L.circle([p.lat, p.lng], { ...APPROX_ZONE_OPTIONS, radius })
+        .bindPopup(buildPopupHtml(p, tc, slug))
+        .addTo(group);
     }
 
     return () => {
       group.clearLayers();
     };
-  // approximatePoints is derived — we depend on points identity instead
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [map, points]);
+  }, [map, points, locale, slug]);
+
+  useEffect(() => {
+    return () => {
+      if (groupRef.current !== null) {
+        map.removeLayer(groupRef.current);
+        groupRef.current = null;
+      }
+    };
+  }, [map]);
 
   return null;
 }
@@ -163,6 +187,56 @@ function escapeHtml(s: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+// ── Popup HTML (markers and approximate zones) ──────────────────────────────
+function buildPopupHtml(
+  point: MapPoint,
+  tc: ReturnType<typeof getMessages>['ui'],
+  slug?: string,
+): string {
+  // Build rich popup HTML — all free-text values are escaped to prevent XSS
+  const kindLabel = point.kind === 'resource' ? tc.map_kind_resource : tc.map_kind_need;
+  const typeLabel =
+    point.resourceType != null && point.resourceType !== ''
+      ? `<br/><span style="font-size:11px;color:#555;">${escapeHtml(point.resourceType)}</span>`
+      : '';
+  const locationParts: string[] = [];
+  if (point.city != null && point.city !== '') locationParts.push(escapeHtml(point.city));
+  if (point.country != null && point.country !== '') locationParts.push(escapeHtml(point.country));
+  const locationLabel =
+    locationParts.length > 0
+      ? `<br/><span style="font-size:11px;color:#555;">${locationParts.join(', ')}</span>`
+      : '';
+  const acceptsLabel =
+    point.accepts != null && point.accepts.length > 0
+      ? `<br/><span style="font-size:11px;color:#555;">${escapeHtml(tc.map_accepts)} ${point.accepts.map(escapeHtml).join(', ')}</span>`
+      : '';
+  const approximateLabel =
+    point.kind === 'need' && point.approximate === true
+      ? `<br/><span style="font-size:11px;color:#b45309;">📍 ${escapeHtml(tc.map_approx_location)}</span>`
+      : '';
+  const disputedLabel =
+    point.kind === 'resource' && point.disputed === true
+      ? `<br/><span style="font-size:11px;color:#b45309;">⚠️ ${escapeHtml(tc.map_disputed)}</span>`
+      : '';
+
+  // Resource popups (only on the public landing, where slug is provided)
+  // link the name to the detail page and offer a "report a problem" CTA.
+  const detailHref =
+    point.kind === 'resource' && slug != null && slug !== ''
+      ? `/e/${encodeURIComponent(slug)}/recursos/${encodeURIComponent(point.id)}`
+      : null;
+  const titleHtml =
+    detailHref !== null
+      ? `<a href="${escapeHtml(detailHref)}" style="color:#0f172a;font-weight:700;text-decoration:underline;">${escapeHtml(point.label)}</a>`
+      : `<strong>${escapeHtml(point.label)}</strong>`;
+  const reportLink =
+    detailHref !== null
+      ? `<br/><a href="${escapeHtml(`${detailHref}/reportar-estado`)}" style="font-size:11px;color:#b45309;font-weight:600;">${escapeHtml(tc.map_report_cta)}</a>`
+      : '';
+
+  return `${titleHtml}<br/><span style="font-size:11px;color:#6b7280;">${kindLabel}</span>${typeLabel}${locationLabel}${acceptsLabel}${approximateLabel}${disputedLabel}${reportLink}`;
 }
 
 // ── Inner component that renders clustered resource/need markers ──────────────
@@ -193,51 +267,12 @@ function ClusteredMarkersLayer({
     group.clearLayers();
 
     for (const point of points) {
+      // Approximate needs are drawn only as a shaded zone (no centre pin).
+      if (isApproximateNeed(point)) continue;
       const icon =
         point.kind === 'resource' ? resourceIcon(point.status) : ICONS.red;
 
-      // Build rich popup HTML — all free-text values are escaped to prevent XSS
-      const kindLabel = point.kind === 'resource' ? tc.map_kind_resource : tc.map_kind_need;
-      const typeLabel =
-        point.resourceType != null && point.resourceType !== ''
-          ? `<br/><span style="font-size:11px;color:#555;">${escapeHtml(point.resourceType)}</span>`
-          : '';
-      const locationParts: string[] = [];
-      if (point.city != null && point.city !== '') locationParts.push(escapeHtml(point.city));
-      if (point.country != null && point.country !== '') locationParts.push(escapeHtml(point.country));
-      const locationLabel =
-        locationParts.length > 0
-          ? `<br/><span style="font-size:11px;color:#555;">${locationParts.join(', ')}</span>`
-          : '';
-      const acceptsLabel =
-        point.accepts != null && point.accepts.length > 0
-          ? `<br/><span style="font-size:11px;color:#555;">${escapeHtml(tc.map_accepts)} ${point.accepts.map(escapeHtml).join(', ')}</span>`
-          : '';
-      const approximateLabel =
-        point.kind === 'need' && point.approximate === true
-          ? `<br/><span style="font-size:11px;color:#b45309;">📍 ${escapeHtml(tc.map_approx_location)}</span>`
-          : '';
-      const disputedLabel =
-        point.kind === 'resource' && point.disputed === true
-          ? `<br/><span style="font-size:11px;color:#b45309;">⚠️ ${escapeHtml(tc.map_disputed)}</span>`
-          : '';
-
-      // Resource popups (only on the public landing, where slug is provided)
-      // link the name to the detail page and offer a "report a problem" CTA.
-      const detailHref =
-        point.kind === 'resource' && slug != null && slug !== ''
-          ? `/e/${encodeURIComponent(slug)}/recursos/${encodeURIComponent(point.id)}`
-          : null;
-      const titleHtml =
-        detailHref !== null
-          ? `<a href="${escapeHtml(detailHref)}" style="color:#0f172a;font-weight:700;text-decoration:underline;">${escapeHtml(point.label)}</a>`
-          : `<strong>${escapeHtml(point.label)}</strong>`;
-      const reportLink =
-        detailHref !== null
-          ? `<br/><a href="${escapeHtml(`${detailHref}/reportar-estado`)}" style="font-size:11px;color:#b45309;font-weight:600;">${escapeHtml(tc.map_report_cta)}</a>`
-          : '';
-
-      const popupHtml = `${titleHtml}<br/><span style="font-size:11px;color:#6b7280;">${kindLabel}</span>${typeLabel}${locationLabel}${acceptsLabel}${approximateLabel}${disputedLabel}${reportLink}`;
+      const popupHtml = buildPopupHtml(point, tc, slug);
 
       L.marker([point.lat, point.lng], { icon })
         .bindPopup(popupHtml)
@@ -355,7 +390,7 @@ export default function EmergencyMap({
 
         {onMapReady && <MapReadyEmitter onMapReady={onMapReady} />}
         <BoundsFitter points={points} />
-        <ApproximateCirclesLayer points={points} />
+        <ApproximateZonesLayer points={points} slug={slug} />
         <ClusteredMarkersLayer points={points} slug={slug} />
         <GeolocateControl />
       </MapContainer>

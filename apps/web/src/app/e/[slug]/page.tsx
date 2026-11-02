@@ -160,6 +160,7 @@ export default async function EmergencyPage({ params, searchParams }: Props) {
           label: n.title,
           kind: 'need',
           approximate: n.locationSensitivity === 'approximate',
+          ...(typeof n.approxRadiusMeters === 'number' ? { approxRadiusMeters: n.approxRadiusMeters } : {}),
         }),
       ),
   ];
