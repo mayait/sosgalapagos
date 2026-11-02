@@ -75,7 +75,7 @@ export default async function PeticionPage({ params, searchParams }: Props) {
               action={boundAction}
               slug={slug}
               {...(resourceId !== undefined ? { resourceId } : {})}
-              locationPicker={<LocationPicker />}
+              locationPicker={<LocationPicker variant="peticion" />}
               orgSelector={<OrgSelector />}
               itemsField={<ItemsField t={t.peticion} categories={categories} />}
               t={t.peticion}

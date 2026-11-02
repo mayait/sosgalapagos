@@ -85,7 +85,7 @@ export default async function DonarPage({ params, searchParams }: Props) {
               slug={slug}
               targetNeedTitle={targetNeedTitle}
               targetNeedId={targetNeedId}
-              locationPicker={<LocationPicker />}
+              locationPicker={<LocationPicker variant="donar" />}
               orgSelector={<OrgSelector />}
               t={t.donar}
               backToEmergencyLabel={t.common.back_to_emergency}
