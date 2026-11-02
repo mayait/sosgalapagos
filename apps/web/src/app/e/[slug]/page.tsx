@@ -459,9 +459,9 @@ export default async function EmergencyPage({ params, searchParams }: Props) {
             )}
           </section>
 
-          <GruposWhatsapp headingId="grupos-whatsapp-emergencia" />
-
           <ApoyoViolencia headingId="apoyo-violencia-emergencia" />
+
+          <GruposWhatsapp headingId="grupos-whatsapp-emergencia" />
 
           {token !== null && (
             <section aria-labelledby="manage-heading" className="flex flex-col gap-3">

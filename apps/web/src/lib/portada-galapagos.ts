@@ -36,11 +36,9 @@ export const PORTADA = {
       nombre: 'USFQ Galápagos · Galápagos Science Center',
       instagram: 'usfqgalapagos',
       // Instagram del GSC por confirmar: por ahora su página oficial de Facebook.
-      enlaces: [
-        { etiqueta: 'Galápagos Science Center', url: 'https://www.facebook.com/GalapagosGSC/' },
-        // Campaña de donaciones de la USFQ (botón de pagos oficial de la universidad).
-        { etiqueta: 'Donar · Campaña USFQ', url: 'https://btnpagos.usfq.edu.ec/pagos/eventos.aspx?adm=810110836' },
-      ],
+      enlaces: [{ etiqueta: 'Galápagos Science Center', url: 'https://www.facebook.com/GalapagosGSC/' }],
+      // Campaña de donaciones de la USFQ (botón de pagos oficial de la universidad).
+      donar: 'https://btnpagos.usfq.edu.ec/pagos/eventos.aspx?adm=810110836',
     },
     { nombre: 'Funcavid — Fundación Un Cambio por la Vida', instagram: 'fundacionuncambioxlavida' },
     { nombre: 'Fundación Charles Darwin (FCD)', instagram: 'charlesdarwinfoundation' },
@@ -49,7 +47,7 @@ export const PORTADA = {
     { nombre: 'Galapagos Conservancy', instagram: 'galapagosconservancy' },
     { nombre: 'Fundación ECOS' },
     { nombre: 'CAPTURGAL — Cámara Provincial de Turismo de Galápagos', instagram: 'capturgal' },
-  ] as { nombre: string; instagram?: string; whatsapp?: string; enlaces?: { etiqueta: string; url: string }[] }[],
+  ] as { nombre: string; instagram?: string; whatsapp?: string; enlaces?: { etiqueta: string; url: string }[]; donar?: string }[],
 
   /**
    * Páginas de consulta del mismo dominio que sirve Caddy fuera de la app

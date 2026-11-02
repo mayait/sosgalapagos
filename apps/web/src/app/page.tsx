@@ -207,6 +207,8 @@ export default async function HomePage() {
           </ul>
         </section>
 
+        <ApoyoViolencia headingId="apoyo-violencia-portada" />
+
         <GruposWhatsapp headingId="grupos-whatsapp-portada" />
 
         {/* ── Organizaciones ───────────────────────────────────────── */}
@@ -251,6 +253,16 @@ export default async function HomePage() {
                     {e.etiqueta} ↗
                   </a>
                 ))}
+                {o.donar ? (
+                  <a
+                    href={o.donar}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`${botonRojo} mt-2 w-full px-5 py-3 text-[15px]`}
+                  >
+                    Donar ↗
+                  </a>
+                ) : null}
                 {!o.instagram && !o.whatsapp && !o.enlaces ? (
                   <span className="text-[12px] text-muted">Contactar por sus canales oficiales</span>
                 ) : null}
@@ -294,8 +306,6 @@ export default async function HomePage() {
             Datos de donación compartidos por la coordinación de SOS Galápagos.
           </p>
         </section>
-
-        <ApoyoViolencia headingId="apoyo-violencia-portada" />
 
         <p className="text-[12.5px] text-muted">
           Información actualizada al {PORTADA.actualizado}. Fuentes: COE Provincial y cantonal, GAD Santa Cruz y
