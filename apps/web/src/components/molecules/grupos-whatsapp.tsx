@@ -25,7 +25,7 @@ export function GruposWhatsapp({ headingId = 'grupos-whatsapp-heading', classNam
           Escanea el código o, si estás en el celular, toca «Unirme por WhatsApp».
         </p>
       </div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {GRUPOS_WHATSAPP.map((g) => (
           <div
             key={g.url}
@@ -43,13 +43,23 @@ export function GruposWhatsapp({ headingId = 'grupos-whatsapp-heading', classNam
             </div>
             <div className="flex min-w-0 flex-1 flex-col gap-2">
               <p className="text-sm font-bold text-ink">{g.nombre}</p>
+              {g.descripcion ? <p className="text-[12.5px] leading-snug text-ink-soft">{g.descripcion}</p> : null}
+              {g.grupos ? (
+                <ul className="flex flex-wrap gap-1 sm:justify-center" aria-label={`Grupos de ${g.nombre}`}>
+                  {g.grupos.map((n) => (
+                    <li key={n} className="rounded border border-line bg-surface px-1.5 py-0.5 text-[11.5px] font-semibold text-ink">
+                      {n}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
               <a
                 href={g.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-navy px-3 py-2 text-[13px] font-bold text-white hover:bg-navy-700 focus:outline-none focus:ring-2 focus:ring-accent"
               >
-                Unirme por WhatsApp
+                {g.grupos ? 'Entrar a la comunidad' : 'Unirme por WhatsApp'}
               </a>
             </div>
           </div>

@@ -4,6 +4,7 @@ import { api } from '@/lib/api';
 import { AppBar } from '@/components/organisms/app-bar';
 import { GruposWhatsapp } from '@/components/molecules/grupos-whatsapp';
 import { ApoyoViolencia } from '@/components/molecules/apoyo-violencia';
+import { AvisoDestacado } from '@/components/molecules/aviso-destacado';
 import { getEmergencyBySlug } from '@/lib/emergencies';
 import { PORTADA } from '@/lib/portada-galapagos';
 
@@ -103,6 +104,8 @@ export default async function HomePage() {
       </section>
 
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-5 py-8 lg:gap-10 lg:px-8 lg:py-10">
+        <AvisoDestacado />
+
         {/* ── Necesitas ayuda / Quieres ayudar ──────────────────────── */}
         <div className="grid gap-4 md:grid-cols-2">
           <section aria-labelledby="necesitas-heading" className={`${tarjeta} border-t-4 border-t-accent`}>
@@ -132,11 +135,8 @@ export default async function HomePage() {
               <Link href={`${base}/voluntario`} className={botonNegro}>
                 Apuntarme como voluntario
               </Link>
-              <a href={PORTADA.donacionUSFQ} target="_blank" rel="noopener noreferrer" className={botonRojo}>
-                Donar a la campaña USFQ ↗
-              </a>
-              <a href="#organizaciones" className={botonBorde}>
-                Otras organizaciones
+              <a href="#organizaciones" className={botonRojo}>
+                Donar ↓
               </a>
               <a href="#mascotas" className={botonBorde}>
                 Mascotas
@@ -207,6 +207,8 @@ export default async function HomePage() {
           </ul>
         </section>
 
+        <GruposWhatsapp headingId="grupos-whatsapp-portada" />
+
         {/* ── Organizaciones ───────────────────────────────────────── */}
         <section id="organizaciones" aria-labelledby="org-heading" className={`${tarjeta} scroll-mt-20`}>
           <h2 id="org-heading" className={h2}>Organizaciones aliadas</h2>
@@ -214,22 +216,7 @@ export default async function HomePage() {
             Si quieres donar dinero, hazlo a organizaciones con trazabilidad y por sus canales oficiales.{' '}
             <b>No dones a cuentas personales.</b> Todo se coordina con el COE.
           </p>
-          <div className="mt-4 flex flex-col gap-4 rounded-lg bg-black p-4 text-white sm:flex-row sm:items-center sm:justify-between lg:p-5">
-            <div>
-              <p className="font-display text-base font-black uppercase leading-tight lg:text-lg">{PORTADA.usfq.nombre}</p>
-              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[13px]">
-                {PORTADA.usfq.redes.map((r) => (
-                  <a key={r.url} href={r.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-white/85 underline underline-offset-2 hover:text-white">
-                    {r.etiqueta} ↗
-                  </a>
-                ))}
-              </div>
-            </div>
-            <a href={PORTADA.donacionUSFQ} target="_blank" rel="noopener noreferrer" className={`${botonRojo} shrink-0 px-5 py-3 text-[15px]`}>
-              Donar · Campaña USFQ ↗
-            </a>
-          </div>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3" role="list">
+          <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3" role="list">
             {PORTADA.organizaciones.map((o) => (
               <li key={o.nombre} className="flex flex-col gap-0.5 rounded-lg border border-line bg-surface px-3 py-2.5">
                 <span className="text-[13.5px] font-semibold text-ink">{o.nombre}</span>
@@ -253,7 +240,18 @@ export default async function HomePage() {
                     Instagram @{o.instagram} ↗
                   </a>
                 ) : null}
-                {!o.instagram && !o.whatsapp ? (
+                {o.enlaces?.map((e) => (
+                  <a
+                    key={e.url}
+                    href={e.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[12.5px] font-semibold text-accent underline-offset-2 hover:underline"
+                  >
+                    {e.etiqueta} ↗
+                  </a>
+                ))}
+                {!o.instagram && !o.whatsapp && !o.enlaces ? (
                   <span className="text-[12px] text-muted">Contactar por sus canales oficiales</span>
                 ) : null}
               </li>
@@ -296,8 +294,6 @@ export default async function HomePage() {
             Datos de donación compartidos por la coordinación de SOS Galápagos.
           </p>
         </section>
-
-        <GruposWhatsapp headingId="grupos-whatsapp-portada" />
 
         <ApoyoViolencia headingId="apoyo-violencia-portada" />
 

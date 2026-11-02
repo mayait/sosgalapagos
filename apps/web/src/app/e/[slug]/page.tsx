@@ -10,6 +10,7 @@ import { ResourceList } from '@/components/organisms/resource-list';
 import { EmergencyMapWrapper } from '@/components/organisms/emergency-map-wrapper';
 import { GruposWhatsapp } from '@/components/molecules/grupos-whatsapp';
 import { ApoyoViolencia } from '@/components/molecules/apoyo-violencia';
+import { AvisoDestacado } from '@/components/molecules/aviso-destacado';
 import { NeedsFilter } from '@/components/molecules/needs-filter';
 import { MetricCard } from '@/components/molecules/metric-card';
 import { Card } from '@/components/atoms/card';
@@ -319,6 +320,8 @@ export default async function EmergencyPage({ params, searchParams }: Props) {
             <p className="text-[14px] leading-[1.55] text-ink-soft">{introBody}</p>
             <p className="text-[12.5px] text-muted-soft">{te.intro_source}</p>
           </section>
+
+          <AvisoDestacado />
 
           {announcement !== null && (
             <AnnouncementCard
