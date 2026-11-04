@@ -93,6 +93,15 @@ export default async function HomePage() {
               Ver el mapa y los puntos
             </Link>
           </div>
+          {/* /mapas y /clima los sirve Caddy fuera de la app: van con <a>, no con <Link>. */}
+          <div className="mt-2.5 flex flex-wrap gap-2.5">
+            <a href="/mapas/" className="inline-flex items-center justify-center gap-1.5 rounded-lg border-[1.5px] border-white/60 px-4 py-2.5 text-sm font-bold text-white hover:border-white">
+              <span aria-hidden="true">🗺️</span> Mapas de riesgo
+            </a>
+            <a href="/clima/" className="inline-flex items-center justify-center gap-1.5 rounded-lg border-[1.5px] border-white/60 px-4 py-2.5 text-sm font-bold text-white hover:border-white">
+              <span aria-hidden="true">🌧️</span> Clima en vivo
+            </a>
+          </div>
           <p className="mt-5 text-sm text-white/70">
             En una emergencia, llama al{' '}
             <a href="tel:911" className="font-bold text-white underline underline-offset-2">
@@ -106,20 +115,37 @@ export default async function HomePage() {
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-5 py-8 lg:gap-10 lg:px-8 lg:py-10">
         <AvisoDestacado />
 
+        {/* ── Situación hoy ─────────────────────────────────────────── */}
+        <section aria-labelledby="situacion-heading" className={tarjeta}>
+          <h2 id="situacion-heading" className={h2}>Situación hoy</h2>
+          <p className="mt-2 text-[13px] text-muted">Actualizado el {PORTADA.actualizado}.</p>
+          <dl className="mt-4 grid gap-3 md:grid-cols-2">
+            {PORTADA.situacion.map((s) => (
+              <div key={s.tema} className="rounded-lg border border-line bg-surface px-3.5 py-3">
+                <dt className="text-[12px] font-extrabold uppercase tracking-wide text-accent">{s.tema}</dt>
+                <dd className="mt-1 text-[14px] leading-snug text-ink">{s.texto}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
         {/* ── Necesitas ayuda / Quieres ayudar ──────────────────────── */}
         <div className="grid gap-4 md:grid-cols-2">
           <section aria-labelledby="necesitas-heading" className={`${tarjeta} border-t-4 border-t-accent`}>
             <h2 id="necesitas-heading" className={h2}>Si necesitas ayuda</h2>
             <p className="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
-              Registra tu necesidad en esta plataforma y completa el formulario oficial del COE. En una emergencia, llama
-              al ECU 911.
+              Registra tu necesidad en esta plataforma y regístrate como damnificado en el GAD Municipal de Santa Cruz. En
+              una emergencia, llama al ECU 911.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Link href={`${base}/peticion`} className={botonNegro}>
                 Registrar mi necesidad
               </Link>
+              <a href={PORTADA.registroGAD} target="_blank" rel="noopener noreferrer" className={botonBorde}>
+                Registro de damnificados (GAD) ↗
+              </a>
               <a href={PORTADA.formularioCOE} target="_blank" rel="noopener noreferrer" className={botonBorde}>
-                Formulario del COE para damnificados ↗
+                Formulario del COE ↗
               </a>
             </div>
           </section>
@@ -276,12 +302,14 @@ export default async function HomePage() {
           <h2 id="mascotas-heading" className={h2}>Ayuda para mascotas</h2>
           <p className="mt-2 max-w-3xl text-[14px] leading-relaxed text-ink-soft">
             Los perros y gatos de las familias damnificadas y los refugios de animales también lo perdieron todo. Se
-            necesita alimento (croquetas) y dinero. Estas organizaciones de Santa Cruz los están atendiendo.
+            necesita alimento para perros y gatos, collares, correas, transportadoras, toallas y dinero. Estas
+            organizaciones de Santa Cruz los están atendiendo.
           </p>
           <ul className="mt-4 grid gap-3 sm:grid-cols-2" role="list">
             {PORTADA.mascotas.map((m) => (
               <li key={m.nombre} className="flex flex-col gap-2 rounded-lg border border-line bg-surface p-4">
                 <span className="font-display text-base font-black uppercase leading-tight text-black">{m.nombre}</span>
+                {m.detalle ? <p className="text-[13px] leading-snug text-ink-soft">{m.detalle}</p> : null}
                 {m.banco ? (
                   <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-[13px] leading-snug">
                     <dt className="text-muted">Banco</dt>
@@ -290,8 +318,8 @@ export default async function HomePage() {
                     <dd className="select-all font-mono font-semibold text-ink">{m.banco.numero}</dd>
                     <dt className="text-muted">Titular</dt>
                     <dd className="font-semibold text-ink">{m.banco.titular}</dd>
-                    <dt className="text-muted">C.I.</dt>
-                    <dd className="select-all font-mono font-semibold text-ink">{m.banco.cedula}</dd>
+                    <dt className="text-muted">{m.banco.idTipo}</dt>
+                    <dd className="select-all font-mono font-semibold text-ink">{m.banco.id}</dd>
                   </dl>
                 ) : null}
                 {m.paypal ? (
@@ -299,11 +327,21 @@ export default async function HomePage() {
                     Donar por PayPal ↗
                   </a>
                 ) : null}
+                {m.facebook ? (
+                  <a
+                    href={m.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-auto text-[12.5px] font-semibold text-accent underline-offset-2 hover:underline"
+                  >
+                    Facebook ↗
+                  </a>
+                ) : null}
               </li>
             ))}
           </ul>
           <p className="mt-3 text-[12.5px] text-muted">
-            Datos de donación compartidos por la coordinación de SOS Galápagos.
+            Datos de donación compartidos por la coordinación de SOS Galápagos y por las propias fundaciones.
           </p>
         </section>
 
