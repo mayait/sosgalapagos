@@ -19,7 +19,7 @@ export const PORTADA = {
   aviso: {
     titulo: 'Único refugio autorizado: Colegio Miguel Ángel Cazares',
     texto:
-      'Si necesitas refugio, acude al Colegio Miguel Ángel Cazares, en Puerto Ayora. Los otros sitios de la primera lista ya no funcionan como refugio. No lleves ropa usada: hoy hace falta repelente, agua, artículos de higiene y pañales.',
+      'Si necesitas refugio, acude al Colegio Miguel Ángel Cazares, en Puerto Ayora. Los otros sitios de la lista del 31 de octubre ya no son refugios autorizados. No lleves ropa usada: hoy hace falta repelente, agua, artículos de higiene y pañales.',
   } as { titulo: string; texto: string } | null,
 
   formularioCOE:
@@ -37,12 +37,12 @@ export const PORTADA = {
     {
       tema: 'Refugio',
       texto:
-        'El único refugio autorizado es el Colegio Miguel Ángel Cazares (Puerto Ayora). Ahí se concentran las familias que estaban en otros sitios.',
+        'El único refugio autorizado es el Colegio Miguel Ángel Cazares (Puerto Ayora). Se está trasladando ahí a las familias de otros sitios y de hoteles.',
     },
     {
       tema: 'Donaciones en Santa Cruz',
       texto:
-        'Se reciben en la bodega del club de ciclismo, junto al coliseo de Puerto Ayora, y en el Colegio Cazares. Desde ahí se reparte a La Cascada, El Bosque, Guayabillos, Aguacatal y la parte alta.',
+        'Centro de acopio oficial: Colegio Miguel Ángel Cazares. También recibe la bodega del club de ciclismo, junto al coliseo de Puerto Ayora (punto comunitario), que reparte a La Cascada, El Bosque, Guayabillos y Aguacatal.',
     },
     {
       tema: 'Comida',
@@ -52,7 +52,7 @@ export const PORTADA = {
     {
       tema: 'Salud',
       texto:
-        'Desde el 4 de noviembre hay controles para embarazadas y madres que acaban de dar a luz en el Centro de Energías Renovables (Pampas Coloradas). Ante fiebre, acude al centro de salud: hay riesgo de dengue.',
+        'Según un aviso difundido el 2 de noviembre, desde el 4 hay controles para embarazadas y madres que acaban de dar a luz en el Centro de Energías Renovables (Pampas Coloradas). Confirma el horario en el centro de salud. Ante fiebre, acude al centro de salud: hay riesgo de dengue.',
     },
     {
       tema: 'Dengue',
@@ -62,7 +62,7 @@ export const PORTADA = {
     {
       tema: 'Zonas que aún necesitan ayuda',
       texto:
-        'Parte alta (Bellavista, El Bosque, Miconia), Guayabillos, Aguacatal, Scalesia, Los Arrayanes y las calles Ignacio Hernández y Piqueros. Hacen falta vehículos para llegar.',
+        'Bellavista y Miconia (parte alta), El Bosque, Guayabillos, Aguacatal, Scalesia y Los Arrayanes. Hacen falta vehículos para llegar.',
     },
   ] as { tema: string; texto: string }[],
 

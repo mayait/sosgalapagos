@@ -43,7 +43,7 @@ const lista = (d) => (Array.isArray(d) ? d : d?.items ?? []);
 
 const MOTIVO = 'Actualización 4-nov-2026 con la información de los grupos de coordinación';
 const CERRADO =
-  'Ya no funciona como refugio. Al 3-nov-2026 el único refugio autorizado es el Colegio Miguel Ángel Cazares (Puerto Ayora).';
+  'Ya no es un refugio autorizado. Al 3-nov-2026 el único refugio autorizado es el Colegio Miguel Ángel Cazares (Puerto Ayora).';
 
 // Coordenadas de OpenStreetMap (extracto Geofabrik del 31-oct-2026).
 const P = {
@@ -79,7 +79,8 @@ async function main() {
     const r = porNombre(nombre);
     if (!r) { console.log('  · no está:', nombre); continue; }
     await call('PATCH', `/resources/${r.id}`, { reason: MOTIVO, description: CERRADO });
-    await call('POST', `/resources/${r.id}/status`, { status: 'closed' });
+    if (r.publicStatus === 'hidden') console.log('  · sin publicar, no cambio el estado:', nombre);
+    else await call('POST', `/resources/${r.id}/status`, { status: 'closed' }, { allow: [400] });
     console.log('✓ cerrado:', nombre);
   }
 
@@ -89,7 +90,7 @@ async function main() {
       cambios: {
         name: 'Refugio autorizado — Colegio Miguel Ángel Cazares',
         description:
-          'Único refugio autorizado en Santa Cruz (3-nov-2026). Aquí se concentran las familias que estaban en otros refugios y en hoteles. Tiene camas, colchones y comida. Es también centro de acopio.',
+          'Único refugio autorizado en Santa Cruz (3-nov-2026). Aquí se está reuniendo a las familias que estaban en otros refugios y en hoteles. Tiene camas, colchones y comida. Es también centro de acopio.',
       },
       estado: 'active',
     },
@@ -107,15 +108,16 @@ async function main() {
       cambios: {
         name: 'Oficina USFQ Santa Cruz — clasificación y entrega de kits',
         description:
-          'Oficina de la USFQ, frente a Bodega Blanca. Aquí los voluntarios clasifican y arman los kits que se entregan a las familias. No funciona como refugio.',
+          'Oficina de la USFQ, frente a Bodega Blanca. Aquí los voluntarios de la brigada USFQ clasifican y arman kits. No es punto de entrega al público ni refugio.',
       },
+      estado: 'paused',
     },
   ];
   for (const e of editar) {
     const r = porNombre(e.nombre) ?? porNombre(e.cambios.name);
     if (!r) { console.log('  · no está:', e.nombre); continue; }
     await call('PATCH', `/resources/${r.id}`, { reason: MOTIVO, ...e.cambios });
-    if (e.estado) await call('POST', `/resources/${r.id}/status`, { status: e.estado });
+    if (e.estado && r.publicStatus !== 'hidden') await call('POST', `/resources/${r.id}/status`, { status: e.estado }, { allow: [400] });
     console.log('✓ actualizado:', e.cambios.name ?? e.nombre);
   }
 
@@ -127,19 +129,22 @@ async function main() {
       description:
         'Recibe y reparte donaciones a La Cascada, El Bosque, Guayabillos, Aguacatal y la parte alta. Hace falta agua, repelente, pañales (de niño y de adulto), toallas húmedas, papel higiénico y artículos de higiene. No se recibe ropa usada. Ubicación aproximada: junto al Coliseo Cerrado de Deportes (OpenStreetMap).',
       location: P.coliseo, city: 'Puerto Ayora', accepts: ['water', 'hygiene', 'food_non_perishable'],
+      fuente: 'Grupos de la sociedad civil',
     },
     {
       type: 'venue',
       name: 'Control de embarazadas y posparto — Centro de Energías Renovables',
       description:
-        'Desde el 4-nov-2026 hay controles para mujeres embarazadas y madres que acaban de dar a luz. Ubicación: Centro de Energías Renovables, Pampas Coloradas (OpenStreetMap). Horario por confirmar.',
+        'Según un aviso difundido el 2-nov-2026, desde el 4-nov hay controles para mujeres embarazadas y madres que acaban de dar a luz. Ubicación: Centro de Energías Renovables, Pampas Coloradas (OpenStreetMap). Horario por confirmar en el centro de salud.',
       location: P.energias, city: 'Puerto Ayora',
+      fuente: 'Ministerio de Salud Pública (aviso del 2-nov-2026)',
     },
   ];
   for (const n of nuevos) {
     if (porNombre(n.name)) { console.log('  · ya existe:', n.name); continue; }
+    const { fuente, ...dto } = n;
     const creado = (await call('POST', `/emergencies/${E}/resources`, {
-      ...n, country: 'EC', ownerOrganizationId: org.id, sourceOrganisation: 'USFQ Galápagos',
+      ...dto, country: 'EC', ownerOrganizationId: org.id, sourceOrganisation: fuente,
     })).data;
     await call('POST', `/resources/${creado.id}/verify`, {}, { allow: [400, 409, 422] });
     await call('POST', `/resources/${creado.id}/publish`, {}, { allow: [400, 409, 422] });
@@ -150,22 +155,22 @@ async function main() {
   const needs = [
     {
       title: 'Repelente y mosquiteros (prevención de dengue)', priority: 'urgent', location: P.cazares,
-      description: 'Hay muchos mosquitos y aguas estancadas en las quebradas. Repelente con DEET, de preferencia a granel, y mosquiteros para el refugio y las familias.',
+      description: 'Hay muchos mosquitos y aguas estancadas en las quebradas. Repelente con DEET, de preferencia a granel, y mosquiteros para el refugio y las familias, además de los que ya vienen en camino.',
       items: [
         { name: 'Repelente con DEET', quantity: 1, unit: 'lote', category: 'hygiene' },
-        { name: 'Mosquitero para cama', quantity: 50, unit: 'unidad', category: 'shelter' },
+        { name: 'Mosquitero para cama', quantity: 1, unit: 'lote', category: 'shelter' },
       ],
     },
     {
       title: 'Agua para los barrios sin servicio', priority: 'urgent', location: P.bellavista,
-      description: 'Varios barrios de la parte alta y de Puerto Ayora siguen sin agua de red. Entregar en los puntos de acopio. Comprar en Santa Cruz: no enviar agua entre islas.',
+      description: 'Se pide agua para beber en la parte alta y en barrios de Puerto Ayora. Entregar en los puntos de acopio. Comprar en Santa Cruz: no enviar agua entre islas.',
       items: [{ name: 'Agua embotellada', quantity: 1, unit: 'lote', category: 'water' }],
     },
     {
       title: 'Pañales, toallas húmedas y artículos de higiene', priority: 'high', location: P.coliseo,
       description: 'Pañales de niño (talla XL) y de adulto (talla G), toallas húmedas, papel higiénico, jabón, toallas higiénicas, pasta y cepillos de dientes.',
       items: [
-        { name: 'Pañales de niño talla XL', quantity: 1, unit: 'lote', category: 'hygiene_infantil' },
+        { name: 'Pañales de niño talla XL', quantity: 1, unit: 'lote', category: 'hygiene_infantile' },
         { name: 'Pañales de adulto talla G', quantity: 1, unit: 'lote', category: 'hygiene_personal' },
         { name: 'Toallas húmedas y papel higiénico', quantity: 1, unit: 'lote', category: 'hygiene_personal' },
       ],
@@ -180,7 +185,7 @@ async function main() {
       ],
     },
     {
-      title: 'Botas de caucho para la limpieza de viviendas', priority: 'high', location: P.laCascada,
+      title: 'Botas de caucho para la limpieza de viviendas', priority: 'medium', location: P.laCascada,
       description: 'Para quienes limpian el lodo de las casas (militares, voluntarios y familias). Tallas variadas.',
       items: [{ name: 'Botas de caucho', quantity: 1, unit: 'lote', category: 'tools' }],
     },
@@ -201,7 +206,7 @@ async function main() {
     {
       title: 'Alimento y accesorios para perros y gatos', priority: 'medium', location: P.puertoAyora,
       description: 'Para los animales de las familias afectadas. Alimento balanceado o húmedo, collares, correas, transportadoras y toallas. Lo reciben Pan Animalia, Patitas Galapagueñas y Juanchito al Rescate.',
-      items: [{ name: 'Alimento para perros y gatos', quantity: 1, unit: 'lote', category: 'other' }],
+      items: [{ name: 'Alimento para perros y gatos', quantity: 1, unit: 'lote', category: 'other_pets' }],
     },
   ];
   const vigentes = new Set(lista((await call('GET', `/emergencies/${E}/public/needs?limit=100`)).data).map((n) => n.title));
@@ -214,9 +219,9 @@ async function main() {
 
   // 4) Tareas de voluntariado.
   const tasks = [
-    { title: 'Llevar ayuda en vehículo a la parte alta', description: 'Faltan vehículos para llevar agua, comida y kits a Bellavista, El Bosque, Guayabillos, Aguacatal, Miconia y Los Arrayanes. Salir desde la bodega del club de ciclismo, junto al coliseo.', location: P.coliseo, requiredSkill: 'driving' },
+    { title: 'Llevar ayuda en vehículo a la parte alta', description: 'Faltan vehículos para llevar agua, comida y kits a Bellavista, El Bosque, Guayabillos, Aguacatal, Miconia y Los Arrayanes. Salir desde la bodega del club de ciclismo, junto al coliseo. No hacer entregas durante aguaceros.', location: P.coliseo, requiredSkill: 'driving' },
     { title: 'Ayudar en las cocinas comunitarias', description: 'Preparar y repartir comida con la Fundación Torraja y La Colmena.', location: P.puertoAyora, requiredSkill: 'cooking' },
-    { title: 'Limpieza de lodo en viviendas de La Cascada', description: 'Con botas, guantes y palas. Coordinar con el refugio o el punto de acopio antes de ir; no ir solo a las zonas afectadas.', location: P.laCascada, requiredSkill: 'general' },
+    { title: 'Limpieza de lodo en viviendas de La Cascada', description: 'Con botas, guantes y palas. Coordinar con el refugio o el punto de acopio antes de ir; no ir solo a las zonas afectadas. No entrar a zonas evacuadas ni a cauces de quebrada, no ir con lluvia y seguir las indicaciones del COE y de los bomberos.', location: P.laCascada, requiredSkill: 'general' },
   ];
   const tareas = new Set(lista((await call('GET', `/emergencies/${E}/tasks`)).data).map((t) => t.title));
   for (const t of tasks) {

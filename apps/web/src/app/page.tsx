@@ -95,7 +95,7 @@ export default async function HomePage() {
           </div>
           {/* /mapas y /clima los sirve Caddy fuera de la app: van con <a>, no con <Link>. */}
           <div className="mt-2.5 flex flex-wrap gap-2.5">
-            <a href="/mapas/" className="inline-flex items-center justify-center gap-1.5 rounded-lg border-[1.5px] border-white/60 px-4 py-2.5 text-sm font-bold text-white hover:border-white">
+            <a href="/mapas/" title="Estimaciones propias, no oficiales" className="inline-flex items-center justify-center gap-1.5 rounded-lg border-[1.5px] border-white/60 px-4 py-2.5 text-sm font-bold text-white hover:border-white">
               <span aria-hidden="true">🗺️</span> Mapas de riesgo
             </a>
             <a href="/clima/" className="inline-flex items-center justify-center gap-1.5 rounded-lg border-[1.5px] border-white/60 px-4 py-2.5 text-sm font-bold text-white hover:border-white">
