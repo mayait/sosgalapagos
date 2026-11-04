@@ -60,6 +60,10 @@ www.{$SITE_DOMAIN} {
 	handle_path /estudios/api/* {
 		reverse_proxy comentarios:8080
 	}
+	# /estudios/ publica solo la lista de informes técnicos en PDF (sosgalapagos-datos: informes/publicar.sh).
+	# /informes es un alias.
+	redir /informes /estudios/ permanent
+	redir /informes/* /estudios/ permanent
 	redir /estudios /estudios/ permanent
 	handle_path /estudios/* {
 		root * /srv/estudios
