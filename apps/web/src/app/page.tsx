@@ -201,14 +201,14 @@ export default async function HomePage() {
           )}
         </section>
 
-        {/* ── Para entender la emergencia: /mapas, /clima, /estudios ── */}
+        {/* ── Para entender la emergencia: /mapas y /clima ── */}
         <section aria-labelledby="consulta-heading" className={tarjeta}>
-          <h2 id="consulta-heading" className={h2}>Mapas, clima y estudios</h2>
+          <h2 id="consulta-heading" className={h2}>Mapas y clima</h2>
           <p className="mt-2 max-w-3xl text-[14px] leading-relaxed text-ink-soft">
             Información abierta para entender qué pasó y dónde está el riesgo. Sirve a vecinos, voluntarios, técnicos y
             autoridades.
           </p>
-          <ul className="mt-4 grid gap-3 md:grid-cols-3" role="list">
+          <ul className="mt-4 grid gap-3 md:grid-cols-2" role="list">
             {PORTADA.consulta.map((c) => (
               <li key={c.ruta}>
                 <a

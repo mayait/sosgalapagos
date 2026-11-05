@@ -121,17 +121,6 @@ export const PORTADA = {
         'Nivel de inundación por zona (preliminar, no oficial)',
       ],
     },
-    {
-      titulo: 'Estudios preliminares',
-      ruta: '/estudios/',
-      resumen:
-        'Análisis topográficos e hidrológicos rápidos, con datos públicos y asistencia de IA, sin revisión profesional. Cada estudio admite comentarios.',
-      contenido: [
-        'Santa Cruz: cronología del 30 de octubre, lluvia medida, La Cascada, parte alta y cruces de quebradas con vías',
-        'San Cristóbal: puntos potenciales de inundación',
-        'No sustituyen estudios de ingeniería ni mapas oficiales',
-      ],
-    },
   ],
 
   /**
