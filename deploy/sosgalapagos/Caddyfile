@@ -92,7 +92,7 @@ www.{$SITE_DOMAIN} {
 		handle @permitido {
 			file_server
 		}
-		@descargas path_regexp ^/datos/descargas/[A-Za-z0-9_.-]+\.(csv|csv\.gz|txt|json)$
+		@descargas path_regexp ^/datos/descargas/[A-Za-z0-9_.-]+\.(csv|csv\.gz|zip|txt|json)$
 		handle @descargas {
 			file_server
 		}
