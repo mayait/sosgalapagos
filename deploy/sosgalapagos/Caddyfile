@@ -79,9 +79,10 @@ www.{$SITE_DOMAIN} {
 	}
 
 	# Clima en vivo: dashboard estático + los JSON agregados que reescribe cada
-	# 5 min el recolector del host (systemd sosgalapagos-clima.timer). Solo se
-	# sirven la página y esos JSON: no hay descargas ni otros archivos, y la
-	# página no se indexa (algunas fuentes aún no son públicas).
+	# 5 min el recolector del host (systemd sosgalapagos-clima.timer). Se sirven
+	# la página, esos JSON y, desde el 12-nov-2026, las descargas de datos crudos
+	# (/datos/descargas/: CSV mensuales, estaciones, LEEME e índice), que el
+	# recolector regenera cada hora. Todo lo demás da 404.
 	redir /clima /clima/ permanent
 	handle_path /clima/* {
 		root * /srv/clima
@@ -89,6 +90,10 @@ www.{$SITE_DOMAIN} {
 		header Cache-Control "no-cache"
 		@permitido path / /index.html /datos/estado.json /datos/horario.json /datos/diario.json
 		handle @permitido {
+			file_server
+		}
+		@descargas path_regexp ^/datos/descargas/[A-Za-z0-9_.-]+\.(csv|csv\.gz|txt|json)$
+		handle @descargas {
 			file_server
 		}
 		handle {
