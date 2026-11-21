@@ -52,6 +52,13 @@ export const PORTADA = {
   formularioCOE:
     'https://docs.google.com/forms/d/e/1FAIpQLSe-wb4SGX8Z0IxRUCjMUBgY3XFLGGc-wwmfPux6aTaGxxOCzQ/viewform',
 
+  /**
+   * Línea de reportes ciudadanos por WhatsApp de SOS Galápagos (no es un número
+   * personal). El enlace abre el chat con una plantilla ya escrita.
+   */
+  reporteWhatsapp:
+    'https://wa.me/593985155898?text=Reporte%20SOS%20Gal%C3%A1pagos%0ATipo%20%28inundaci%C3%B3n%2C%20v%C3%ADa%20cerrada%20o%20peligro%29%3A%20%0AUbicaci%C3%B3n%20o%20calle%3A%20%0ADetalle%3A%20',
+
   /** Registro de damnificados del GAD Municipal de Santa Cruz (sitio oficial). */
   registroGAD: 'https://www.gadsantacruz.gob.ec/registro-damnificados/',
 
