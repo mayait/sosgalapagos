@@ -110,6 +110,9 @@ export default async function HomePage() {
             <a href="/clima/" className="inline-flex items-center justify-center gap-1.5 rounded-lg border-[1.5px] border-white/60 px-4 py-2.5 text-sm font-bold text-white hover:border-white">
               <span aria-hidden="true">🌧️</span> Clima en vivo
             </a>
+            <a href={PORTADA.reporteWhatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 rounded-lg border-[1.5px] border-white/60 px-4 py-2.5 text-sm font-bold text-white hover:border-white">
+              <span aria-hidden="true">📲</span> Reportar por WhatsApp
+            </a>
           </div>
           <p className="mt-5 text-sm text-white/70">
             En una emergencia, llama al{' '}
@@ -123,6 +126,32 @@ export default async function HomePage() {
 
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-5 py-8 lg:gap-10 lg:px-8 lg:py-10">
         <AvisoDestacado />
+
+        {/* ── Reportes ciudadanos por WhatsApp ──────────────────────── */}
+        <section id="reportar" aria-labelledby="reportar-heading" className={`${tarjeta} scroll-mt-20 border-t-4 border-t-accent`}>
+          <h2 id="reportar-heading" className={h2}>Reporta lo que ves</h2>
+          <p className="mt-3 max-w-3xl text-[14.5px] leading-relaxed text-ink-soft">
+            Ayuda a mantener al día los mapas de la emergencia. Si ves una inundación, una vía cerrada o un peligro,
+            escríbenos por WhatsApp. También cuéntanos las buenas noticias: una vía que se abrió, agua que ya bajó o un
+            servicio que volvió.
+          </p>
+          <p className="mt-2 max-w-3xl text-[14.5px] leading-relaxed text-ink-soft">
+            Comparte tu ubicación de WhatsApp o escribe la calle. Si puedes, añade una foto y di qué tan grave es, si se
+            puede pasar y si es seguro.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <a href={PORTADA.reporteWhatsapp} target="_blank" rel="noopener noreferrer" className={`${botonRojo} px-5 py-3 text-[15px]`}>
+              Reportar por WhatsApp ↗
+            </a>
+            <span className="text-[13px] text-muted">
+              Si hay vidas en riesgo, llama primero al{' '}
+              <a href="tel:911" className="font-bold text-black underline underline-offset-2">
+                ECU 911
+              </a>
+              .
+            </span>
+          </div>
+        </section>
 
         {/* ── Situación hoy ─────────────────────────────────────────── */}
         <section aria-labelledby="situacion-heading" className={tarjeta}>
