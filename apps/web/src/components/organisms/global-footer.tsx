@@ -39,7 +39,9 @@ export function GlobalFooter({ tf, tb }: GlobalFooterProps) {
         { href: '/', label: tf.nav_home },
         { href: '/riesgos/', label: 'Mapa de riesgos' },
         { href: '/riesgos/informe/', label: 'Línea del tiempo' },
-        { href: '/clima/', label: 'Clima en vivo' },
+        { href: '/clima/', label: 'Clima' },
+        { href: '/riesgos/mapa-del-tiempo/', label: 'Lluvia y viento' },
+        { href: '/riesgos/descargas/', label: 'Descargar capas' },
       ];
   const resources = !activa ? [] : [
     { href: '/funcionalidades', label: tf.resources_features },
