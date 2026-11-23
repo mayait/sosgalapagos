@@ -66,6 +66,35 @@ export default async function HomePage() {
 
   return (
     <main className="flex-1 bg-surface">
+      {/* Menú del sitio, el mismo de /riesgos/ y /clima/: lo pinta /riesgos/app.js (cargado más abajo) dentro de
+          [data-sos-menu]. Estos enlaces son el respaldo si ese componente no llega; la altura ya queda reservada
+          (48 px de barra + la línea del aviso), así la página no salta al aparecer el menú. Con la plataforma de
+          coordinación encendida manda su propia barra (AppBar): nunca dos hamburguesas. */}
+      {activa ? null : (
+        <nav data-sos-menu aria-label="SOS Galápagos" className="block bg-white">
+          <div className="flex h-12 items-center gap-4 overflow-x-auto whitespace-nowrap border-b border-line px-4 text-[13.5px]">
+            <a href="/" className="font-display text-[15px] font-black uppercase text-black no-underline">
+              SOS Galápagos
+            </a>
+            <a href="/" aria-current="page" className="font-semibold text-black">Inicio</a>
+            <a href="/riesgos/" className="text-black">Mapa de riesgos</a>
+            <a href="/riesgos/informe/" className="text-black">Línea del tiempo</a>
+            <a href="/clima/" className="text-black">Clima</a>
+            <a href="/riesgos/mapa-del-tiempo/" className="text-black">Lluvia y viento</a>
+            <a href="/riesgos/descargas/" className="text-black">Descargar capas</a>
+            <a href="/riesgos/puntos/" className="text-black">Puntos</a>
+            <a href="tel:911" className="ml-auto inline-flex h-11 min-w-14 items-center justify-center rounded-full bg-accent px-3.5 font-extrabold text-white no-underline">
+              911
+            </a>
+          </div>
+          <p className="m-0 flex h-[34px] items-center justify-center border-b border-line px-3 text-center text-[11.5px] leading-tight text-muted sm:h-[26px]">
+            <span>
+              <b className="text-black">Información de apoyo de SOS Galápagos (USFQ), no oficial.</b> Las alertas las da el COE y el
+              pronóstico oficial es del INAMHI.
+            </span>
+          </p>
+        </nav>
+      )}
       {!activa ? null : emergencia ? (
         <AppBar variant="emergency" slug={slug} emergency={{ name: emergencia.name, status: emergencia.status }} />
       ) : (
@@ -112,7 +141,7 @@ export default async function HomePage() {
               <span aria-hidden="true">🕒</span> Línea del tiempo
             </a>
             <a href="/clima/" className="inline-flex items-center justify-center gap-1.5 rounded-lg border-[1.5px] border-white/60 px-4 py-2.5 text-sm font-bold text-white hover:border-white">
-              <span aria-hidden="true">🌧️</span> Clima en vivo
+              <span aria-hidden="true">🌧️</span> Clima
             </a>
           </div>
           {/* Instalar la app y recibir avisos: el componente lo sirve el mapa de riesgos (/riesgos/app.js)
