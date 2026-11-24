@@ -1,3 +1,5 @@
+> **Retirado el 24 de noviembre de 2026.** Este fork de ResponseGrid ya no se usa ni se despliega. La portada de sosgalapagos.org, su página de privacidad y la configuración del servidor (Caddy) viven ahora en [`mayait/sosgalapagos-plataforma`](https://github.com/mayait/sosgalapagos-plataforma) (Apache 2.0). Los datos de la antigua plataforma de coordinación quedan en un respaldo fuera de línea; sus necesidades y puntos públicos, sin datos personales, pasaron al historial de la línea del tiempo. Este repositorio queda archivado, de solo lectura, con su licencia AGPL-3.0 original.
+
 # SOS Galápagos — Gestión de Emergencias · Sociedad Civil Galápagos
 
 **Plataforma para coordinar la ayuda durante las inundaciones por El Niño en Galápagos (2026).** Reúne en un solo lugar las necesidades de la población, los refugios y centros de acopio, el voluntariado y la logística. Trabaja junto a organizaciones de la sociedad civil y en coordinación con el COE.
